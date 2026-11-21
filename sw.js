@@ -1,5 +1,5 @@
 // Pay & Route offline cache. Bump VERSION when app files change.
-const VERSION = 'pr-v8';
+const VERSION = 'pr-v9';
 const SHELL = ['./', './index.html', './router.js', './manifest.json', './maplibre-gl.js', './maplibre-gl.css', './icon-180.png', './icon-192.png', './icon-512.png'];
 const MAP = './halton-map.txt';
 const TILES = 'pr-tiles';

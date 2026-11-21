@@ -406,8 +406,9 @@ function toCells(text){
   text=decodeEnt(String(text).replace(/\r/g,''));
   let cells;
   if(/\t/.test(text)){cells=[];for(const line of text.split('\n'))for(const c of line.split('\t'))cells.push(c)}
-  else cells=text.split(/\n[ \t ]*\n/);
-  return cells.map(c=>c.replace(/ /g,' ').replace(/\s+/g,' ').trim());
+  else{const nl=(text.match(/\n/g)||[]).length,bl=(text.match(/\n[ \t  ]*\n/g)||[]).length;
+    cells=(nl>20&&bl<nl*0.15)?text.split('\n'):text.split(/\n[ \t  ]*\n/)}
+  return cells.map(c=>c.replace(/[  ]/g,' ').replace(/\s+/g,' ').trim());
 }
 const CITY={MIL:'Milton',BUR:'Burlington',OAK:'Oakville',HH:'Halton Hills',GEO:'Georgetown',ACT:'Acton'};
 function cityOf(ward){const m=/^([A-Z]+)/i.exec(ward||'');if(!m)return'';const k=m[1].toUpperCase();for(const p in CITY)if(k.startsWith(p))return CITY[p];return''}
@@ -535,7 +536,7 @@ const isAny=s=>s.win==null||s.win>=9999||s.win<0;
 const effWin=s=>isAny(s)?(s.slot==='pm'?5000:-1):s.win;
 function groupsOf(date){
   const st=(S.days[date]&&S.days[date].stops)||[];const m=new Map();
-  st.forEach((s,i)=>{const w=effWin(s),k=w+'|'+s.addr.toUpperCase();if(!m.has(k))m.set(k,{key:k,win:w,any:isAny(s),time:s.time,addr:s.addr,city:s.city,o:s.o==null?i:s.o,items:[]});const g=m.get(k);g.items.push(s);g.o=Math.min(g.o,s.o==null?i:s.o)});
+  st.forEach((s,i)=>{const w=effWin(s),k=w+'|'+s.addr.toUpperCase();if(!m.has(k))m.set(k,{key:k,win:w,any:isAny(s),time:String(s.time||'').replace(/(\d{1,2}:\d{2}):\d{2}/,'$1'),addr:s.addr,city:s.city,o:s.o==null?i:s.o,items:[]});const g=m.get(k);g.items.push(s);g.o=Math.min(g.o,s.o==null?i:s.o)});
   const gs=[...m.values()].sort((a,b)=>a.win-b.win||a.o-b.o);
   gs.forEach(g=>{g.state=g.items.every(s=>s.st==='done')?'done':g.items.every(s=>s.st)?'skip':''});
   return gs;
@@ -619,7 +620,7 @@ function loadStops(text,date,source){
   $('mails').innerHTML='';$('pasteBox').hidden=true;return true;
 }
 function parseTable(text,date){
-  const c=toCells(text),isWO=x=>/^\d{6,8}$/.test(x||'');
+  const c=toCells(text).filter(x=>x!==''),isWO=x=>/^\d{6,8}$/.test(x||'');
   const h=c.findIndex(x=>/^(host order|wo)\s*#?/i.test(x));if(h<0)return [];
   let n=0;while(h+n<c.length&&!isWO(c[h+n])&&n<20)n++;
   const hd=c.slice(h,h+n).map(x=>x.toLowerCase()),col=re=>hd.findIndex(x=>re.test(x));
@@ -633,7 +634,9 @@ function parseTable(text,date){
   return out;
 }
 function addManual(list,date,source){
-  const d=day(date),have=new Set((d.stops||[]).map(s=>s.wo).filter(Boolean));
+  const d=day(date);
+  {const addrs=new Set(list.filter(s=>s.wo||s.unit).map(s=>s.addr.toUpperCase()));if(addrs.size&&d.stops){const before=d.stops.length;d.stops=d.stops.filter(s=>!(s.manual&&!s.wo&&!s.unit&&s.st!=='done'&&addrs.has(s.addr.toUpperCase())));if(d.stops.length<before)toast('Replaced '+(before-d.stops.length)+' stops that had no unit numbers')}}
+  const have=new Set((d.stops||[]).map(s=>s.wo).filter(Boolean));
   const add=list.filter(s=>!s.wo||!have.has(s.wo)),base=(d.stops||[]).length;
   d.stops=(d.stops||[]).concat(add.map((s,i)=>Object.assign(s,{o:effWin(s)*100+base+i})));
   routeDate=date;touch(date);renderAll();$('mails').innerHTML='';$('pasteBox').hidden=true;$('addBox').hidden=true;
@@ -666,7 +669,7 @@ function parseLines(text,type,slot,date){
   const tb=parseTable(text,date);if(tb.length)return tb.map(s=>Object.assign(s,{slot,type:s.type==='REPL_T'&&type?type.toUpperCase():s.type}));
   const sched=parseSchedule(text,'');if(sched.stops.length)return sched.stops.map(s=>Object.assign(s,{manual:true,slot}));
   const known=((S.days[date]&&S.days[date].stops)||[]).map(s=>s.city).filter(Boolean);
-  const defCity=known.sort((a,b)=>known.filter(x=>x===b).length-known.filter(x=>x===a).length)[0]||'';
+  const defCity=known.sort((a,b)=>known.filter(x=>x===b).length-known.filter(x=>x===a).length)[0]||S.settings.homeCity||'Milton';
   const out=[];
   for(let line of decodeEnt(text).split(/\n/)){
     line=line.replace(/\u00a0/g,' ').replace(/^\s*(?:[-*•]|\d{1,2}[.)])\s+/,'').trim();if(!line)continue;
