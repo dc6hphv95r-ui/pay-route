@@ -210,6 +210,7 @@ tr.go{cursor:pointer}
       <div style="display:flex;gap:8px;margin-top:12px"><button class="wide" data-go="log">Add jobs</button></div>
     </div>
 
+    <div id="tSetup"></div>
     <div id="tWx"></div>
     <div id="tShop"></div>
     <div id="tTomorrow"></div>
@@ -302,7 +303,7 @@ tr.go{cursor:pointer}
   <section class="view" id="v-setup">
     <h2>Setup</h2>
     <div class="grid2">
-      <label class="f">Your name on schedule<input id="sTag" placeholder="_yonas"></label>
+      <label class="f">Your name on schedule<input id="sTag" placeholder="_yourname"></label>
       <label class="f">Weekly target $<input type="number" id="sTarget" inputmode="decimal"></label>
       <label class="f">Hourly $<input type="number" id="sHourly" inputmode="decimal" step="0.01"></label>
       <label class="f">Mileage $/km<input type="number" id="sKm" inputmode="decimal" step="0.01"></label>
@@ -369,7 +370,7 @@ tr.go{cursor:pointer}
 <div id="sheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetT"><div id="sheetT" style="font-weight:800;font-size:18px;margin-bottom:10px"></div><div id="sheetB" style="display:grid;gap:8px"></div><button id="sheetX" class="wide" style="margin-top:10px">Cancel</button></div></div>
 
 <script src="router.js"></script>
-<script id="legacy" type="application/json">{"settings": {"hourly": 25, "target": 1500, "kmRate": 0.64, "rates": {"mrt": 25.63, "wr": 17.28, "wrl": 34.56, "wf4": 3, "wf12": 6, "tc": 14.5, "rad": 16.4, "radc": 27, "dkw": 2.05, "dks": 2.5, "bcv": 22.55, "tp": 16.4, "pmin": 16.4, "pnor": 31.78, "cmin": 15.38, "cnor": 32.4}, "brk": 0, "tag": "_yonas"}, "days": {"2026-11-20": {"h": 10, "km": 0, "c": {"mrt": 8, "wrl": 8, "wf4": 1, "tc": 9}}, "2026-11-19": {"h": 10, "km": 0, "c": {"mrt": 11, "wrl": 6, "wr": 4, "bcv": 1, "pmin": 1}}}}</script>
+<script id="legacy" type="application/json">{}</script>
 <script>
 {
 function decodeEnt(s){return s.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&nbsp;/g,' ')}
@@ -402,13 +403,13 @@ function parseSchedule(text,tag){
 }
 
 const JOBS=[
-['mrt','REPL MRT install / remove (permit)',25.63],['wr','Wire run <25′ / wire fix >12′',17.28],['wrl','Wire run >25′',34.56],
-['wf4','Wire fix <4′',3.00],['wf12','Wire fix 4′–12′',6.00],['tc','TC outside REPL_T',14.50],['rad','Radio retrofit',16.40],
-['radc','Radio retrofit – commercial',27.00],['dkw','DK weekday',2.05],['dks','DK Saturday',2.50],['bcv','BCV',22.55],
-['tp','TP REPL repair investigation',16.40],['pmin','Minor plumbing (1–3 fittings)',16.40],['pnor','Normal plumbing (4–6 fittings)',31.78],
-['cmin','Minor carpentry',15.38],['cnor','Normal carpentry',32.40]];
+['mrt','REPL MRT install / remove (permit)',0],['wr','Wire run <25′ / wire fix >12′',0],['wrl','Wire run >25′',0],
+['wf4','Wire fix <4′',0],['wf12','Wire fix 4′–12′',0],['tc','TC outside REPL_T',0],['rad','Radio retrofit',0],
+['radc','Radio retrofit – commercial',0],['dkw','DK weekday',0],['dks','DK Saturday',0],['bcv','BCV',0],
+['tp','TP REPL repair investigation',0],['pmin','Minor plumbing (1–3 fittings)',0],['pnor','Normal plumbing (4–6 fittings)',0],
+['cmin','Minor carpentry',0],['cnor','Normal carpentry',0]];
 const TYPE_JOB={REPL_MRT:'mrt',REPL_T:'tc',REPAIR:'tp'};
-const DEF={hourly:25,target:1500,kmRate:0.64,rates:{},tag:'_yonas',homeAddr:'',homeCity:'',shopAddr:'2538 Speers Rd',shopCity:'Oakville',shopDays:'12345',shopMin:15,endHome:true,schoolAddr:'11 Kodiak Cres',schoolCity:'Toronto',schoolDays:'1234',classAt:'17:30',classLatest:'17:45',schoolBuf:10,taxPct:20,learn:true,useGps:true,voice:true,autoArrive:true,myName:'Yonas',smsTpl:'Hi{first}, this is {me} from KTI Utility Services for your Halton Region water meter appointment at {addr}. I\'m on my way and should be there in about {min} minutes.',dayStart:'08:00',minAppt:30,minRT:10,fix:{}};
+const DEF={hourly:0,target:1500,kmRate:0,rates:{},tag:'',homeAddr:'',homeCity:'',shopAddr:'',shopCity:'',shopDays:'12345',shopMin:15,endHome:true,schoolAddr:'',schoolCity:'',schoolDays:'',classAt:'17:30',classLatest:'17:45',schoolBuf:10,taxPct:20,learn:true,useGps:true,voice:true,autoArrive:true,myName:'',smsTpl:'Hi{first}, this is {me} about your water meter appointment at {addr}. I\'m on my way and should be there in about {min} minutes.',dayStart:'08:00',minAppt:30,minRT:10,fix:{}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -683,11 +684,14 @@ function dayReport(date){
 }
 async function shareReport(date){const text=dayReport(date);
   try{if(navigator.share){await navigator.share({title:'Day report '+date,text});return}}catch(e){if(e&&e.name==='AbortError')return}
-  try{await navigator.clipboard.writeText(text);toast('Report copied — paste it to Jennifer')}catch(e){toast('Couldn\'t share — try again')}}
+  try{await navigator.clipboard.writeText(text);toast('Report copied — paste it to dispatch')}catch(e){toast('Couldn\'t share — try again')}}
 
 /* ---------- backup ---------- */
 function backupText(){return JSON.stringify({app:'pay-route',v:2,at:new Date().toISOString(),data:S})}
-function restore(txt){try{const o=JSON.parse(txt);const d=o.data||o;if(!d.settings||!d.days)throw 0;
+function restore(txt){try{const o=JSON.parse(txt);const d=o.data||o;
+  if(o.merge&&d.settings){const keep={homeAddr:S.settings.homeAddr,homeCity:S.settings.homeCity,fix:S.settings.fix};S.settings=Object.assign({},DEF,S.settings,d.settings);for(const k in keep)if(keep[k]&&(typeof keep[k]!=='object'||Object.keys(keep[k]).length))S.settings[k]=keep[k];
+    let added=0;for(const k in (d.days||{}))if(!S.days[k]){S.days[k]=d.days[k];added++}cache();GEO.clear();renderAll();toast('Your settings are loaded'+(added?' + '+added+' saved days':''));return}
+  if(!d.settings||!d.days)throw 0;
     S=d;S.settings=Object.assign({},DEF,S.settings);cache();GEO.clear();renderAll();toast('Backup restored — '+Object.keys(S.days).length+' days')}catch(e){toast('That isn\'t a valid backup')}}
 $('bkSave').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([backupText()],{type:'application/json'}));a.download='pay-route-backup-'+TODAY+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)};
 $('bkCopy').onclick=async()=>{try{await navigator.clipboard.writeText(backupText());toast('Backup copied — keep it in Notes')}catch(e){toast('Copy blocked')}};
@@ -1151,6 +1155,7 @@ function renderTomorrow(){
   el.innerHTML=`<div class="card"><div style="font-weight:800">${longD(nd)} is planned</div>${TW?`<div class="note" style="margin-top:4px">Weather: ${WMO[TW.code]||''}, ${Math.round(TW.min)}° to ${Math.round(TW.max)}°${TW.pp?', rain '+TW.pp+'%':''}${TA.length?' — <b>'+esc(TA[0].t)+'</b>':''}</div>`:''}${pk.length?`<div class="note" style="margin-top:4px">Shop: ${pk.map(i=>i.total+' '+(i.k==='radio'?'radios':i.label.replace(/^Meters /,'').replace(/ ·.*$/,'')+' meters')).join(' · ')}</div>`:''}<div class="note" style="color:var(--ink);margin-top:4px">${P.from==='home'?'Leave home '+P.leave:'Start '+P.leave}${P.shop?' · shop '+P.shop.eta:''}${P.school?' · leave for class by '+P.school.leaveBy:P.home?' · home ~'+P.home.eta:''} · ${D.stops.length} WOs</div><div class="grid2" style="margin-top:10px"><button data-ics="${nd}">Add alarms to calendar</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;
 }
 function renderToday(){
+  {const st=S.settings,miss=[!st.tag&&'your schedule name',!Object.values(st.rates||{}).some(v=>+v)&&'pay rates',!st.hourly&&'hourly rate',!st.homeAddr&&'home address'].filter(Boolean);$('tSetup').innerHTML=miss.length?`<button class="linkcard" data-go="setup" style="border:2px solid var(--ink)"><div style="font-weight:800">Finish setup</div><div class="note">Missing: ${miss.join(', ')}. Open your settings file in Setup → Backup → Restore, or fill them in.</div></button>`:''}
   renderWx();if(!WX||Date.now()-WX.at>25*60000)wxRefresh(false);
   {const it=shopDay(TODAY)?pickItems(TODAY):[];$('tShop').innerHTML=it.length&&it.some(i=>!i.got)&&!groupsOf(TODAY).some(g=>g.state)?pickHtml(TODAY):''}
   $('dateLine').textContent=longD(TODAY);startGPS();renderTomorrow();if(!MAP&&S.days[TODAY]&&S.days[TODAY].stops)loadMap().catch(()=>{});
