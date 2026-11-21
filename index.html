@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Pay & Route">
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="maplibre-gl.css">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <title>Pay &amp; Route</title>
@@ -88,13 +89,49 @@ label.f input{margin-top:4px}
 .ur .ck{width:48px;padding:0;font-size:18px}
 .ur.cur{background:var(--y);color:#111}.ur.cur .nm{color:#333}.ur.cur .ck{background:#111;color:#fff;border-color:#111}
 .ur.ok{opacity:.5}.ur.ok .ck{background:var(--ok);color:#fff;border-color:var(--ok)}
-.mapbox{position:relative;height:min(62vh,460px);border-radius:16px;overflow:hidden;background:var(--plane);margin-top:4px}
+.mapbox{position:relative;height:min(70vh,560px);border-radius:16px;overflow:hidden;background:var(--plane);margin-top:4px}
 #map{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
-.mapctl{position:absolute;right:8px;top:8px;display:grid;gap:6px}
+#map[hidden],#gl[hidden]{display:none}
+.mapctl{position:absolute;right:8px;top:8px;display:grid;gap:6px;z-index:3}
+#gl{position:absolute;inset:0}
+.mapbox.full{position:fixed;inset:0;z-index:15;height:auto;border-radius:0;margin:0}
+.mapbox.full .mapctl{top:calc(8px + env(safe-area-inset-top))}
+.pin{width:30px;height:30px;border-radius:50%;background:#111;color:#fff;border:2.5px solid #fff;display:grid;place-items:center;font:800 13px "Hanken Grotesk",system-ui,sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.35);cursor:pointer}
+.pin.next{background:#ffe600;color:#111;border-color:#111;width:36px;height:36px;font-size:15px}
+.pin.done{background:#8a8a85}.pin.skip{background:#8a8a85;text-decoration:line-through}
+.pin.sp{border-radius:9px}
+.maplibregl-popup-content{font:15px/1.35 "Hanken Grotesk",system-ui,sans-serif;color:#111;border-radius:12px;padding:12px 14px;min-width:200px}
+.maplibregl-popup-content .btn,.maplibregl-popup-content button{min-height:40px;margin-top:8px;color:#111}
+.maplibregl-popup-content .btn.primary{background:#111;color:#fff;border-color:#111;padding:0 16px}
+.maplibregl-popup-content button{background:#fff;border:1px solid #ccc}
 .mapctl button{width:44px;padding:0;font-size:20px;background:var(--bg)}
 .mapctl #zFit,.mapctl #zHere{font-size:13px}
 .chip.drive{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .chip.late{background:#c62828;color:#fff;border-color:#c62828}
+.acts2{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.acts2>*{flex:1 1 0}
+.btn.sms{background:#1565c0;color:#fff;border-color:#1565c0}
+.chip.call{background:#1565c0;color:#fff;border-color:#1565c0}
+.chip.here{background:var(--ok);color:#fff;border-color:var(--ok)}
+#mapCard{position:absolute;left:8px;right:8px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:4;background:var(--bg);border-radius:16px;padding:12px 14px;box-shadow:0 6px 24px rgba(0,0,0,.25);touch-action:pan-y;display:none}
+.mapbox.full #mapCard{display:block}
+.mapbox.full .maplibregl-ctrl-bottom-right{bottom:150px}
+#mapCard .mc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#mapCard .mc-addr{font-weight:800;font-size:18px;line-height:1.2}
+#mapCard .mc-nav{display:flex;gap:6px}#mapCard .mc-nav button{width:44px;padding:0;font-size:20px}
+.pk{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.pk:last-child{border-bottom:0}
+.pk input{width:24px;min-height:24px;margin:0}
+.pk .pl{font-weight:700}.pk .ps{font-size:13px;color:var(--mute)}
+.pk .pn{display:flex;align-items:center;gap:4px}.pk .pn b{min-width:2.2em;text-align:center;font-size:20px;font-variant-numeric:tabular-nums}
+.pk .pn button{width:40px;min-height:40px;padding:0;font-size:20px}
+.pk.got .pl,.pk.got .pn b{text-decoration:line-through;opacity:.55}
+.wx{padding:14px 16px}
+.wx .wn{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.wx .wt{font-size:40px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.wx .hrs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(46px,1fr);gap:4px;overflow-x:auto;margin-top:10px;padding-bottom:4px}
+.wx .hr{background:var(--bg);border-radius:10px;padding:6px 4px;text-align:center;font-size:12px;font-variant-numeric:tabular-nums}
+.wx .hr b{display:block;font-size:15px}.wx .hr .pp{display:block;height:4px;background:var(--line);border-radius:2px;margin-top:4px;overflow:hidden}.wx .hr .pp i{display:block;height:100%;background:#1565c0}
+.wxa{margin-top:8px;padding:8px 10px;border-radius:10px;font-weight:700;font-size:14px;background:var(--y);color:#111}
+.wxa.bad{background:#c62828;color:#fff}
 .chip.any{background:var(--y);color:#111;border-color:var(--y)}
 .acts .sm{padding:0 10px;font-size:18px}
 .win{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:22px 0 10px}
@@ -173,6 +210,8 @@ tr.go{cursor:pointer}
       <div style="display:flex;gap:8px;margin-top:12px"><button class="wide" data-go="log">Add jobs</button></div>
     </div>
 
+    <div id="tWx"></div>
+    <div id="tShop"></div>
     <div id="tTomorrow"></div>
     <div id="tClass"></div>
     <div id="tNext"></div>
@@ -214,9 +253,9 @@ tr.go{cursor:pointer}
       <div class="grid2"><button class="primary" id="optBtn">Best order</button><button id="mapBtn">Show map</button></div>
       <div class="msg" id="mapMsg" role="status"></div>
       <div id="mapWrap" hidden>
-        <div class="mapbox"><canvas id="map" aria-label="Map of route"></canvas>
-          <div class="mapctl"><button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">−</button><button id="zFit">Fit</button><button id="zHere" aria-label="Show or set my location">Me</button></div></div>
-        <div class="note"><b>Me</b> centres on your location (or, with GPS off, tap Me then your spot). Hold a numbered pin to drag it if it's in the wrong place. H home · K shop. Map data © OpenStreetMap contributors.</div>
+        <div class="mapbox" id="mapbox"><div id="gl" hidden></div><div id="mapCard"></div><canvas id="map" aria-label="Map of route"></canvas>
+          <div class="mapctl"><button id="zFull" aria-label="Full screen map">⤢</button><button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">−</button><button id="zFit">Fit</button><button id="zHere" aria-label="Show my location">Me</button></div></div>
+        <div class="note" id="mapNote">Tap a numbered pin for details. Drag a pin if it's in the wrong place. H home · K shop · C class. Map © OpenStreetMap contributors, OpenFreeMap.</div>
       </div>
     </div>
     <div id="rBody"></div>
@@ -300,6 +339,12 @@ tr.go{cursor:pointer}
     <div class="grid2"><label class="f">Set aside for tax %<input type="number" id="sTax" inputmode="decimal"></label></div>
     <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sLearn" style="width:22px;min-height:22px"> Use my real job times (after 5 samples)</label>
     <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sGps" style="width:22px;min-height:22px"> Use my location (GPS) for planning</label>
+    <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sVoice" style="width:22px;min-height:22px"> Speak the next stop when I finish a job</label>
+    <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sArrive" style="width:22px;min-height:22px"> Mark “arrived” by itself when I pull up (GPS)</label>
+    <h3>Text to customers</h3>
+    <label class="f">Your name in texts<input id="sMe"></label>
+    <label class="f" style="margin-top:8px">Message<textarea id="sTpl" style="min-height:110px"></textarea></label>
+    <p class="note">{first} = customer's first name, {addr} = address, {min} = minutes away, {eta} = arrival time, {me} = your name. The text opens in Messages for you to send — nothing is sent by itself.</p>
     <button id="clearFix" style="margin-top:12px">Clear map pin fixes</button>
     <h3>Piece rates</h3>
     <div class="rates" id="rateList"></div>
@@ -363,7 +408,7 @@ const JOBS=[
 ['tp','TP REPL repair investigation',16.40],['pmin','Minor plumbing (1–3 fittings)',16.40],['pnor','Normal plumbing (4–6 fittings)',31.78],
 ['cmin','Minor carpentry',15.38],['cnor','Normal carpentry',32.40]];
 const TYPE_JOB={REPL_MRT:'mrt',REPL_T:'tc',REPAIR:'tp'};
-const DEF={hourly:25,target:1500,kmRate:0.64,rates:{},tag:'_yonas',homeAddr:'',homeCity:'',shopAddr:'2538 Speers Rd',shopCity:'Oakville',shopDays:'12345',shopMin:15,endHome:true,schoolAddr:'11 Kodiak Cres',schoolCity:'Toronto',schoolDays:'1234',classAt:'17:30',classLatest:'17:45',schoolBuf:10,taxPct:20,learn:true,useGps:true,dayStart:'08:00',minAppt:30,minRT:10,fix:{}};
+const DEF={hourly:25,target:1500,kmRate:0.64,rates:{},tag:'_yonas',homeAddr:'',homeCity:'',shopAddr:'2538 Speers Rd',shopCity:'Oakville',shopDays:'12345',shopMin:15,endHome:true,schoolAddr:'11 Kodiak Cres',schoolCity:'Toronto',schoolDays:'1234',classAt:'17:30',classLatest:'17:45',schoolBuf:10,taxPct:20,learn:true,useGps:true,voice:true,autoArrive:true,myName:'Yonas',smsTpl:'Hi{first}, this is {me} from KTI Utility Services for your Halton Region water meter appointment at {addr}. I\'m on my way and should be there in about {min} minutes.',dayStart:'08:00',minAppt:30,minRT:10,fix:{}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -473,7 +518,7 @@ function stopCard(g,n,date,isNext){
   const names=[...new Set(g.items.map(s=>s.name))],units=g.items.map(s=>s.unit).filter(Boolean),notes=[...new Set(g.items.map(s=>s.notes).filter(Boolean))];
   const phones=[...new Set(g.items.flatMap(s=>[s.ph,s.ph2]).filter(Boolean))];
   const types={};g.items.forEach(s=>types[s.type]=(types[s.type]||0)+1);
-  const ul=g.items.length>=2&&g.items.filter(s=>s.unit).length>=2;
+  const ul=g.items.length>=2&&g.items.filter(s=>s.unit).length>=2,call=needsCall(g),arr=g.items.find(s=>s.arriveAt);
   let unitHtml='';
   if(ul){const so=[...g.items].sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9)||String(a.unit).localeCompare(String(b.unit)));
     const cur=so.find(s=>!s.st),dn=so.filter(s=>s.st==='done').length;
@@ -484,9 +529,10 @@ function stopCard(g,n,date,isNext){
    <div class="sub">${esc(g.city||'')}${ul?' · '+g.items.length+' units':units.length?' · Unit '+esc(units.join(', ')):''} · ${g.any?'No appointment':esc(g.time)+' window'}</div>
    ${ul?'':`<div class="who">${esc(names.slice(0,3).join(' · '))}${names.length>3?' +'+(names.length-3):''}</div>`}
    <div class="who">${phones.map(p=>{const d=p.replace(/[^\d]/g,'').slice(0,11);return d.length>=10?`<a href="tel:${d}">${esc(p)}</a>`:esc(p)}).join(' · ')}</div>
-   <div class="chips">${legChips(date,g)}${g.any?'<span class="chip any">Anytime</span>':''}${Object.entries(types).map(([t,c])=>`<span class="chip">${c>1?c+' × ':''}${esc(t||'—')}</span>`).join('')}${!ul&&g.items.some(s=>s.wo)?`<span class="chip">WO ${esc(g.items.map(s=>s.wo).filter(Boolean).join(', '))}</span>`:''}</div>
+   <div class="chips">${call&&g.state!=='done'?'<span class="chip call">Text before arriving</span>':''}${callOnArrival(g)&&g.state!=='done'?'<span class="chip call">Call when you arrive</span>':''}${arr&&g.state!=='done'?`<span class="chip here">On site since ${tm(new Date(arr.arriveAt).toISOString())}</span>`:''}${legChips(date,g)}${g.any?'<span class="chip any">Anytime</span>':''}${Object.entries(types).map(([t,c])=>`<span class="chip">${c>1?c+' × ':''}${esc(t||'—')}</span>`).join('')}${!ul&&g.items.some(s=>s.wo)?`<span class="chip">WO ${esc(g.items.map(s=>s.wo).filter(Boolean).join(', '))}</span>`:''}</div>
    ${notes.map(t=>`<div class="nb${FLAG.test(t)?' flag':''}">${esc(t)}</div>`).join('')}
   </div></div>${unitHtml}
+  ${g.state==='done'?'':`<div class="acts2">${arr?'':`<button data-a="arrive">I'm here</button>`}${smsLink(g,date)?`<a class="btn${call?' sms':''}" href="${smsLink(g,date)}" data-smsk="${esc(g.key)}">Text customer</a>`:''}</div>`}
   <div class="acts${g.any?' any':''}"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a>${ul&&g.items.length>4&&g.state!=='done'?`<button disabled>${g.items.filter(s=>s.st==='done').length}/${g.items.length}</button>`:`<button data-a="done">${g.state==='done'?'Undo':ul?'All done':'Done'}</button>`}<button data-a="skip" class="sm" aria-label="No access / skip">${g.state==='skip'?'↺':'✕'}</button><button data-a="up" class="sm" aria-label="Move earlier">↑</button>${g.any?`<button data-a="slot" class="sm" aria-label="Move ${g.win<0?'after':'before'} appointments">${g.win<0?'PM':'AM'}</button>`:''}${g.items.every(s=>s.manual)?'<button data-a="del" class="sm" aria-label="Remove stop">Del</button>':''}</div>
  </div>`;
 }
@@ -497,6 +543,7 @@ function renderRoute(){
   const all=gs.flatMap(g=>g.items),done=all.filter(s=>s.st==='done').length;
   const next=gs.find(g=>!g.state);
   let html=`<div class="card"><div style="font-weight:800;font-size:18px">${longD(routeDate)}</div><div class="note">${gs.length} stops · ${all.length} work orders · ${done} done</div>${planLine(gs)}${planInfo(routeDate)}<div class="bar"><i style="width:${all.length?done/all.length*100:0}%"></i></div></div>`;
+  if(shopDay(routeDate))html+=`<details class="pkwrap" ${routeDate>TODAY||(routeDate===TODAY&&!(S.days[routeDate].pick&&Object.keys(S.days[routeDate].pick.got||{}).length))?'open':''}><summary style="font-weight:800;min-height:44px;display:flex;align-items:center">Shop pickup list</summary>${pickHtml(routeDate)}</details>`;
   const wins=[...new Set(gs.map(g=>g.win))];let n=0;
   for(const w of wins){const wg=gs.filter(g=>g.win===w),pend=wg.filter(g=>!g.state);
     const parts=[];for(let i=0;i<pend.length;i+=4)parts.push(pend.slice(i,i+4));
@@ -508,14 +555,15 @@ function renderRoute(){
 }
 function stopAction(date,key,a,wo){
   const d=day(date),gs=groupsOf(date),g=gs.find(x=>x.key===key);if(!g)return;
+  if(a==='arrive'){arriveAt(g,date,false);toast('Arrived — timing this job');return}
   if(a==='copy'){if(!wo)return;navigator.clipboard.writeText(wo).then(()=>toast('WO '+wo+' copied — paste it in Clevest'),()=>toast('WO '+wo));return}
   if(a==='one'){const s=g.items.find(x=>x.wo===wo);if(!s)return;const j=TYPE_JOB[s.type];
     if(s.st==='done'){s.st='';if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}
     else{s.st='done';s.doneAt=Date.now();if(j)d.c[j]=(+d.c[j]||0)+1;const left=g.items.filter(x=>!x.st).sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9))[0];toast('Unit '+s.unit+' done'+(left?' · next: unit '+left.unit+', WO '+left.wo:' · building finished'))}
-    touch(date);renderAll();if(d.plan&&MAP&&g.items.every(x=>x.st))planRoute(date,false);return}
+    touch(date);renderAll();if(g.items.every(x=>x.st)){if(d.plan&&MAP)planRoute(date,false);if(date===TODAY)afterDone(date)}return}
   if(a==='done'){
     if(g.state==='done'){for(const s of g.items){if(s.st==='done'){const j=TYPE_JOB[s.type];if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}s.st=''}toast('Marked not done')}
-    else{let add=0;for(const s of g.items){if(s.st!=='done'){const j=TYPE_JOB[s.type];if(j){d.c[j]=(+d.c[j]||0)+1;add++}s.st='done';s.doneAt=Date.now()}}toast(add?'Done — added '+add+' job'+(add>1?'s':'')+' to '+(date===TODAY?'today':fmtD(date)):'Done')}
+    else{let add=0;for(const s of g.items){if(s.st!=='done'){const j=TYPE_JOB[s.type];if(j){d.c[j]=(+d.c[j]||0)+1;add++}s.st='done';s.doneAt=Date.now()}}toast(add?'Done — added '+add+' job'+(add>1?'s':'')+' to '+(date===TODAY?'today':fmtD(date)):'Done');if(date===TODAY)setTimeout(()=>afterDone(date),350)}
   }else if(a==='skip'){if(g.state==='skip'){g.items.forEach(s=>{if(s.st==='skip'){s.st='';delete s.why}})}else{askWhy(g,date);return}}
   else if(a==='slot'){g.items.forEach(s=>s.slot=g.win<0?'pm':'am')}
   else if(a==='del'){g.items.forEach(s=>{if(s.st==='done'){const j=TYPE_JOB[s.type];if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}});d.stops=d.stops.filter(s=>!g.items.includes(s))}
@@ -648,7 +696,7 @@ $('bkPaste').onclick=()=>restore($('bkText').value);
 /* ---------- GPS ---------- */
 let GPS=null,gpsWatch=null;
 function startGPS(){if(gpsWatch!=null||!S.settings.useGps||!navigator.geolocation)return;
-  gpsWatch=navigator.geolocation.watchPosition(p=>{GPS={lon:p.coords.longitude,lat:p.coords.latitude,acc:p.coords.accuracy,at:Date.now()};if(!$('mapWrap').hidden)drawMap()},
+  gpsWatch=navigator.geolocation.watchPosition(p=>{GPS={lon:p.coords.longitude,lat:p.coords.latitude,acc:p.coords.accuracy,at:Date.now()};checkArrival();if(!$('mapWrap').hidden)drawMap()},
     e=>{if(e.code===1){mapMsg('Location is off for this app — turn it on in your phone settings, or tap “Me” then your spot on the map.',true)}gpsWatch=null},{enableHighAccuracy:true,maximumAge:30000,timeout:20000})}
 const gpsFresh=()=>GPS&&Date.now()-GPS.at<180000&&GPS.acc<400;
 
@@ -656,7 +704,7 @@ const gpsFresh=()=>GPS&&Date.now()-GPS.at<180000&&GPS.acc<400;
 function icsDate(date,mins){const d=parseD(date);d.setMinutes(Math.round(mins));const p=n=>String(n).padStart(2,'0');return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'T'+p(d.getHours())+p(d.getMinutes())+'00'}
 function icsFor(date){const P=S.days[date]&&S.days[date].plan;if(!P)return null;const ev=[];
   const add=(m,title,note,alarm)=>ev.push(['BEGIN:VEVENT','UID:'+date+'-'+ev.length+'@payroute','DTSTAMP:'+icsDate(TODAY,0),'DTSTART:'+icsDate(date,m),'DTEND:'+icsDate(date,m+10),'SUMMARY:'+title,'DESCRIPTION:'+note.replace(/\n/g,'\\n'),...(alarm!=null?['BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+title,'TRIGGER:-PT'+alarm+'M','END:VALARM']:[]),'END:VEVENT'].join('\r\n'));
-  if(P.leaveM!=null)add(P.leaveM,P.from==='home'?'Leave home for work':'Start route',P.shop?'Shop pickup '+P.shop.eta:'',15);
+  if(P.leaveM!=null){const W=wxDay(date),A=wxAlerts(date);add(P.leaveM,P.from==='home'?'Leave home for work':'Start route',(P.shop?'Shop pickup '+P.shop.eta+'. ':'')+(W?'Weather: '+(WMO[W.code]||'')+', '+Math.round(W.min)+' to '+Math.round(W.max)+' C'+(W.pp?', rain '+W.pp+'%':'')+'. ':'')+A.map(a=>a.t).join(' '),15)}
   const gs=groupsOf(date),first=gs.find(g=>!g.any&&g.win<2000);if(first)add(first.win,'First appointment window '+first.time,first.addr,30);
   if(P.school)add(P.school.lb,'LEAVE FOR CLASS',`Class ${S.settings.classAt} at ${S.settings.schoolAddr}. Drive ~${dur(P.school.d)}.`,15);
   return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//PayRoute//EN',...ev,'END:VCALENDAR'].join('\r\n');}
@@ -671,7 +719,8 @@ function learned(){const sig=Object.keys(S.days).length+':'+Object.values(S.days
   const smp={};for(const k in CAT)smp[k]=[];
   for(const date in S.days){const d=S.days[date],st=(d.stops||[]).filter(s=>s.st==='done'&&s.doneAt).sort((a,b)=>a.doneAt-b.doneAt);
     const size={};for(const s of d.stops||[]){const key=s.addr.toUpperCase();size[key]=(size[key]||0)+1}
-    for(let i=1;i<st.length;i++){const a=st[i-1],b=st[i];let gap=(b.doneAt-a.doneAt)/60000;
+    for(const b of st){if(b.arriveAt&&b.doneAt>b.arriveAt){const sameBefore=st.filter(x=>x.addr===b.addr&&x.doneAt<b.doneAt);const startT=sameBefore.length?Math.max(b.arriveAt,...sameBefore.map(x=>x.doneAt)):b.arriveAt;const g2=(b.doneAt-startT)/60000;if(g2>=2&&g2<=180){smp[catOf(b,size[b.addr.toUpperCase()])].push(g2);b._u=1}}}
+    for(let i=1;i<st.length;i++){const a=st[i-1],b=st[i];if(b._u)continue;let gap=(b.doneAt-a.doneAt)/60000;
       if(a.addr.toUpperCase()!==b.addr.toUpperCase()){const L=d.plan&&d.plan.legs&&Object.entries(d.plan.legs).find(([k])=>k.endsWith('|'+b.addr.toUpperCase()));if(!L||L[1].d==null)continue;gap-=L[1].d/60}
       if(gap>=2&&gap<=180)smp[catOf(b,size[b.addr.toUpperCase()])].push(gap)}}
   const med=a=>{const x=a.slice().sort((p,q)=>p-q);return x.length?x[x.length>>1]:null};
@@ -705,6 +754,135 @@ function renderInsights(){
   <table><thead><tr><th>Job</th><th>Samples</th><th>Typical</th></tr></thead><tbody>${Object.entries(CAT).map(([k,n])=>`<tr><td>${n}</td><td>${L[k].n}</td><td>${L[k].n?Math.round(L[k].m)+' min'+(L[k].n<5?' (need 5)':''):'—'}</td></tr>`).join('')}</tbody></table>
   <p class="note">Learned from the time between stops you mark Done, minus drive time. Planning uses them once there are 5 samples${S.settings.learn?'':' — turned off in Setup'}.</p>`;
 }
+
+
+
+
+/* ---------- weather (Open-Meteo, free, no key) ---------- */
+const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Fog',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
+let WX=null;try{WX=JSON.parse(ls.get('wx')||'null')}catch(e){}
+function wxPlace(){if(gpsFresh())return{lat:GPS.lat,lon:GPS.lon,name:'your location'};
+  if(MAP&&S.settings.homeAddr){const h=locate(S.settings.homeAddr,S.settings.homeCity);if(h){const ll=MAP.q2ll(h.x,h.y);return{lat:ll[1],lon:ll[0],name:'home'}}}
+  return{lat:43.51,lon:-79.88,name:'Milton'}}
+async function wxFetch(force){
+  if(!force&&WX&&Date.now()-WX.at<25*60000)return WX;if(!navigator.onLine)return WX;
+  const pl=wxPlace();
+  const u='https://api.open-meteo.com/v1/forecast?latitude='+pl.lat.toFixed(3)+'&longitude='+pl.lon.toFixed(3)+'&current=temperature_2m,apparent_temperature,weather_code,wind_gusts_10m,precipitation&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_gusts_10m,snowfall&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum,snowfall_sum,wind_gusts_10m_max,sunset&timezone=America%2FToronto&forecast_days=3';
+  try{const r=await fetch(u);if(!r.ok)throw 0;const data=await r.json();
+    const prev=WX;WX={at:Date.now(),place:pl.name,data};ls.set('wx',JSON.stringify(WX));wxCompare(prev,WX);return WX}catch(e){return WX}}
+function wxDay(date){if(!WX)return null;const D=WX.data.daily,i=D.time.indexOf(date);if(i<0)return null;return{max:D.temperature_2m_max[i],min:D.temperature_2m_min[i],code:D.weather_code[i],pp:D.precipitation_probability_max[i],rain:D.precipitation_sum[i],snow:D.snowfall_sum[i],gust:D.wind_gusts_10m_max[i]}}
+function wxHours(date,from,to){if(!WX)return [];const H=WX.data.hourly,out=[];H.time.forEach((t,i)=>{if(t.slice(0,10)!==date)return;const h=+t.slice(11,13);if(h<from||h>to)return;out.push({h,t:H.temperature_2m[i],f:H.apparent_temperature[i],pp:H.precipitation_probability[i]||0,code:H.weather_code[i],g:H.wind_gusts_10m[i],sn:H.snowfall[i]||0})});return out}
+const hh12=h=>(h%12||12)+(h<12?'a':'p');
+function wxAlerts(date){
+  const hrs=wxHours(date,7,19),D=wxDay(date),out=[];if(!hrs.length||!D)return out;
+  const first=(f)=>{const x=hrs.find(f);return x?hh12(x.h):''};
+  if(hrs.some(x=>[56,57,66,67,48].includes(x.code)))out.push({k:'ice',bad:1,t:'Freezing rain or ice from '+first(x=>[56,57,66,67,48].includes(x.code))+' — slippery steps, ramps and roads.'});
+  if(hrs.some(x=>x.code>=95))out.push({k:'storm',bad:1,t:'Thunderstorms possible from '+first(x=>x.code>=95)+'.'});
+  if((D.snow||0)>=2)out.push({k:'snow',bad:D.snow>=10,t:'Snow '+Math.round(D.snow)+' cm today — allow extra drive time, clear access to meter areas.'});
+  const wet=hrs.filter(x=>x.pp>=60);if(wet.length&&!out.some(a=>a.k==='snow'||a.k==='ice'))out.push({k:'rain',t:'Rain likely '+hh12(wet[0].h)+'–'+hh12(wet[wet.length-1].h+1)+' ('+Math.max(...wet.map(x=>x.pp))+'%). Bring rain gear.'});
+  const coldest=Math.min(...hrs.map(x=>x.f));if(coldest<=-15)out.push({k:'cold',bad:coldest<=-25,t:'Feels like '+Math.round(coldest)+'° — frozen lines and meters likely, dress for it.'});
+  const hot=Math.max(...hrs.map(x=>x.f));if(hot>=32)out.push({k:'heat',t:'Feels like '+Math.round(hot)+'° — drink water, take breaks.'});
+  const gust=Math.max(...hrs.map(x=>x.g));if(gust>=60)out.push({k:'wind',bad:gust>=80,t:'Wind gusts up to '+Math.round(gust)+' km/h.'});
+  const t0=hrs[0].t,mx=Math.max(...hrs.map(x=>x.t)),mn=Math.min(...hrs.map(x=>x.t));if(mx-mn>=12)out.push({k:'swing',t:'Big temperature swing today ('+Math.round(mn)+'° to '+Math.round(mx)+'°) — layer up.'});
+  return out}
+function wxCompare(prev,cur){
+  if(!prev||!prev.data)return;const before=new Set(wxAlertsFrom(prev,TODAY).map(a=>a.k)),now=wxAlertsFrom(cur,TODAY),nw=now.filter(a=>!before.has(a.k));
+  if(nw.length){const h=new Date().getHours();if(h<5||h>19)return;const msg='Weather update: '+nw.map(a=>a.t).join(' ');ls.set('wxnew',JSON.stringify({at:Date.now(),list:nw}));toast(msg.slice(0,140));speak(msg)}}
+function wxAlertsFrom(w,date){const keep=WX;WX=w;try{return wxAlerts(date)}finally{WX=keep}}
+function wxDriveFactor(date){const a=wxAlerts(date).map(x=>x.k);return a.includes('ice')?1.35:a.includes('snow')?1.25:a.includes('storm')||a.includes('rain')?1.08:1}
+function renderWx(){
+  const el=$('tWx');if(!el)return;if(!WX){el.innerHTML='';return}
+  const c=WX.data.current,D=wxDay(TODAY),al=wxAlerts(TODAY),hrs=wxHours(TODAY,new Date().getHours(),19),nw=(()=>{try{const x=JSON.parse(ls.get('wxnew')||'null');return x&&Date.now()-x.at<3*3600e3?x.list:[]}catch(e){return []}})();
+  const age=Math.round((Date.now()-WX.at)/60000);
+  el.innerHTML=`<div class="card wx"><div class="wn"><span class="wt">${Math.round(c.temperature_2m)}°</span><div><b>${WMO[c.weather_code]||''}</b><div class="note">Feels ${Math.round(c.apparent_temperature)}° · ${D?'today '+Math.round(D.min)+'° to '+Math.round(D.max)+'°':''}${D&&D.pp?' · rain '+D.pp+'%':''}</div></div></div>
+   ${nw.map(a=>`<div class="wxa bad">Changed: ${esc(a.t)}</div>`).join('')}
+   ${al.filter(a=>!nw.some(n=>n.k===a.k)).map(a=>`<div class="wxa${a.bad?' bad':''}">${esc(a.t)}</div>`).join('')}
+   ${hrs.length?`<div class="hrs">${hrs.map(x=>`<div class="hr">${hh12(x.h)}<b>${Math.round(x.t)}°</b>${x.pp}%<span class="pp"><i style="width:${x.pp}%"></i></span></div>`).join('')}</div>`:''}
+   <div class="note" style="margin-top:6px">${esc(WX.place)} · updated ${age<2?'just now':age+' min ago'} · <a href="https://open-meteo.com/" target="_blank" rel="noopener" style="color:inherit">Weather data by Open-Meteo.com</a></div></div>`;
+}
+async function wxRefresh(force){await wxFetch(force);renderWx();if(location.hash==='#today'||!location.hash)renderTomorrow()}
+setInterval(()=>{if(document.visibilityState==='visible')wxRefresh(false)},30*60000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wxRefresh(false)});
+
+/* ---------- shop pickup list ---------- */
+const SIZE_LBL={'12':'12 mm (check)','15':'15 mm · 5/8″','16':'15 mm · 5/8″','20':'20 mm · 3/4″','25':'25 mm · 1″','40':'40 mm · 1½″','50':'50 mm · 2″'};
+function pickItems(date){
+  const d=S.days[date];if(!d||!d.stops)return [];const pk=d.pick||{},adj=pk.adj||{},got=pk.got||{};
+  const need={radio:0},sizes={};
+  for(const s of d.stops){if(s.st==='skip')continue;const t=s.type||'';
+    if(/REPL_MRT/.test(t)){need.radio++;const z=String(s.size||'').trim()||'?';sizes[z]=(sizes[z]||0)+1}
+    else if(/REPL_T/.test(t))need.radio++}
+  const items=[{k:'radio',label:'Radios',sub:'1 per REPL_MRT and REPL_T',n:need.radio}];
+  Object.keys(sizes).sort((a,b)=>(+a||999)-(+b||999)).forEach(z=>items.push({k:'m'+z,label:'Meters '+(SIZE_LBL[z]||(z==='?'?'— size not listed':z+' mm')),sub:'REPL_MRT',n:sizes[z]}));
+  for(const k in adj)if(!items.some(i=>i.k===k))items.push({k,label:k==='radio'?'Radios':'Meters '+(SIZE_LBL[k.slice(1)]||k.slice(1)+' mm'),sub:'extra',n:0});
+  return items.map(i=>Object.assign(i,{total:Math.max(0,i.n+(+adj[i.k]||0)),adj:+adj[i.k]||0,got:!!got[i.k]})).filter(i=>i.total>0||i.n>0||i.adj);
+}
+function pickHtml(date,compact){
+  const it=pickItems(date);if(!it.length)return '';
+  const left=it.filter(i=>!i.got).length;
+  return `<div class="card" data-pkdate="${date}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b style="font-size:18px">Shop pickup</b><span class="note">${left?left+' to load':'All loaded ✓'}</span></div>
+  <div class="note" style="margin:2px 0 6px">${esc(S.settings.shopAddr)} · from ${longD(date)}'s schedule</div>
+  ${it.map(i=>`<label class="pk${i.got?' got':''}"><input type="checkbox" data-pkgot="${i.k}" ${i.got?'checked':''}><div><div class="pl">${esc(i.label)}</div><div class="ps">${i.n} on schedule${i.adj?` · ${i.adj>0?'+':''}${i.adj} spare`:''}</div></div><div class="pn"><button type="button" data-pkadj="${i.k}" data-v="-1" aria-label="One less">−</button><b>${i.total}</b><button type="button" data-pkadj="${i.k}" data-v="1" aria-label="One more">+</button></div></label>`).join('')}
+  <div class="grid2" style="margin-top:8px"><button type="button" data-pkadd="1">+ Other size</button><button type="button" data-pkall="1">All loaded</button></div>
+  <p class="note" style="margin:8px 0 0">Meter sizes come from the schedule and aren't always right — grab a spare of the common size if unsure.</p></div>`;
+}
+function pickState(date){const d=day(date);d.pick=d.pick||{};d.pick.adj=d.pick.adj||{};d.pick.got=d.pick.got||{};return d.pick}
+function rerenderPick(date){const html=pickHtml(date);document.querySelectorAll(`[data-pkdate="${date}"]`).forEach(el=>{const tmp=document.createElement('div');tmp.innerHTML=html;el.replaceWith(tmp.firstElementChild||tmp)})}
+document.addEventListener('click',e=>{const box=e.target.closest('[data-pkdate]');if(!box)return;const date=box.dataset.pkdate;
+  const a=e.target.closest('[data-pkadj]');if(a){e.preventDefault();const P=pickState(date);P.adj[a.dataset.pkadj]=(+P.adj[a.dataset.pkadj]||0)+(+a.dataset.v);touch(date);rerenderPick(date);return}
+  if(e.target.closest('[data-pkall]')){const P=pickState(date);pickItems(date).forEach(i=>P.got[i.k]=true);touch(date);rerenderPick(date);toast('All loaded — have a good day');if(date===TODAY)renderToday();return}
+  if(e.target.closest('[data-pkadd]')){$('sheetT').textContent='Add a meter size';$('sheetB').innerHTML=['15','20','25','40','50'].map(z=>`<button data-pksz="${z}">${SIZE_LBL[z]}</button>`).join('');$('sheet').hidden=false;
+    $('sheetB').onclick=ev=>{const b=ev.target.closest('[data-pksz]');if(!b)return;const P=pickState(date);P.adj['m'+b.dataset.pksz]=(+P.adj['m'+b.dataset.pksz]||0)+1;touch(date);$('sheet').hidden=true;rerenderPick(date)};$('sheetX').onclick=()=>{$('sheet').hidden=true};return}});
+document.addEventListener('change',e=>{const c=e.target.closest('[data-pkgot]');if(!c)return;const date=c.closest('[data-pkdate]').dataset.pkdate,P=pickState(date);P.got[c.dataset.pkgot]=c.checked;touch(date);rerenderPick(date)});
+function pickSpeech(date){const it=pickItems(date).filter(i=>i.total>0);return it.map(i=>i.total+' '+(i.k==='radio'?'radios':(i.k==='m?'?'meters with no size listed':i.label.replace(/^Meters /,'').replace(/ ·.*$/,'').replace('mm','millimetre')+' meters'))).join(', ')}
+function checkShop(){
+  if(!MAP||!gpsFresh()||!shopDay(TODAY)||!S.settings.shopAddr)return;const d=S.days[TODAY];if(!d||!d.stops||(d.pick&&d.pick.shown))return;
+  const l=locate(S.settings.shopAddr,S.settings.shopCity);if(!l)return;const q=MAP.ll2q(GPS.lon,GPS.lat);
+  if(Math.hypot((q[0]-l.x)*MAP.MX,(q[1]-l.y)*MAP.MY)<200){const P=pickState(TODAY);P.shown=Date.now();touch(TODAY);
+    $('sheetT').textContent='You\'re at the shop';$('sheetB').innerHTML=pickHtml(TODAY);$('sheet').hidden=false;$('sheetB').onclick=null;$('sheetX').textContent='Close';$('sheetX').onclick=()=>{$('sheet').hidden=true;$('sheetX').textContent='Cancel';renderAll()};
+    speak('You\'re at the shop. Pick up '+pickSpeech(TODAY)+'.')}}
+
+/* ---------- customer texts, arrival, voice ---------- */
+const CALLRX=/\b(call|text|phone|ring)\b[^.]*\b(before|prior|ahead|advance|arriv|min)|\b(before|prior to)\b[^.]*\b(arriv|coming|visit)|\bcall (ho|homeowner|customer|tenant|owner)\b/i;
+const ONARRIVE=/\b(when|upon|once|on)\s+(you\s+)?(have\s+)?(arriv|get there)/i;
+function needsCall(g){return g.items.some(s=>CALLRX.test(s.notes||'')&&!ONARRIVE.test(s.notes||''))}
+function callOnArrival(g){return g.items.some(s=>ONARRIVE.test(s.notes||'')&&/\b(call|text|phone)\b/i.test(s.notes||''))}
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const NOTEPH=/(?:call|text|contact)\s+(?:the\s+)?([A-Za-z]{2,}(?:\s+[A-Za-z]{2,})?)?[\s:,-]*(?:at|@)?\s*(\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})/i;
+function noteContact(g){for(const s of g.items){const m=NOTEPH.exec(s.notes||'');if(m){const nm=(m[1]||'').split(/\s+/)[0];return{ph:m[2].replace(/[^\d]/g,''),name:/^(ho|homeowner|customer|tenant|owner|super|the)$/i.test(nm)?'':nm}}}return null}
+function custPhone(g){const nc=noteContact(g);if(nc&&nc.ph.length===10)return nc.ph;for(const s of g.items)for(const p of [s.ph,s.ph2]){const d=String(p||'').replace(/[^\d]/g,'');if(d.length===10)return d;if(d.length===11&&d[0]==='1')return d.slice(1)}return null}
+function firstName(g){const nc=noteContact(g);if(nc&&nc.name)return nc.name[0].toUpperCase()+nc.name.slice(1).toLowerCase();const n=(g.items.find(s=>s.name)||{}).name||'';if(!n||/\b(INC|LTD|ONT|CORP|LIMITED|CO|LLC|CONDO|PROPERTY|MGMT|MANAGEMENT)\b|\d/.test(n.toUpperCase()))return '';const f=n.trim().split(/[\s&,]+/)[0];return f.length>1?f[0]+f.slice(1).toLowerCase():''}
+function minsAway(g,date){
+  try{if(MAP&&gpsFresh()&&date===TODAY){const l=locate(g.addr,g.city),q=MAP.ll2q(GPS.lon,GPS.lat),v=HaltonRouter.snap(MAP,q[0],q[1]);if(l&&v>=0){const{dist}=HaltonRouter.dijkstra(MAP,v,[l.v]);const sec=dist[l.v];if(sec<1e6){const n=new Date();return Math.max(3,Math.round(rush(n.getHours()*60+n.getMinutes(),sec)/60))}}}}catch(e){}
+  const L=S.days[date]&&S.days[date].plan&&S.days[date].plan.legs[g.key];return L&&L.d!=null?Math.max(3,Math.round(L.d/60)):15}
+function smsText(g,date){const m=minsAway(g,date),n=new Date(Date.now()+m*60000);const f=firstName(g);
+  return (S.settings.smsTpl||'').replace(/\{first\}/g,f?' '+f:'').replace(/\{me\}/g,S.settings.myName||'').replace(/\{addr\}/g,g.addr.replace(/\b(\w)(\w*)/g,(x,a,b)=>a+b.toLowerCase())).replace(/\{min\}/g,m).replace(/\{eta\}/g,n.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}))}
+function smsLink(g,date){const ph=custPhone(g);if(!ph)return null;return 'sms:+1'+ph+(isIOS?'&':'?')+'body='+encodeURIComponent(smsText(g,date))}
+// refresh the message right when tapped (minutes may have changed)
+document.addEventListener('click',e=>{const a=e.target.closest('[data-smsk]');if(!a)return;const date=(a.closest('[data-date]')||{}).dataset?.date||routeDate;const g=groupsOf(date).find(x=>x.key===a.dataset.smsk);if(!g)return;const u=smsLink(g,date);if(u)a.href=u;
+  g.items.forEach(s=>s.texted=Date.now());touch(date)},true);
+function speak(t){if(!S.settings.voice||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-CA';u.rate=1.02;speechSynthesis.speak(u)}catch(e){}}
+const sayAddr=a=>a.replace(/\bST\b/g,'Street').replace(/\bDR\b/g,'Drive').replace(/\bCRES\b/g,'Crescent').replace(/\bCRT\b/g,'Court').replace(/\bAVE\b/g,'Avenue').replace(/\bRD\b/g,'Road').replace(/\bPL\b/g,'Place').replace(/\bCIR\b/g,'Circle').replace(/\bBLVD\b/g,'Boulevard').replace(/\bLANDNG\b/g,'Landing').replace(/\bN\b/g,'North').replace(/\bS\b/g,'South').replace(/\bE\b/g,'East').replace(/\bW\b/g,'West').toLowerCase();
+function afterDone(date){
+  const gs=groupsOf(date),next=gs.find(g=>!g.state);
+  if(!next){speak('That was the last stop.'+(isSchoolDay(date)?' Head to class.':' Nice work.'));return}
+  const m=minsAway(next,date);
+  speak('Next stop: '+sayAddr(next.addr)+', about '+m+' minutes.'+(needsCall(next)?' This customer asked for a call first.':''));
+  if(needsCall(next)&&!next.items.some(s=>s.texted)&&smsLink(next,date)){
+    $('sheetT').textContent=next.addr+' asked to be called before you arrive.';
+    const ph=custPhone(next);
+    $('sheetB').innerHTML=`<a class="btn primary sms" data-smsk="${esc(next.key)}" href="${smsLink(next,date)}">Text: on my way (~${m} min)</a><a class="btn" href="tel:+1${ph}">Call ${ph.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3')}</a>`;
+    $('sheet').hidden=false;$('sheetB').onclick=e=>{if(e.target.closest('a'))setTimeout(()=>{$('sheet').hidden=true},300)};$('sheetX').onclick=()=>{$('sheet').hidden=true};
+  }
+}
+function arriveAt(g,date,auto){if(g.items.some(s=>s.arriveAt))return;const t=Date.now();g.items.forEach(s=>{if(!s.st)s.arriveAt=t});touch(date);renderAll();
+  if(auto){toast('Arrived at '+g.addr);speak('Arrived at '+sayAddr(g.addr)+'.'+(callOnArrival(g)?' The customer asked for a call when you arrive.':''))}
+  if(callOnArrival(g)){const ph=custPhone(g);if(ph){$('sheetT').textContent='Call '+(firstName(g)||'the customer')+' — they asked for a call when you arrive.';$('sheetB').innerHTML=`<a class="btn primary" href="tel:+1${ph}">Call ${ph.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3')}</a>`;$('sheet').hidden=false;$('sheetB').onclick=e=>{if(e.target.closest('a'))setTimeout(()=>{$('sheet').hidden=true},300)};$('sheetX').onclick=()=>{$('sheet').hidden=true}}}}
+function checkArrival(){
+  checkShop();
+  if(!S.settings.autoArrive||!MAP||!gpsFresh())return;const gs=groupsOf(TODAY),next=gs.find(g=>!g.state);if(!next||next.items.some(s=>s.arriveAt))return;
+  const l=locate(next.addr,next.city);if(!l)return;const q=MAP.ll2q(GPS.lon,GPS.lat),dm=Math.hypot((q[0]-l.x)*MAP.MX,(q[1]-l.y)*MAP.MY);
+  if(dm<120)arriveAt(next,TODAY,true)}
 
 /* ---------- offline routing ---------- */
 let MAP=null,mapP=null;const GEO=new Map();let ROUTE=null;
@@ -766,7 +944,8 @@ async function planRoute(date,optimize){
   const [hh,mi]=(st.dayStart||'08:00').split(':').map(Number),now=new Date();
   let t=(date===TODAY&&midDay)?now.getHours()*60+now.getMinutes():hh*60+mi,drive=0;const legs={},out={leave:hm(t),leaveM:t};
   let prev=iStart;
-  const go=to=>{if(prev<0||to<0||mat[prev][to]>=1e6)return null;const sec=rush(t,mat[prev][to]);drive+=sec;t+=sec/60;prev=to;return Math.round(sec)};
+  const WF=wxDriveFactor(date);out.wxf=WF;
+  const go=to=>{if(prev<0||to<0||mat[prev][to]>=1e6)return null;const sec=rush(t,mat[prev][to])*WF;drive+=sec;t+=sec/60;prev=to;return Math.round(sec)};
   if(iShop>=0){const dd=go(iShop);if(iStart<0)prev=iShop;out.shop={d:dd,eta:hm(t)};t+=+st.shopMin||0;out.shop.leave=hm(t)}
   const idxK=new Map();pend.forEach(g=>{if(idxOf.has(g))idxK.set(g.key,idxOf.get(g))});
   for(const g of gs){if(g.state==='done')continue;const i=idxK.get(g.key),leg={};
@@ -800,30 +979,127 @@ function planInfo(date){const P=S.days[date]&&S.days[date].plan;if(!P)return '<d
   parts.push('last job done ~'+P.finish);if(P.home)parts.push('home ~'+P.home.eta);
   let cls='';if(P.school){const cut=Object.values(P.legs).filter(l=>l.cut).length;parts.push('class ~'+P.school.arrive);
     cls=`<div class="card" style="margin:10px 0 0;padding:12px;background:${P.school.late?'#c62828':P.school.tight?'var(--y)':'var(--bg)'};color:${P.school.late?'#fff':'inherit'}"><b>Leave your last stop by ${P.school.leaveBy}</b> for class (${dur(P.school.d)} drive + parking).${cut?` ${cut} stop${cut>1?'s':''} would run past that — move ${cut>1?'them':'it'} to another day or before appointments.`:P.school.late?' You\'ll be late at this pace.':''}</div>`}
-  return `<div class="note" style="margin-top:6px;color:var(--ink)">${parts.join(' → ')}<br><b>${dur(P.drive)} driving</b> (rush-hour adjusted)${late?` · <b style="color:#c62828">${late} stop${late>1?'s':''} may miss the window</b>`:''}</div>${cls}<div class="grid2" style="margin-top:10px"><button data-ics="${date}">Add alarms to calendar</button><button data-rep="${date}">Share day report</button></div>`}
+  return `<div class="note" style="margin-top:6px;color:var(--ink)">${parts.join(' → ')}<br><b>${dur(P.drive)} driving</b> (rush-hour${P.wxf>1?' + weather +'+Math.round((P.wxf-1)*100)+'%':''} adjusted)${late?` · <b style="color:#c62828">${late} stop${late>1?'s':''} may miss the window</b>`:''}</div>${cls}<div class="grid2" style="margin-top:10px"><button data-ics="${date}">Add alarms to calendar</button><button data-rep="${date}">Share day report</button></div>`}
 $('optBtn').onclick=async()=>{startGPS();const b=$('optBtn');b.disabled=true;b.textContent='Working…';try{await planRoute(routeDate,true);toast('Stops ordered by drive time')}finally{b.disabled=false;b.textContent='Best order'}};
 $('mapBtn').onclick=async()=>{const w=$('mapWrap');if(!w.hidden){w.hidden=true;$('mapBtn').textContent='Show map';return}
   try{await loadMap()}catch(e){return}w.hidden=false;$('mapBtn').textContent='Hide map';
-  if(!ROUTE||ROUTE.date!==routeDate){const d=S.days[routeDate];await planRoute(routeDate,false)}fitMap();};
+  if(!ROUTE||ROUTE.date!==routeDate){await planRoute(routeDate,false)}initGL();fitMap();};
+
+/* ---------- online map (MapLibre + OpenFreeMap), offline canvas fallback ---------- */
+let GL=null,glReady=false,glFailed=false,glGeo=null,glMk=[];
+function loadGLLib(){if(window.maplibregl)return Promise.resolve();return new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='maplibre-gl.js';sc.onload=res;sc.onerror=rej;document.head.appendChild(sc)})}
+function glFallback(msg){if(GL){try{GL.remove()}catch(e){}}GL=null;glReady=false;glFailed=true;$('gl').hidden=true;$('map').hidden=false;if(msg)mapMsg(msg);fitMap()}
+async function initGL(){
+  if(GL||glFailed)return;if(!navigator.onLine){glFallback('Offline — showing the built-in map.');return}
+  try{await loadGLLib()}catch(e){glFallback();return}
+  $('gl').hidden=false;$('map').hidden=true;
+  try{GL=new maplibregl.Map({container:'gl',style:'https://tiles.openfreemap.org/styles/liberty',center:[-79.85,43.5],zoom:10,attributionControl:{compact:true},dragRotate:false,pitchWithRotate:false})}catch(e){glFallback();return}
+  GL.touchZoomRotate.disableRotation();window.__GL=GL;
+  glGeo=new maplibregl.GeolocateControl({positionOptions:{enableHighAccuracy:true},trackUserLocation:true,showAccuracyCircle:true,showUserLocation:true});
+  GL.addControl(glGeo,'bottom-right');
+  glGeo.on('geolocate',p=>{GPS={lon:p.coords.longitude,lat:p.coords.latitude,acc:p.coords.accuracy,at:Date.now()};checkArrival()});
+  const to=setTimeout(()=>{if(!glReady)glFallback('The online map is slow to load — showing the built-in map.')},9000);
+  GL.on('load',()=>{clearTimeout(to);glReady=true;
+    GL.addSource('route',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+    GL.addSource('tail',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+    GL.addLayer({id:'tail',type:'line',source:'tail',paint:{'line-color':'#111','line-width':3,'line-dasharray':[2,2]},layout:{'line-cap':'round'}});
+    GL.addLayer({id:'route-case',type:'line',source:'route',paint:{'line-color':'#111','line-width':9},layout:{'line-cap':'round','line-join':'round'}});
+    GL.addLayer({id:'route',type:'line',source:'route',paint:{'line-color':'#ffe600','line-width':5},layout:{'line-cap':'round','line-join':'round'}});
+    glUpdate();glFit()});
+}
+const q2ll=(x,y)=>MAP.q2ll(x,y);
+function glLine(p){const c=[];for(let i=0;i<p.length;i+=2)c.push(q2ll(p[i],p[i+1]));return{type:'Feature',geometry:{type:'LineString',coordinates:c},properties:{}}}
+function glUpdate(){
+  if($('mapbox').classList.contains('full'))renderMapCard(false);
+  if(!GL||!glReady||!MAP)return;
+  const R=ROUTE&&ROUTE.date===routeDate?ROUTE:null;
+  GL.getSource('route').setData({type:'FeatureCollection',features:R?R.segs.filter(p=>p.length>=4).map(glLine):[]});
+  GL.getSource('tail').setData({type:'FeatureCollection',features:R&&R.tail&&R.tail.length>=4?[glLine(R.tail)]:[]});
+  glMk.forEach(m=>m.remove());glMk=[];
+  const P=S.days[routeDate]&&S.days[routeDate].plan,nx=groupsOf(routeDate).find(g=>!g.state),nextKey=nx?nx.key:null;
+  const pin=(x,y,txt,cls,html,drag,g)=>{const el=document.createElement('div');el.className='pin '+cls;el.textContent=txt;
+    const m=new maplibregl.Marker({element:el,draggable:!!drag}).setLngLat(q2ll(x,y));
+    if(html)m.setPopup(new maplibregl.Popup({offset:18,closeButton:true}).setHTML(html));
+    if(drag&&g){m.on('dragend',()=>{const ll=m.getLngLat();askMove(g,ll,()=>m.setLngLat(q2ll(x,y)))})}
+    m.addTo(GL);glMk.push(m)};
+  if(R){if(R.home)pin(R.home.x,R.home.y,R.endMark||'H','sp','<b>'+(R.endMark==='C'?'Class — '+esc(S.settings.schoolAddr):'Home')+'</b>');
+    if(R.start&&!R.here&&!R.gps&&!(R.home&&R.endMark!=='C'&&R.start.v===R.home.v))pin(R.start.x,R.start.y,P&&P.from==='home'?'H':'S','sp','<b>'+(P&&P.from==='home'?'Home':'Start')+'</b>');
+    if(R.shop)pin(R.shop.x,R.shop.y,'K','sp','<b>Shop</b><br>'+esc(S.settings.shopAddr));
+    if(R.here)pin(R.here.x,R.here.y,'●','sp','<b>Where you tapped</b>')}
+  for(const o of mapStops().reverse()){const g=o.g,L=P&&P.legs[g.key];
+    const html=`<b>${o.n}. ${esc(g.addr)}</b><br><span style="color:#555">${esc(g.city||'')} · ${g.items.length} WO${g.items.length>1?'s':''}${L?' · ETA '+L.eta:''}${L&&L.d!=null?' · '+dur(L.d)+' drive':''}</span><br><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a> ${g.state?'':`<button data-pa="done" data-k="${esc(g.key)}">${g.items.length>4?'Open list':'Done'}</button>`}`;
+    pin(o.l.x,o.l.y,g.state==='done'?'✓':String(o.n),g.state==='done'?'done':g.state==='skip'?'skip':g.key===nextKey?'next':'',html,!g.state,g)}
+}
+function glFit(){if(!GL||!glReady)return;const pts=[];
+  for(const o of mapStops())pts.push(q2ll(o.l.x,o.l.y));const R=ROUTE&&ROUTE.date===routeDate?ROUTE:null;
+  if(R)for(const p of[R.start,R.shop,R.endMark==='C'?null:R.home])if(p)pts.push(q2ll(p.x,p.y));
+  if(!pts.length){GL.easeTo({center:[-79.85,43.5],zoom:10});return}
+  const b=pts.reduce((b,p)=>b.extend(p),new maplibregl.LngLatBounds(pts[0],pts[0]));GL.fitBounds(b,{padding:60,maxZoom:15,duration:0})}
+function askMove(g,ll,undo){
+  $('sheetT').textContent='Move the pin for '+g.addr+' here?';
+  $('sheetB').innerHTML='<button class="primary" id="mvOk">Yes — remember this spot</button>';$('sheet').hidden=false;
+  let done=false;$('mvOk').onclick=()=>{done=true;const k=fixKey(g.addr,g.city);S.settings.fix=Object.assign({},S.settings.fix,{[k]:[+ll.lng.toFixed(6),+ll.lat.toFixed(6)]});GEO.delete(k);touch('settings');$('sheet').hidden=true;toast('Pin saved for '+g.addr);planRoute(routeDate,false)};
+  $('sheetX').onclick=()=>{$('sheet').hidden=true;if(!done)undo()};
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pa]');if(!b)return;const g=groupsOf(routeDate).find(x=>x.key===b.dataset.k);if(!g)return;
+  if(g.items.length>4){const c=[...document.querySelectorAll('#rBody .stop')].find(el=>el.dataset.k===g.key);if($('mapbox').classList.contains('full'))$('zFull').click();if(c)c.scrollIntoView({behavior:'smooth',block:'start'});return}
+  stopAction(routeDate,g.key,'done')});
+$('zFull').onclick=()=>{const m=$('mapbox');m.classList.toggle('full');if(m.classList.contains('full')){const gs=mcList(),ni=gs.findIndex(g=>!g.state);MC=ni>=0?ni:0;renderMapCard(true)}$('zFull').textContent=m.classList.contains('full')?'✕':'⤢';setTimeout(()=>{if(GL)GL.resize();else drawMap()},60)};
+
+
+document.addEventListener('click',()=>{if(window.speechSynthesis&&!window.__sp){window.__sp=1;try{speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}}},{once:true});
+/* ---------- swipe between stops on the full-screen map ---------- */
+let MC=0;
+function mcList(){return groupsOf(routeDate)}
+function renderMapCard(fly){const gs=mcList(),el=$('mapCard');if(!gs.length){el.innerHTML='<b>No stops</b>';return}
+  if(MC<0)MC=0;if(MC>=gs.length)MC=gs.length-1;const g=gs[MC],P=S.days[routeDate]&&S.days[routeDate].plan,L=P&&P.legs[g.key],sm=smsLink(g,routeDate);
+  el.innerHTML=`<div class="mc-top"><div><div class="note">Stop ${MC+1} of ${gs.length}${g.state==='done'?' · done':g.state==='skip'?' · skipped':''}${L?' · ETA '+L.eta:''}</div><div class="mc-addr">${esc(g.addr)}</div><div class="note">${esc(g.city||'')} · ${g.items.length} WO${g.items.length>1?'s':''}${needsCall(g)?' · <b style="color:#1565c0">text first</b>':''}</div></div>
+   <div class="mc-nav"><button data-mc="-1" aria-label="Previous stop">‹</button><button data-mc="1" aria-label="Next stop">›</button></div></div>
+   <div class="acts2" data-date="${routeDate}"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a>${sm?`<a class="btn${needsCall(g)?' sms':''}" data-smsk="${esc(g.key)}" href="${sm}">Text</a>`:''}${g.state?'':g.items.length>4?'':`<button data-mcdone="${esc(g.key)}">Done</button>`}</div>`;
+  if(fly){const l=MAP&&locate(g.addr,g.city);if(l){if(GL&&!glFailed&&glReady)GL.flyTo({center:MAP.q2ll(l.x,l.y),zoom:Math.max(GL.getZoom(),14.5),speed:1.6});else{VW.cx=l.x;VW.cy=l.y;VW.s=Math.max(VW.s,0.15);drawMap()}}}}
+$('mapCard').addEventListener('click',e=>{const b=e.target.closest('[data-mc]');if(b){MC+= +b.dataset.mc;renderMapCard(true);return}
+  const d=e.target.closest('[data-mcdone]');if(d){stopAction(routeDate,d.dataset.mcdone,'done');const gs=mcList();const ni=gs.findIndex(g=>!g.state);if(ni>=0)MC=ni;renderMapCard(true)}});
+{let sx0=null,sy0=null;const el=$('mapCard');
+ el.addEventListener('touchstart',e=>{sx0=e.touches[0].clientX;sy0=e.touches[0].clientY},{passive:true});
+ el.addEventListener('touchend',e=>{if(sx0==null)return;const dx=e.changedTouches[0].clientX-sx0,dy=e.changedTouches[0].clientY-sy0;sx0=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){MC+=dx<0?1:-1;renderMapCard(true)}},{passive:true});}
+
 /* map drawing */
 const VW={cx:32000,cy:25000,s:0.01};
 function mapStops(){const gs=groupsOf(routeDate);return gs.map((g,i)=>({g,n:i+1,l:MAP?locate(g.addr,g.city):null})).filter(o=>o.l)}
-function fitMap(){const c=$('map'),st=mapStops(),xs=st.map(o=>o.l.x),ys=st.map(o=>o.l.y);if(ROUTE&&ROUTE.date===routeDate)for(const p of[ROUTE.start,ROUTE.shop])if(p){xs.push(p.x);ys.push(p.y)}
+function fitMap(){if(GL&&!glFailed){glFit();return}const c=$('map'),st=mapStops(),xs=st.map(o=>o.l.x),ys=st.map(o=>o.l.y);if(ROUTE&&ROUTE.date===routeDate)for(const p of[ROUTE.start,ROUTE.shop])if(p){xs.push(p.x);ys.push(p.y)}
   if(!xs.length){VW.cx=32000;VW.cy=24000;VW.s=0.008}else{const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);VW.cx=(x0+x1)/2;VW.cy=(y0+y1)/2;
   const w=c.clientWidth||320,h=c.clientHeight||360;VW.s=Math.min(0.5,Math.min((w-60)/Math.max(1,(x1-x0)*HaltonRouter.MX/HaltonRouter.MY),(h-60)/Math.max(1,y1-y0)))}drawMap()}
 function drawMap(){
+  if(GL&&!glFailed){glUpdate();return}
   const c=$('map');if(!MAP||!c||$('mapWrap').hidden)return;const dpr=devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;if(!W)return;
   if(c.width!==Math.round(W*dpr)||c.height!==Math.round(H*dpr)){c.width=Math.round(W*dpr);c.height=Math.round(H*dpr)}
-  const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);const cs=getComputedStyle(document.body),ink=cs.getPropertyValue('--ink').trim()||'#111',bg=cs.getPropertyValue('--plane').trim()||'#eee',line=cs.getPropertyValue('--line').trim()||'#ccc',mute=cs.getPropertyValue('--mute').trim()||'#666';
-  x.fillStyle=bg;x.fillRect(0,0,W,H);
+  const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+  const dark=matchMedia('(prefers-color-scheme: dark)').matches&&document.documentElement.dataset.theme!=='light'||document.documentElement.dataset.theme==='dark';
+  const C=dark?{bg:'#1e1f22',minor:'#3a3b40',minorCase:'#2a2b2f',art:'#7a6a3a',artCase:'#4a4128',hwy:'#b8743a',hwyCase:'#5e3c1e',label:'#d8d8d4',halo:'#1e1f22'}
+              :{bg:'#f2efe9',minor:'#ffffff',minorCase:'#d3cec4',art:'#fcd880',artCase:'#d9a441',hwy:'#f4a35a',hwyCase:'#c4732c',label:'#3a3a38',halo:'#f2efe9'};
+  x.fillStyle=C.bg;x.fillRect(0,0,W,H);x.globalAlpha=1;
+  const ink=dark?'#f2f2ef':'#111';
   const k=HaltonRouter.MX/HaltonRouter.MY,s=VW.s,sx=X=>(X-VW.cx)*s*k+W/2,sy=Y=>H/2-(Y-VW.cy)*s;
   const vx0=VW.cx-W/2/(s*k),vx1=VW.cx+W/2/(s*k),vy0=VW.cy-H/2/s,vy1=VW.cy+H/2/s,A=MAP.A,DG=MAP.DG,seen=new Set();
-  const lists=[[],[],[],[]];
+  const lists=[[],[],[],[]]; // 0 highways, 1 arterials, 2 local, 3 service
   for(let gx=Math.floor(vx0/DG);gx<=Math.floor(vx1/DG);gx++)for(let gy=Math.floor(vy0/DG);gy<=Math.floor(vy1/DG);gy++){const a=MAP.dgrid.get(gx*MAP.dgx+gy);if(!a)continue;
-    for(const w of a){if(seen.has(w))continue;seen.add(w);const c=A.wCls[w];if(s<0.012&&c>=5)continue;if(s<0.03&&c===6)continue;lists[c<=1||c===7?0:c<=4?1:c===6?3:2].push(w)}}
-  const style=[[ink,Math.max(1.5,s*120),0.55],[mute,Math.max(1,s*90),0.8],[line,Math.max(0.6,s*60),1],[line,Math.max(0.4,s*30),0.8]];
-  for(let L=3;L>=0;L--){const[col,wd,al]=style[L];x.strokeStyle=col;x.lineWidth=Math.min(wd,L===0?7:L===1?6:5);x.globalAlpha=al;x.lineCap='round';x.lineJoin='round';x.beginPath();
-    for(const w of lists[L]){const st=A.wStart[w],en=A.wStart[w+1];for(let i=st;i<en;i++){const n=A.wNodes[i],X=sx(A.nx[n]),Y=sy(A.ny[n]);if(i===st)x.moveTo(X,Y);else x.lineTo(X,Y)}}x.stroke()}
+    for(const w of a){if(seen.has(w))continue;seen.add(w);const cl=A.wCls[w];if(s<0.012&&cl>=5)continue;if(s<0.03&&cl===6)continue;lists[cl<=1||cl===7?0:cl<=4?1:cl===6?3:2].push(w)}}
+  const mpp=1/(s*MAP.MY); // metres per pixel
+  const wpx=m=>Math.max(1,Math.min(16,m/mpp));
+  const path=L=>{x.beginPath();for(const w of lists[L]){const st=A.wStart[w],en=A.wStart[w+1];for(let i=st;i<en;i++){const n=A.wNodes[i],X=sx(A.nx[n]),Y=sy(A.ny[n]);if(i===st)x.moveTo(X,Y);else x.lineTo(X,Y)}}};
+  x.lineCap='round';x.lineJoin='round';
+  const STY=[[C.hwy,C.hwyCase,wpx(22)],[C.art,C.artCase,wpx(16)],[C.minor,C.minorCase,wpx(11)],[C.minor,C.minorCase,wpx(6)]];
+  for(let L=3;L>=0;L--){const[f,cs,w]=STY[L];path(L);x.strokeStyle=cs;x.lineWidth=w+2;x.stroke()}
+  for(let L=3;L>=0;L--){const[f,cs,w]=STY[L];path(L);x.strokeStyle=f;x.lineWidth=w;x.stroke()}
+  // street names (horizontal, de-duplicated)
+  if(mpp<9){x.font='600 12px "Hanken Grotesk",system-ui,sans-serif';x.textAlign='center';x.textBaseline='middle';x.lineWidth=3.5;x.strokeStyle=C.halo;x.fillStyle=C.label;
+    const taken=[],done=new Set(),cell=new Map();
+    for(const L of [0,1,2]){for(const w of lists[L]){const nm=A.wName[w];if(!nm)continue;const st=A.wStart[w],en=A.wStart[w+1];if(en-st<2)continue;
+      const n=A.wNodes[(st+en)>>1],X=sx(A.nx[n]),Y=sy(A.ny[n]);if(X<30||X>W-30||Y<20||Y>H-20)continue;
+      const key=nm+'|'+Math.floor(X/180)+'|'+Math.floor(Y/180);if(done.has(key))continue;
+      const t=MAP.names[nm].replace(/\b(\w)(\w*)/g,(m,a,b)=>a+b.toLowerCase());const tw=x.measureText(t).width+8;
+      if(taken.some(r=>Math.abs(r[0]-X)<(r[2]+tw)/2&&Math.abs(r[1]-Y)<16))continue;
+      taken.push([X,Y,tw]);done.add(key);x.strokeText(t,X,Y);x.fillText(t,X,Y);if(taken.length>60)break}}}
   x.globalAlpha=1;
   const poly=p=>{for(let i=0;i<p.length;i+=2){const X=sx(p[i]),Y=sy(p[i+1]);if(!i)x.moveTo(X,Y);else x.lineTo(X,Y)}};
   if(ROUTE&&ROUTE.date===routeDate){if(ROUTE.tail){x.setLineDash([6,6]);x.strokeStyle=ink;x.lineWidth=3;x.beginPath();poly(ROUTE.tail);x.stroke();x.setLineDash([])}
@@ -858,8 +1134,8 @@ let MODE=null,DRAG=null;
    down=null};
  c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
  c.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.deltaY<0?1.25:0.8,e.offsetX,e.offsetY)},{passive:false});
- $('zIn').onclick=()=>zoomAt(1.5,c.clientWidth/2,c.clientHeight/2);$('zOut').onclick=()=>zoomAt(1/1.5,c.clientWidth/2,c.clientHeight/2);$('zFit').onclick=fitMap;
- $('zHere').onclick=()=>{if(gpsFresh()&&MODE!=='here'){const q=MAP.ll2q(GPS.lon,GPS.lat);VW.cx=q[0];VW.cy=q[1];VW.s=Math.max(VW.s,0.12);drawMap();return}
+ $('zIn').onclick=()=>{if(GL&&!glFailed)return GL.zoomIn();zoomAt(1.5,c.clientWidth/2,c.clientHeight/2)};$('zOut').onclick=()=>{if(GL&&!glFailed)return GL.zoomOut();zoomAt(1/1.5,c.clientWidth/2,c.clientHeight/2)};$('zFit').onclick=fitMap;
+ $('zHere').onclick=()=>{if(GL&&!glFailed&&glGeo){glGeo.trigger();return}if(gpsFresh()&&MODE!=='here'){const q=MAP.ll2q(GPS.lon,GPS.lat);VW.cx=q[0];VW.cy=q[1];VW.s=Math.max(VW.s,0.12);drawMap();return}
   MODE=MODE==='here'?null:'here';$('zHere').classList.toggle('primary',MODE==='here');drawMap()};
  const ro=new ResizeObserver(()=>drawMap());ro.observe(c);}
 
@@ -871,10 +1147,13 @@ function renderTomorrow(){
   const nd=nextWorkday(),D=S.days[nd],has=D&&D.stops&&D.stops.length,P=D&&D.plan;
   if(!has){el.innerHTML=`<div class="card" style="border:2px solid var(--ink)"><div style="font-weight:800;font-size:18px">Set up ${longD(nd)}</div><p class="note" style="margin:4px 0 10px">When the schedule email comes in: open it in Mail → Select All → Copy, then tap below. Do the same for the REPL_T list.</p><div class="grid2"><button class="primary" data-tmr="${nd}" data-act="clip">Paste schedule</button><button data-tmr="${nd}" data-act="open">Open route</button></div></div>`;return}
   if(!P){el.innerHTML=`<div class="card"><b>${longD(nd)}: ${D.stops.length} work orders loaded.</b><div style="margin-top:8px" class="grid2"><button class="primary" data-tmr="${nd}" data-act="plan">Plan it</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;return}
-  el.innerHTML=`<div class="card"><div style="font-weight:800">${longD(nd)} is planned</div><div class="note" style="color:var(--ink);margin-top:4px">${P.from==='home'?'Leave home '+P.leave:'Start '+P.leave}${P.shop?' · shop '+P.shop.eta:''}${P.school?' · leave for class by '+P.school.leaveBy:P.home?' · home ~'+P.home.eta:''} · ${D.stops.length} WOs</div><div class="grid2" style="margin-top:10px"><button data-ics="${nd}">Add alarms to calendar</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;
+  const pk=shopDay(nd)?pickItems(nd).filter(i=>i.total):[],TW=wxDay(nd),TA=wxAlerts(nd);
+  el.innerHTML=`<div class="card"><div style="font-weight:800">${longD(nd)} is planned</div>${TW?`<div class="note" style="margin-top:4px">Weather: ${WMO[TW.code]||''}, ${Math.round(TW.min)}° to ${Math.round(TW.max)}°${TW.pp?', rain '+TW.pp+'%':''}${TA.length?' — <b>'+esc(TA[0].t)+'</b>':''}</div>`:''}${pk.length?`<div class="note" style="margin-top:4px">Shop: ${pk.map(i=>i.total+' '+(i.k==='radio'?'radios':i.label.replace(/^Meters /,'').replace(/ ·.*$/,'')+' meters')).join(' · ')}</div>`:''}<div class="note" style="color:var(--ink);margin-top:4px">${P.from==='home'?'Leave home '+P.leave:'Start '+P.leave}${P.shop?' · shop '+P.shop.eta:''}${P.school?' · leave for class by '+P.school.leaveBy:P.home?' · home ~'+P.home.eta:''} · ${D.stops.length} WOs</div><div class="grid2" style="margin-top:10px"><button data-ics="${nd}">Add alarms to calendar</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;
 }
 function renderToday(){
-  $('dateLine').textContent=longD(TODAY);startGPS();renderTomorrow();
+  renderWx();if(!WX||Date.now()-WX.at>25*60000)wxRefresh(false);
+  {const it=shopDay(TODAY)?pickItems(TODAY):[];$('tShop').innerHTML=it.length&&it.some(i=>!i.got)&&!groupsOf(TODAY).some(g=>g.state)?pickHtml(TODAY):''}
+  $('dateLine').textContent=longD(TODAY);startGPS();renderTomorrow();if(!MAP&&S.days[TODAY]&&S.days[TODAY].stops)loadMap().catch(()=>{});
   renderClock();
   const c=calc(S.days[TODAY]);$('tPay').textContent=money(c.total);
   $('tSplit').innerHTML=`<span>${c.h.toFixed(2)} h</span><span>Reg ${money(c.reg)}</span><span>Piece ${money(c.piece)}</span><span>Bonus ${money(c.bonus)}</span>${c.km?`<span>${c.km} km</span>`:''}`;
@@ -940,17 +1219,17 @@ $('copy').onclick=async()=>{
 /* ---------- setup ---------- */
 function renderSetup(){
   if(document.activeElement&&document.activeElement.closest('#v-setup'))return;
-  $('sTag').value=S.settings.tag||'';$('sHome').value=S.settings.homeAddr||'';$('sHomeCity').value=S.settings.homeCity||'';$('sShop').value=S.settings.shopAddr||'';$('sShopCity').value=S.settings.shopCity||'';$('sShopMin').value=S.settings.shopMin;$('sEndHome').checked=!!S.settings.endHome;$('sTax').value=S.settings.taxPct;$('sLearn').checked=!!S.settings.learn;$('sGps').checked=!!S.settings.useGps;$('sSchool').value=S.settings.schoolAddr||'';$('sSchoolCity').value=S.settings.schoolCity||'';$('sClass').value=S.settings.classAt||'17:30';$('sClassLate').value=S.settings.classLatest||'17:45';$('sSchoolBuf').value=S.settings.schoolBuf;$('sSchoolDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-cd="${i+1}" class="${String(S.settings.schoolDays).includes(i+1)?'primary':''}">${n}</button>`).join('');$('sShopDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-sd="${i+1}" class="${String(S.settings.shopDays).includes(i+1)?'primary':''}">${n}</button>`).join('');const nf=Object.keys(S.settings.fix||{}).length;$('clearFix').textContent=nf?'Clear '+nf+' map pin fix'+(nf>1?'es':''):'No map pin fixes';$('clearFix').disabled=!nf;$('sDay').value=S.settings.dayStart||'08:00';$('sMinA').value=S.settings.minAppt;$('sMinR').value=S.settings.minRT;$('sTarget').value=S.settings.target;$('sHourly').value=S.settings.hourly;$('sKm').value=S.settings.kmRate;
+  $('sTag').value=S.settings.tag||'';$('sHome').value=S.settings.homeAddr||'';$('sHomeCity').value=S.settings.homeCity||'';$('sShop').value=S.settings.shopAddr||'';$('sShopCity').value=S.settings.shopCity||'';$('sShopMin').value=S.settings.shopMin;$('sEndHome').checked=!!S.settings.endHome;$('sTax').value=S.settings.taxPct;$('sLearn').checked=!!S.settings.learn;$('sGps').checked=!!S.settings.useGps;$('sVoice').checked=!!S.settings.voice;$('sArrive').checked=!!S.settings.autoArrive;$('sMe').value=S.settings.myName||'';$('sTpl').value=S.settings.smsTpl||'';$('sSchool').value=S.settings.schoolAddr||'';$('sSchoolCity').value=S.settings.schoolCity||'';$('sClass').value=S.settings.classAt||'17:30';$('sClassLate').value=S.settings.classLatest||'17:45';$('sSchoolBuf').value=S.settings.schoolBuf;$('sSchoolDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-cd="${i+1}" class="${String(S.settings.schoolDays).includes(i+1)?'primary':''}">${n}</button>`).join('');$('sShopDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-sd="${i+1}" class="${String(S.settings.shopDays).includes(i+1)?'primary':''}">${n}</button>`).join('');const nf=Object.keys(S.settings.fix||{}).length;$('clearFix').textContent=nf?'Clear '+nf+' map pin fix'+(nf>1?'es':''):'No map pin fixes';$('clearFix').disabled=!nf;$('sDay').value=S.settings.dayStart||'08:00';$('sMinA').value=S.settings.minAppt;$('sMinR').value=S.settings.minRT;$('sTarget').value=S.settings.target;$('sHourly').value=S.settings.hourly;$('sKm').value=S.settings.kmRate;
   $('rateList').innerHTML=JOBS.map(([id,n])=>`<label class="f">${n}<input type="number" inputmode="decimal" step="0.01" data-r="${id}" value="${rate(id)}"></label>`).join('');
 }
 $('v-setup').addEventListener('click',e=>{const c=e.target.closest('[data-cd]');if(c){const d=c.dataset.cd;let v=String(S.settings.schoolDays||'');v=v.includes(d)?v.replace(d,''):(v+d).split('').sort().join('');S.settings.schoolDays=v;c.classList.toggle('primary',v.includes(d));touch('settings');return}
   const b=e.target.closest('[data-sd]');if(b){const d=b.dataset.sd;let v=String(S.settings.shopDays||'');v=v.includes(d)?v.replace(d,''):(v+d).split('').sort().join('');S.settings.shopDays=v;b.classList.toggle('primary',v.includes(d));touch('settings');return}
   if(e.target.id==='clearFix'){S.settings.fix={};GEO.clear();touch('settings');renderSetup();toast('Map pin fixes cleared')}});
 $('v-setup').addEventListener('change',e=>{const id=e.target.id;
-  if(id==='sEndHome'||id==='sLearn'||id==='sGps'){S.settings[{sEndHome:'endHome',sLearn:'learn',sGps:'useGps'}[id]]=e.target.checked;touch('settings');if(id==='sGps'&&e.target.checked)startGPS()}
+  if(id==='sEndHome'||id==='sLearn'||id==='sGps'||id==='sVoice'||id==='sArrive'){S.settings[{sEndHome:'endHome',sLearn:'learn',sGps:'useGps',sVoice:'voice',sArrive:'autoArrive'}[id]]=e.target.checked;touch('settings');if(id==='sGps'&&e.target.checked)startGPS()}
   if(id==='bkFile'&&e.target.files[0]){e.target.files[0].text().then(restore);e.target.value=''}});
 $('v-setup').addEventListener('input',e=>{const t=e.target;
-  if(t.id==='sTax')S.settings.taxPct=Math.max(0,Math.min(60,+t.value||0));else if(t.id==='sSchool')S.settings.schoolAddr=t.value.trim();else if(t.id==='sSchoolCity')S.settings.schoolCity=t.value.trim();else if(t.id==='sClass')S.settings.classAt=t.value||'17:30';else if(t.id==='sClassLate')S.settings.classLatest=t.value||'17:45';else if(t.id==='sSchoolBuf')S.settings.schoolBuf=Math.max(0,+t.value||0);
+  if(t.id==='sMe')S.settings.myName=t.value.trim();else if(t.id==='sTpl')S.settings.smsTpl=t.value;else if(t.id==='sTax')S.settings.taxPct=Math.max(0,Math.min(60,+t.value||0));else if(t.id==='sSchool')S.settings.schoolAddr=t.value.trim();else if(t.id==='sSchoolCity')S.settings.schoolCity=t.value.trim();else if(t.id==='sClass')S.settings.classAt=t.value||'17:30';else if(t.id==='sClassLate')S.settings.classLatest=t.value||'17:45';else if(t.id==='sSchoolBuf')S.settings.schoolBuf=Math.max(0,+t.value||0);
   else if(t.id==='sHome')S.settings.homeAddr=t.value.trim();else if(t.id==='sHomeCity')S.settings.homeCity=t.value.trim();else if(t.id==='sShop')S.settings.shopAddr=t.value.trim();else if(t.id==='sShopCity')S.settings.shopCity=t.value.trim();else if(t.id==='sShopMin')S.settings.shopMin=Math.max(0,+t.value||0);else if(t.id==='sEndHome')S.settings.endHome=t.checked;else if(t.id==='sDay')S.settings.dayStart=t.value||'08:00';else if(t.id==='sMinA')S.settings.minAppt=Math.max(0,+t.value||0);else if(t.id==='sMinR')S.settings.minRT=Math.max(0,+t.value||0);
   else if(t.id==='sTag')S.settings.tag=t.value.trim();else if(t.id==='sTarget')S.settings.target=+t.value||0;else if(t.id==='sHourly')S.settings.hourly=+t.value||0;else if(t.id==='sKm')S.settings.kmRate=+t.value||0;else if(t.dataset.r)S.settings.rates[t.dataset.r]=+t.value||0;else return;
   touch('settings');});
