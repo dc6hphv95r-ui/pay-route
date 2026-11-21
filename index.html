@@ -132,6 +132,13 @@ label.f input{margin-top:4px}
 .wx .hr b{display:block;font-size:15px}.wx .hr .pp{display:block;height:4px;background:var(--line);border-radius:2px;margin-top:4px;overflow:hidden}.wx .hr .pp i{display:block;height:100%;background:#1565c0}
 .wxa{margin-top:8px;padding:8px 10px;border-radius:10px;font-weight:700;font-size:14px;background:var(--y);color:#111}
 .wxa.bad{background:#c62828;color:#fff}
+.nb.mine{background:#e6f4ea;color:#123d1e}
+.nb.att{background:#fdecea;color:#7a1c14;font-weight:700}
+.fu{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.fu:last-child{border-bottom:0}
+#mic{position:fixed;right:14px;bottom:calc(78px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;background:#111;color:#ffe600;border:3px solid #ffe600;z-index:6;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#mic.on{background:#c62828;color:#fff;border-color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}@media(prefers-reduced-motion:reduce){#mic.on{animation:none}}
 .chip.any{background:var(--y);color:#111;border-color:var(--y)}
 .acts .sm{padding:0 10px;font-size:18px}
 .win{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:22px 0 10px}
@@ -211,6 +218,7 @@ tr.go{cursor:pointer}
     </div>
 
     <div id="tSetup"></div>
+    <div id="tFollow"></div>
     <div id="tWx"></div>
     <div id="tShop"></div>
     <div id="tTomorrow"></div>
@@ -265,6 +273,7 @@ tr.go{cursor:pointer}
   <!-- LOG -->
   <section class="view" id="v-log">
     <h2 id="logTitle">Log</h2>
+    <div id="stockCard"></div>
     <div class="grid3">
       <label class="f">Date<input type="date" id="lDate"></label>
       <label class="f">Hours<input type="number" id="lHours" inputmode="decimal" step="0.01" min="0" placeholder="0"></label>
@@ -291,6 +300,16 @@ tr.go{cursor:pointer}
     </div>
     <h3>Insights</h3>
     <div class="card" id="insights"></div>
+    <h3>Check your pay sheet</h3>
+    <div class="card">
+      <p class="note" style="margin-top:0">Open the pay breakdown Excel file, or copy the rows (from the date column to Bonus) and paste them. The app compares each day with what you logged.</p>
+      <label class="btn wide">Open Excel / CSV file<input type="file" id="payFile" accept=".xlsx,.xls,.csv,.ods,.txt" hidden></label>
+      <textarea id="payText" placeholder="…or paste rows here" style="margin-top:8px;min-height:90px"></textarea>
+      <button class="primary wide" id="payGo" style="margin-top:6px">Check pasted rows</button>
+      <div id="payOut"></div>
+    </div>
+    <h3>Year-end tax pack</h3>
+    <div class="card" id="taxCard"></div>
     <h3>All weeks</h3>
     <div class="scroll"><table><thead><tr><th>Week of</th><th>Hours</th><th>Reg</th><th>Piece</th><th>Bonus</th><th>Total</th></tr></thead><tbody id="wHist"></tbody></table></div>
     <h3>Monthly KM</h3>
@@ -350,6 +369,14 @@ tr.go{cursor:pointer}
     <h3>Piece rates</h3>
     <div class="rates" id="rateList"></div>
     <p class="note">Day pay = hours × hourly + bonus. Bonus = piece total minus regular pay when piece is higher. Weeks run Sunday to Saturday. Amounts are before tax. Marking a stop done adds: REPL_MRT → REPL MRT install, REPL_T → TC outside, REPAIR → TP repair investigation.</p>
+    <h3>Cloud backup (GitHub)</h3>
+    <div class="card">
+      <p class="note" style="margin-top:0" id="ghStatus">Not connected.</p>
+      <div class="grid2"><label class="f">GitHub username<input id="ghOwner" autocomplete="off" autocapitalize="off"></label><label class="f">Private repo name<input id="ghRepo" autocomplete="off" autocapitalize="off" placeholder="pay-route-data"></label></div>
+      <label class="f" style="margin-top:8px">Access token<input id="ghToken" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+      <div class="grid2" style="margin-top:8px"><button class="primary" id="ghConnect">Connect &amp; back up</button><button id="ghPull">Restore from cloud</button></div>
+      <p class="note">Saves automatically a minute after changes. The token stays on this phone only and is never put in backups.</p>
+    </div>
     <h3>Backup</h3>
     <p class="note" id="storeNote"></p>
     <div class="grid2"><button id="bkSave">Save backup file</button><button id="bkCopy">Copy backup</button></div>
@@ -366,6 +393,7 @@ tr.go{cursor:pointer}
   <button data-go="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Week</button>
   <button data-go="setup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Setup</button>
 </nav>
+<button id="mic" aria-label="Voice command" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="26" height="26"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
 <div class="toast" id="toast" role="status"></div>
 <div id="sheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetT"><div id="sheetT" style="font-weight:800;font-size:18px;margin-bottom:10px"></div><div id="sheetB" style="display:grid;gap:8px"></div><button id="sheetX" class="wide" style="margin-top:10px">Cancel</button></div></div>
 
@@ -444,7 +472,8 @@ function isEmpty(d){return !d||(!(+d.h)&&!(+d.km)&&!Object.values(d.c||{}).some(
 
 /* ---------- saving ---------- */
 const timers={},chains={};
-function cache(){ls.set('pt2',JSON.stringify(S))}
+function cache(){ls.set('pt2',JSON.stringify(S));if(typeof scheduleSync==='function')scheduleSync()}
+let scheduleSync=()=>{};
 function write(){}
 function touch(key){
   cache();
@@ -466,7 +495,7 @@ async function connect(){
 
 /* ---------- tabs ---------- */
 const VIEWS=['today','route','log','week','setup'];
-function show(v){if(!VIEWS.includes(v))v='today';
+function show(v){if(!VIEWS.includes(v))v='today';{const m=$('mic');if(m)m.hidden=!(SR&&(v==='today'||v==='route'))}
   for(const x of VIEWS){$('v-'+x).classList.toggle('on',x===v)}
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.go===v));
   if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);
@@ -531,9 +560,9 @@ function stopCard(g,n,date,isNext){
    ${ul?'':`<div class="who">${esc(names.slice(0,3).join(' · '))}${names.length>3?' +'+(names.length-3):''}</div>`}
    <div class="who">${phones.map(p=>{const d=p.replace(/[^\d]/g,'').slice(0,11);return d.length>=10?`<a href="tel:${d}">${esc(p)}</a>`:esc(p)}).join(' · ')}</div>
    <div class="chips">${call&&g.state!=='done'?'<span class="chip call">Text before arriving</span>':''}${callOnArrival(g)&&g.state!=='done'?'<span class="chip call">Call when you arrive</span>':''}${arr&&g.state!=='done'?`<span class="chip here">On site since ${tm(new Date(arr.arriveAt).toISOString())}</span>`:''}${legChips(date,g)}${g.any?'<span class="chip any">Anytime</span>':''}${Object.entries(types).map(([t,c])=>`<span class="chip">${c>1?c+' × ':''}${esc(t||'—')}</span>`).join('')}${!ul&&g.items.some(s=>s.wo)?`<span class="chip">WO ${esc(g.items.map(s=>s.wo).filter(Boolean).join(', '))}</span>`:''}</div>
-   ${notes.map(t=>`<div class="nb${FLAG.test(t)?' flag':''}">${esc(t)}</div>`).join('')}
+   ${notes.map(t=>`<div class="nb${FLAG.test(t)?' flag':''}">${esc(t)}</div>`).join('')}${myNote(g)?`<div class="nb mine"><b>Your note:</b> ${esc(myNote(g))}</div>`:''}${attemptChip(g,date)}
   </div></div>${unitHtml}
-  ${g.state==='done'?'':`<div class="acts2">${arr?'':`<button data-a="arrive">I'm here</button>`}${smsLink(g,date)?`<a class="btn${call?' sms':''}" href="${smsLink(g,date)}" data-smsk="${esc(g.key)}">Text customer</a>`:''}</div>`}
+  ${g.state==='done'?'':`<div class="acts2">${arr?'':`<button data-a="arrive">I'm here</button>`}<button data-a="note">${myNote(g)?'Edit note':'Add note'}</button>${smsLink(g,date)?`<a class="btn${call?' sms':''}" href="${smsLink(g,date)}" data-smsk="${esc(g.key)}">Text customer</a>`:''}</div>`}
   <div class="acts${g.any?' any':''}"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a>${ul&&g.items.length>4&&g.state!=='done'?`<button disabled>${g.items.filter(s=>s.st==='done').length}/${g.items.length}</button>`:`<button data-a="done">${g.state==='done'?'Undo':ul?'All done':'Done'}</button>`}<button data-a="skip" class="sm" aria-label="No access / skip">${g.state==='skip'?'↺':'✕'}</button><button data-a="up" class="sm" aria-label="Move earlier">↑</button>${g.any?`<button data-a="slot" class="sm" aria-label="Move ${g.win<0?'after':'before'} appointments">${g.win<0?'PM':'AM'}</button>`:''}${g.items.every(s=>s.manual)?'<button data-a="del" class="sm" aria-label="Remove stop">Del</button>':''}</div>
  </div>`;
 }
@@ -544,6 +573,7 @@ function renderRoute(){
   const all=gs.flatMap(g=>g.items),done=all.filter(s=>s.st==='done').length;
   const next=gs.find(g=>!g.state);
   let html=`<div class="card"><div style="font-weight:800;font-size:18px">${longD(routeDate)}</div><div class="note">${gs.length} stops · ${all.length} work orders · ${done} done</div>${planLine(gs)}${planInfo(routeDate)}<div class="bar"><i style="width:${all.length?done/all.length*100:0}%"></i></div></div>`;
+  html+=followHtml();
   if(shopDay(routeDate))html+=`<details class="pkwrap" ${routeDate>TODAY||(routeDate===TODAY&&!(S.days[routeDate].pick&&Object.keys(S.days[routeDate].pick.got||{}).length))?'open':''}><summary style="font-weight:800;min-height:44px;display:flex;align-items:center">Shop pickup list</summary>${pickHtml(routeDate)}</details>`;
   const wins=[...new Set(gs.map(g=>g.win))];let n=0;
   for(const w of wins){const wg=gs.filter(g=>g.win===w),pend=wg.filter(g=>!g.state);
@@ -556,15 +586,16 @@ function renderRoute(){
 }
 function stopAction(date,key,a,wo){
   const d=day(date),gs=groupsOf(date),g=gs.find(x=>x.key===key);if(!g)return;
+  if(a==='note'){editNote(g,date);return}
   if(a==='arrive'){arriveAt(g,date,false);toast('Arrived — timing this job');return}
   if(a==='copy'){if(!wo)return;navigator.clipboard.writeText(wo).then(()=>toast('WO '+wo+' copied — paste it in Clevest'),()=>toast('WO '+wo));return}
   if(a==='one'){const s=g.items.find(x=>x.wo===wo);if(!s)return;const j=TYPE_JOB[s.type];
-    if(s.st==='done'){s.st='';if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}
-    else{s.st='done';s.doneAt=Date.now();if(j)d.c[j]=(+d.c[j]||0)+1;const left=g.items.filter(x=>!x.st).sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9))[0];toast('Unit '+s.unit+' done'+(left?' · next: unit '+left.unit+', WO '+left.wo:' · building finished'))}
+    if(s.st==='done'){s.st='';useStock(s,-1);if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}
+    else{s.st='done';useStock(s,1);s.doneAt=Date.now();if(j)d.c[j]=(+d.c[j]||0)+1;const left=g.items.filter(x=>!x.st).sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9))[0];toast('Unit '+s.unit+' done'+(left?' · next: unit '+left.unit+', WO '+left.wo:' · building finished'))}
     touch(date);renderAll();if(g.items.every(x=>x.st)){if(d.plan&&MAP)planRoute(date,false);if(date===TODAY)afterDone(date)}return}
   if(a==='done'){
-    if(g.state==='done'){for(const s of g.items){if(s.st==='done'){const j=TYPE_JOB[s.type];if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}s.st=''}toast('Marked not done')}
-    else{let add=0;for(const s of g.items){if(s.st!=='done'){const j=TYPE_JOB[s.type];if(j){d.c[j]=(+d.c[j]||0)+1;add++}s.st='done';s.doneAt=Date.now()}}toast(add?'Done — added '+add+' job'+(add>1?'s':'')+' to '+(date===TODAY?'today':fmtD(date)):'Done');if(date===TODAY)setTimeout(()=>afterDone(date),350)}
+    if(g.state==='done'){for(const s of g.items){if(s.st==='done'){useStock(s,-1);const j=TYPE_JOB[s.type];if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}s.st=''}toast('Marked not done')}
+    else{let add=0;for(const s of g.items){if(s.st!=='done'){const j=TYPE_JOB[s.type];if(j){d.c[j]=(+d.c[j]||0)+1;add++}s.st='done';useStock(s,1);s.doneAt=Date.now()}}toast(add?'Done — added '+add+' job'+(add>1?'s':'')+' to '+(date===TODAY?'today':fmtD(date)):'Done');if(date===TODAY)setTimeout(()=>afterDone(date),350)}
   }else if(a==='skip'){if(g.state==='skip'){g.items.forEach(s=>{if(s.st==='skip'){s.st='';delete s.why}})}else{askWhy(g,date);return}}
   else if(a==='slot'){g.items.forEach(s=>s.slot=g.win<0?'pm':'am')}
   else if(a==='del'){g.items.forEach(s=>{if(s.st==='done'){const j=TYPE_JOB[s.type];if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}});d.stops=d.stops.filter(s=>!g.items.includes(s))}
@@ -762,6 +793,171 @@ function renderInsights(){
 
 
 
+
+/* ---------- address notes ---------- */
+const noteKey=(addr,city)=>fixKey(addr,city);
+function myNote(g){const n=(S.notes||{})[noteKey(g.addr,g.city)];return n&&n.t||''}
+function editNote(g,date){
+  $('sheetT').textContent='Your note for '+g.addr;
+  $('sheetB').innerHTML=`<textarea id="noteTxt" style="min-height:110px" placeholder="e.g. meter in crawlspace, side door · big dog · gate code 1234 · HO home after 3">${esc(myNote(g))}</textarea><button class="primary" id="noteSave">Save note</button>${myNote(g)?'<button id="noteDel">Delete note</button>':''}`;
+  $('sheet').hidden=false;$('sheetX').onclick=()=>{$('sheet').hidden=true};$('sheetB').onclick=null;
+  const k=noteKey(g.addr,g.city);
+  $('noteSave').onclick=()=>{S.notes=S.notes||{};const t=$('noteTxt').value.trim();if(t)S.notes[k]={t,at:Date.now()};else delete S.notes[k];cache();scheduleSync();$('sheet').hidden=true;renderAll();toast('Note saved — it will show every time this address comes up')};
+  if($('noteDel'))$('noteDel').onclick=()=>{delete S.notes[k];cache();scheduleSync();$('sheet').hidden=true;renderAll()};
+}
+/* ---------- follow-ups ---------- */
+function pastAttempts(wo,addr,before){const out=[];for(const d of Object.keys(S.days).sort()){if(d>=before)continue;for(const s of S.days[d].stops||[])if((wo&&s.wo===wo)||(!wo&&s.addr===addr))if(s.st==='skip')out.push({date:d,why:s.why||'not done'})}return out}
+function attemptChip(g,date){const p=[];g.items.forEach(s=>pastAttempts(s.wo,s.addr,date).forEach(x=>p.push(x)));if(!p.length)return '';const last=p[p.length-1];
+  return `<div class="nb att">Attempt ${p.length+1} — last time ${fmtD(last.date)}: ${esc(last.why)}</div>`}
+function followUps(){const done=new Set(),out=[],dates=Object.keys(S.days).sort();
+  for(const d of dates)for(const s of S.days[d].stops||[])if(s.st==='done')done.add(s.wo||s.addr+'|'+d);
+  for(const d of dates)for(const s of S.days[d].stops||[]){if(s.st!=='skip'||s.resolved)continue;const k=s.wo||s.addr;
+    const laterDone=dates.some(d2=>d2>d&&(S.days[d2].stops||[]).some(x=>(s.wo?x.wo===s.wo:x.addr===s.addr)&&x.st==='done'));
+    const laterSkip=dates.some(d2=>d2>d&&(S.days[d2].stops||[]).some(x=>(s.wo?x.wo===s.wo:x.addr===s.addr)&&x.st==='skip'));
+    if(!laterDone&&!laterSkip)out.push({date:d,s})}
+  return out.sort((a,b)=>a.date<b.date?1:-1)}
+function followHtml(){const f=followUps();if(!f.length)return '';
+  return `<details class="card" style="padding:12px 16px"><summary style="font-weight:800;min-height:40px;display:flex;align-items:center">Follow-ups (${f.length})</summary>
+  ${f.map(({date,s})=>`<div class="fu"><div><b>${esc(s.addr)}</b>${s.unit?' unit '+esc(s.unit):''}<div class="note">${fmtD(date)} · WO ${esc(s.wo||'—')} · ${esc(s.why||'not done')}${s.ph?' · '+esc(s.ph):''}</div></div><button data-fudone="${date}|${esc(s.wo||s.addr)}">Clear</button></div>`).join('')}
+  <p class="note" style="margin:8px 0 0">Stops you marked ✕ that haven't been done since. They clear by themselves when the WO is done on a later day.</p></details>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-fudone]');if(!b)return;const[d,k]=b.dataset.fudone.split('|');const st=(S.days[d]&&S.days[d].stops)||[];st.forEach(s=>{if((s.wo||s.addr)===k&&s.st==='skip')s.resolved=true});touch(d);renderAll();toast('Cleared from follow-ups')});
+/* ---------- Android share target ---------- */
+async function takeShared(){try{if(!('caches' in window))return;const c=await caches.open('pr-share'),r=await c.match('./shared.txt');if(!r)return;const t=await r.text();await c.delete('./shared.txt');
+  const fb=new Date().getHours()>=12?nextWorkday():TODAY;routeDate=fb;show('route');await smartImport(t,fb)}catch(e){}}
+
+
+/* ---------- truck stock ---------- */
+function stockKeys(){const ks=new Set(['radio','m15','m20','m25']);for(const k in (S.stock||{}))ks.add(k);return [...ks].sort((a,b)=>a==='radio'?-1:b==='radio'?1:(+a.slice(1)||999)-(+b.slice(1)||999))}
+function stockLabel(k){return k==='radio'?'Radios':'Meters '+(SIZE_LBL[k.slice(1)]||k.slice(1)+' mm')}
+function useStock(s,dir){const t=s.type||'';S.stock=S.stock||{};const sub=k=>{S.stock[k]=(+S.stock[k]||0)-dir};
+  if(/REPL_MRT/.test(t)){sub('radio');sub('m'+(String(s.size||'').trim()||'?'))}else if(/REPL_T/.test(t))sub('radio')}
+function renderStock(){const el=$('stockCard');if(!el)return;const st=S.stock||{};
+  el.innerHTML=`<details class="card" style="padding:12px 16px" ${Object.values(st).some(v=>+v)?'':'open'}><summary style="font-weight:800;min-height:40px;display:flex;align-items:center;justify-content:space-between">Truck stock <span class="note" style="font-weight:600">${stockKeys().filter(k=>+st[k]).map(k=>Math.max(0,+st[k])+' '+(k==='radio'?'radios':k.slice(1)+'mm')).join(' · ')||'empty'}</span></summary>
+  ${stockKeys().map(k=>`<div class="pk"><span></span><div><div class="pl">${esc(stockLabel(k))}</div>${+st[k]<0?'<div class="ps" style="color:#c62828">Below zero — fix the count</div>':''}</div><div class="pn"><button type="button" data-stk="${k}" data-v="-1">−</button><b>${+st[k]||0}</b><button type="button" data-stk="${k}" data-v="1">+</button></div></div>`).join('')}
+  <p class="note" style="margin:8px 0 0">Goes up when you tick items at the shop, down when you mark REPL_MRT (radio + meter) or REPL_T (radio) done. The shop list only asks for what's not already on the truck.</p></details>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-stk]');if(!b)return;S.stock=S.stock||{};S.stock[b.dataset.stk]=(+S.stock[b.dataset.stk]||0)+(+b.dataset.v);cache();renderStock()});
+
+/* ---------- pay sheet check ---------- */
+const SHEET_COLS=['mrt','wr','wrl','wf4','wf12','tc','rad','radc','dkw','dks','bcv','tp','pmin','pnor','cmin','cnor'];
+const MON={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+const num=v=>{const x=String(v==null?'':v).replace(/[$,\s]/g,'');return x===''||x==='-'?0:(isFinite(+x)?+x:NaN)};
+function sheetDate(v){if(v instanceof Date)return ymd(v);if(typeof v==='number'&&v>20000){const d=new Date(Math.round((v-25569)*864e5));return ymd(new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()))}
+  const m=/^(\d{1,2})[-\s]([A-Za-z]{3})/.exec(String(v||'').trim());if(!m)return null;const mo=MON[m[2].toLowerCase()];if(mo==null)return null;
+  const now=new Date();let y=now.getFullYear();let d=new Date(y,mo,+m[1]);if(d-now>14*864e5)d=new Date(y-1,mo,+m[1]);return ymd(d)}
+function parseSheetRows(rows){const out=[];
+  for(const r of rows){const date=sheetDate(r[0]);if(!date)continue;const hrs=num(r[1]);if(!(hrs>0))continue;
+    const c={};SHEET_COLS.forEach((k,i)=>{const v=num(r[3+i]);if(v>0)c[k]=v});
+    const tail=r.slice(3+SHEET_COLS.length).map(num).filter(v=>isFinite(v));
+    out.push({date,h:hrs,c,reg:tail[0]||0,piece:tail[1]||0,bonus:tail[2]||0})}
+  return out}
+function compareSheet(rows){const res=[];let diff=0;
+  for(const r of rows){const d=S.days[r.date],a=calc(d),issues=[];
+    if(!d){issues.push('not logged in the app');res.push({r,issues,money:0});continue}
+    if(Math.abs((+d.h||0)-r.h)>0.05)issues.push('hours: you '+(+d.h||0).toFixed(2)+', sheet '+r.h.toFixed(2));
+    for(const k of SHEET_COLS){const mine=+(d.c||{})[k]||0,th=r.c[k]||0;if(mine!==th){const nm=JOBS.find(j=>j[0]===k)[1];issues.push(nm+': you '+mine+', sheet '+th+' ('+(mine>th?'short ':'extra ')+money(Math.abs(mine-th)*rate(k))+')')}}
+    const sheetPay=r.reg+r.bonus,myPay=a.total,m=myPay-sheetPay;if(Math.abs(m)>=0.5)diff+=m;
+    res.push({r,issues,money:m})}
+  return{res,diff}}
+async function readSheetFile(f){
+  if(/\.(xlsx|xls|ods)$/i.test(f.name)){if(!window.XLSX)await new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='xlsx.full.min.js';sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
+    const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true});let rows=[];for(const n of wb.SheetNames)rows=rows.concat(XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''}));return rows}
+  return textRows(await f.text())}
+function textRows(t){return String(t).split(/\r?\n/).map(l=>l.includes('\t')?l.split('\t'):l.split(','))}
+function showSheetResult(rows){const el=$('payOut');const parsed=parseSheetRows(rows);if(!parsed.length){el.innerHTML='<p class="msg err">Couldn\'t find day rows. Copy the rows from the date column to the Bonus column, or open the Excel file.</p>';return}
+  const{res,diff}=compareSheet(parsed);const bad=res.filter(x=>x.issues.length||Math.abs(x.money)>=0.5);
+  el.innerHTML=`<div class="card" style="margin-top:10px"><b style="font-size:18px">${bad.length?bad.length+' day'+(bad.length>1?'s':'')+' don\'t match':'Everything matches ✓'}</b>
+   <div class="note">${parsed.length} days checked · ${fmtD(parsed[0].date)} to ${fmtD(parsed[parsed.length-1].date)}${Math.abs(diff)>=0.5?` · <b style="color:${diff>0?'#c62828':'inherit'}">${diff>0?'you may be owed ':'sheet pays '}${money(Math.abs(diff))}${diff>0?'':' more than you logged'}</b>`:''}</div>
+   ${bad.map(x=>`<div class="fu"><div><b>${longD(x.r.date)}</b>${Math.abs(x.money)>=0.5?` · <span style="color:${x.money>0?'#c62828':'inherit'}">${x.money>0?'sheet pays '+money(x.money)+' less than you logged':'sheet pays '+money(-x.money)+' more than you logged'}</span>`:''}<div class="note">${x.issues.map(esc).join('<br>')||'pay total differs'}</div></div><span></span></div>`).join('')}
+   <p class="note" style="margin:8px 0 0">Your log might be the one that's off — double-check before raising it. Sheet pay = Reg Pay + Bonus.</p></div>`}
+
+/* ---------- tax pack ---------- */
+const EXP_CATS=['Tools','Work clothing / boots','Training / courses','Phone','Vehicle','Other'];
+function renderTax(){const el=$('taxCard');if(!el)return;const yrs=[...new Set(Object.keys(S.days).map(d=>d.slice(0,4)).concat((S.expenses||[]).map(x=>x.date.slice(0,4))).concat([TODAY.slice(0,4)]))].sort().reverse();
+  const y=el.dataset.y||yrs[0];el.dataset.y=y;const days=Object.keys(S.days).filter(d=>d.startsWith(y)).sort();
+  let tot={total:0,reg:0,bonus:0,h:0,km:0,n:0};for(const d of days){const c=calc(S.days[d]);if(c.total>0)tot.n++;tot.total+=c.total;tot.reg+=c.reg;tot.bonus+=c.bonus;tot.h+=c.h;tot.km+=c.km}
+  const ex=(S.expenses||[]).filter(x=>x.date.startsWith(y)),exT=ex.reduce((a,x)=>a+(+x.amt||0),0);
+  el.innerHTML=`<div class="wl" style="margin-bottom:8px">${yrs.map(v=>`<button data-tyear="${v}" class="${v===y?'primary':''}">${v}</button>`).join('')}</div>
+  <div class="ins"><div><b>${money(tot.total)}</b><span>Earned (logged) ${y}</span></div><div><b>${tot.n}</b><span>Days worked · ${tot.h.toFixed(1)} h</span></div>
+  <div><b>${Math.round(tot.km).toLocaleString('en-CA')} km</b><span>Odometer KM logged</span></div><div><b>${money(exT)}</b><span>Expenses logged</span></div></div>
+  <h3 style="margin-top:14px">Expenses</h3>
+  ${ex.length?ex.sort((a,b)=>a.date<b.date?1:-1).map(x=>`<div class="fu"><div><b>${esc(x.item)}</b> · ${money(+x.amt||0)}<div class="note">${fmtD(x.date)} · ${esc(x.cat)}${x.note?' · '+esc(x.note):''}</div></div><button data-exdel="${x.id}" aria-label="Delete expense">✕</button></div>`).join(''):'<p class="note">None yet.</p>'}
+  <div class="grid2" style="margin-top:10px"><button id="exAdd">Add expense</button><button class="primary" id="taxExport">Export ${y} for taxes</button></div>
+  <p class="note" style="margin:8px 0 0">Exports your daily earnings, mileage log (date, odometer, KM) and expenses as spreadsheet files. Logged pay is your own record — your employer T4 is what counts for tax. Ask an accountant which expenses you can claim as an employee.</p>`}
+function csv(rows){return rows.map(r=>r.map(v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(',')).join('\n')}
+async function exportTax(y){
+  const days=Object.keys(S.days).filter(d=>d.startsWith(y)).sort();
+  const earn=[['date','hours','regular','piece','bonus','pay','km',...JOBS.map(j=>j[1])]].concat(days.map(d=>{const x=S.days[d],c=calc(x);return[d,c.h,c.reg.toFixed(2),c.piece.toFixed(2),c.bonus.toFixed(2),c.total.toFixed(2),c.km,...JOBS.map(j=>(x.c||{})[j[0]]||0)]}));
+  const mil=[['date','start time','end time','odometer start','odometer end','km','mileage rate','mileage pay']].concat(days.filter(d=>+S.days[d].km).map(d=>{const x=S.days[d];return[d,x.in?tm(x.in):'',x.out?tm(x.out):'',x.odoIn??'',x.odoOut??'',x.km,S.settings.kmRate,(x.km*S.settings.kmRate).toFixed(2)]}));
+  const exr=[['date','item','category','amount','note']].concat((S.expenses||[]).filter(x=>x.date.startsWith(y)).sort((a,b)=>a.date<b.date?-1:1).map(x=>[x.date,x.item,x.cat,(+x.amt).toFixed(2),x.note||'']));
+  const files=[['earnings-'+y+'.csv',earn],['mileage-'+y+'.csv',mil],['expenses-'+y+'.csv',exr]].map(([n,r])=>new File([csv(r)],n,{type:'text/csv'}));
+  try{if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files,title:'Tax pack '+y});return}}catch(e){if(e&&e.name==='AbortError')return}
+  for(const f of files){const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();await new Promise(r=>setTimeout(r,400));URL.revokeObjectURL(a.href);a.remove()}}
+document.addEventListener('click',e=>{const t=e.target;
+  const yb=t.closest('[data-tyear]');if(yb){$('taxCard').dataset.y=yb.dataset.tyear;renderTax();return}
+  const xd=t.closest('[data-exdel]');if(xd){S.expenses=(S.expenses||[]).filter(x=>x.id!==xd.dataset.exdel);cache();renderTax();return}
+  if(t.id==='taxExport'){exportTax($('taxCard').dataset.y);return}
+  if(t.id==='exAdd'){$('sheetT').textContent='Add an expense';$('sheetB').innerHTML=`<label class="f">Date<input type="date" id="exD" value="${TODAY}"></label><label class="f">What<input id="exI" placeholder="e.g. pipe wrench, safety boots, G2 course"></label><label class="f">Amount $<input type="number" id="exA" inputmode="decimal" step="0.01"></label><label class="f">Category<select id="exC">${EXP_CATS.map(c=>`<option>${c}</option>`).join('')}</select></label><label class="f">Note<input id="exN" placeholder="store, receipt kept…"></label><button class="primary" id="exSave">Save</button>`;$('sheet').hidden=false;$('sheetB').onclick=null;$('sheetX').onclick=()=>{$('sheet').hidden=true};
+    $('exSave').onclick=()=>{const amt=+$('exA').value,item=$('exI').value.trim();if(!item||!(amt>0)){toast('Add what it was and the amount');return}S.expenses=S.expenses||[];S.expenses.push({id:String(Date.now()),date:$('exD').value||TODAY,item,amt,cat:$('exC').value,note:$('exN').value.trim()});cache();$('sheet').hidden=true;renderTax();toast('Expense saved')};return}
+  if(t.id==='payGo'){showSheetResult(textRows($('payText').value));return}});
+
+
+/* ---------- cloud backup to a private GitHub repo ---------- */
+const GHK='ghcfg';let GH={};try{GH=JSON.parse(ls.get(GHK)||'{}')}catch(e){}
+const ghSave=()=>ls.set(GHK,JSON.stringify(GH));
+const b64e=str=>{const b=new TextEncoder().encode(str);let s='';for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s)};
+const b64d=b=>new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\s/g,'')),c=>c.charCodeAt(0)));
+async function gh(path,opt={}){const r=await fetch('https://api.github.com/repos/'+GH.owner+'/'+GH.repo+path,Object.assign({},opt,{headers:Object.assign({Authorization:'Bearer '+GH.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},opt.headers||{})}));
+  if(r.status===404&&opt.allow404)return null;if(!r.ok){const t=await r.text().catch(()=>'');throw new Error(r.status===401?'token not accepted':r.status===404?'repo not found or token has no access':r.status===403?'token is missing Contents write permission':('GitHub error '+r.status+' '+t.slice(0,80)))}return r.status===204?{}:r.json()}
+function ghStatus(t,err){const el=$('ghStatus');if(el){el.textContent=t;el.style.color=err?'#c62828':''}}
+let ghTimer=null,ghBusy=false;
+scheduleSync=()=>{if(!GH.token)return;GH.dirty=Date.now();ghSave();clearTimeout(ghTimer);ghTimer=setTimeout(()=>ghPush(false),60000)};
+async function ghPush(manual){if(!GH.token||ghBusy)return;if(!navigator.onLine){ghStatus('Offline — will back up when you have signal.');return}ghBusy=true;
+  try{const cur=await gh('/contents/backup.json',{allow404:true});const at=Date.now();
+    await gh('/contents/backup.json',{method:'PUT',body:JSON.stringify({message:'Pay & Route backup '+new Date().toISOString().slice(0,16),content:b64e(JSON.stringify({app:'pay-route',v:2,at,data:S})),sha:cur?cur.sha:undefined})});
+    GH.last=at;GH.dirty=0;ghSave();ghStatus('Backed up '+new Date(at).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'})+' to '+GH.owner+'/'+GH.repo+' (private).');if(manual)toast('Backed up to GitHub')}
+  catch(e){ghStatus('Backup failed: '+e.message,true);if(manual)toast('Backup failed: '+e.message)}finally{ghBusy=false}}
+async function ghPull(ask){if(!GH.token)return;try{const cur=await gh('/contents/backup.json',{allow404:true});if(!cur){if(ask)toast('No cloud backup yet');return}
+  const o=JSON.parse(b64d(cur.content));if(!o.data||!o.data.settings)throw new Error('backup looks empty');
+  if(!ask){if(!(o.at>(GH.last||0)))return;if(GH.dirty){return}} // another device saved newer data and this phone has no unsaved changes
+  S=o.data;S.settings=Object.assign({},DEF,S.settings);ls.set('pt2',JSON.stringify(S));GH.last=o.at;GH.dirty=0;ghSave();GEO.clear();renderAll();toast(ask?'Restored from cloud':'Updated from your other device');ghStatus('Synced '+new Date(o.at).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'})+'.')}
+  catch(e){ghStatus('Restore failed: '+e.message,true);if(ask)toast('Restore failed: '+e.message)}}
+function renderGH(){if(!$('ghOwner'))return;if(document.activeElement&&document.activeElement.closest('#v-setup'))return;$('ghOwner').value=GH.owner||'';$('ghRepo').value=GH.repo||'';$('ghToken').value=GH.token?'••••••••':'';
+  ghStatus(GH.token?(GH.last?'Connected. Last backup '+new Date(GH.last).toLocaleString('en-CA',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+'.':'Connected.'):'Not connected.')}
+$('ghConnect').onclick=async()=>{const o=$('ghOwner').value.trim(),r=($('ghRepo').value.trim()||'pay-route-data'),t=$('ghToken').value.trim();
+  if(!o){toast('Enter your GitHub username');return}GH.owner=o;GH.repo=r;if(t&&!/^•+$/.test(t))GH.token=t;if(!GH.token){toast('Paste your access token');return}ghSave();ghStatus('Checking…');
+  try{const info=await gh('');if(!info.private){ghStatus('That repository is PUBLIC — make it private first (repo Settings → General → Danger Zone → Change visibility).',true);return}
+    await ghPush(true);renderGH()}catch(e){ghStatus('Couldn\'t connect: '+e.message,true)}};
+$('ghPull').onclick=()=>ghPull(true);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&GH.dirty)ghPush(false);if(document.visibilityState==='visible')ghPull(false)});
+
+/* ---------- voice commands ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function nextGroup(){const gs=groupsOf(TODAY);return gs.find(g=>!g.state)}
+function curUnit(g){return g.items.filter(s=>!s.st).sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9))[0]}
+function voiceDo(raw){const t=raw.toLowerCase();const g=nextGroup();toast('Heard: “'+raw+'”');
+  const say=x=>{const v=S.settings.voice;S.settings.voice=true;speak(x);S.settings.voice=v};
+  if(/how much|my pay|earn|money|made/.test(t)){const c=calc(S.days[TODAY]),w=weekSum(weekStart(TODAY));say('Today '+Math.round(c.total)+' dollars. This week '+Math.round(w.total)+' of '+Math.round(+S.settings.target||0)+'.');return}
+  if(/weather|rain|snow/.test(t)){if(!WX){say('No weather yet.');return}const c=WX.data.current,a=wxAlerts(TODAY);say(Math.round(c.temperature_2m)+' degrees, '+(WMO[c.weather_code]||'')+'. '+(a.length?a.map(x=>x.t).join(' '):'No weather warnings.'));return}
+  if(/shop|pick ?up|load/.test(t)){const s2=pickSpeech(TODAY);say(s2?'Pick up '+s2+'.':'Nothing to pick up today.');return}
+  if(/leave|class|school/.test(t)){const P=S.days[TODAY]&&S.days[TODAY].plan;say(P&&P.school?'Leave your last stop by '+P.school.leaveBy+' for class.':'No class time planned today.');return}
+  if(!g){say('No stops left today.');return}
+  const ul=g.items.length>=2&&g.items.filter(s=>s.unit).length>=2;
+  if(/\b(done|finished|complete|completed)\b/.test(t)){if(ul){const u=curUnit(g);if(u){stopAction(TODAY,g.key,'one',u.wo);return}}stopAction(TODAY,g.key,'done');return}
+  if(/no access|no answer|nobody|not home|skip|cancel/.test(t)){const why=/no access/.test(t)?'No access':/cancel/.test(t)?'Customer cancelled':/no answer|nobody|not home/.test(t)?'No answer / not home':null;
+    if(why){g.items.forEach(s=>{if(!s.st){s.st='skip';s.why=why}});touch(TODAY);renderAll();say('Marked '+why.toLowerCase()+'.');setTimeout(()=>afterDone(TODAY),1500)}else askWhy(g,TODAY);return}
+  if(/\b(here|arrived)\b/.test(t)){arriveAt(g,TODAY,false);say('Arrived at '+sayAddr(g.addr)+'.');return}
+  if(/\btext|message\b/.test(t)){const u=smsLink(g,TODAY);if(u){g.items.forEach(s=>s.texted=Date.now());touch(TODAY);location.href=u}else say('No phone number for this stop.');return}
+  if(/\bcall\b/.test(t)){const ph=custPhone(g);if(ph)location.href='tel:+1'+ph;else say('No phone number for this stop.');return}
+  if(/navigat|direction|take me|drive/.test(t)){location.href=navUrl(g);return}
+  if(/next|where/.test(t)){say('Next stop: '+sayAddr(g.addr)+', about '+minsAway(g,TODAY)+' minutes.'+(ul?' Unit '+(curUnit(g)||{}).unit+'.':''));return}
+  if(/\bwo\b|work order/.test(t)){const u=ul?curUnit(g):g.items[0];say('Work order '+String(u.wo).split('').join(' ')+(u.unit?', unit '+u.unit:''));return}
+  say('Try: done, next stop, no answer, text customer, navigate, how much today, or weather.')}
+let REC=null;
+function micStart(){if(!SR){toast('Voice commands need Chrome on Android');return}if(REC){try{REC.stop()}catch(e){}REC=null;$('mic').classList.remove('on');return}
+  REC=new SR();REC.lang='en-CA';REC.interimResults=false;REC.maxAlternatives=1;$('mic').classList.add('on');
+  REC.onresult=e=>{const r=e.results[0][0].transcript;voiceDo(r)};REC.onerror=e=>{if(e.error==='not-allowed')toast('Allow the microphone for this app in Chrome settings');};REC.onend=()=>{REC=null;$('mic').classList.remove('on')};
+  try{REC.start()}catch(e){REC=null;$('mic').classList.remove('on')}}
+
 /* ---------- weather (Open-Meteo, free, no key) ---------- */
 const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Fog',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
 let WX=null;try{WX=JSON.parse(ls.get('wx')||'null')}catch(e){}
@@ -811,6 +1007,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 /* ---------- shop pickup list ---------- */
 const SIZE_LBL={'12':'12 mm (check)','15':'15 mm · 5/8″','16':'15 mm · 5/8″','20':'20 mm · 3/4″','25':'25 mm · 1″','40':'40 mm · 1½″','50':'50 mm · 2″'};
 function pickItems(date){
+  const stk=S.stock||{};
   const d=S.days[date];if(!d||!d.stops)return [];const pk=d.pick||{},adj=pk.adj||{},got=pk.got||{};
   const need={radio:0},sizes={};
   for(const s of d.stops){if(s.st==='skip')continue;const t=s.type||'';
@@ -819,14 +1016,15 @@ function pickItems(date){
   const items=[{k:'radio',label:'Radios',sub:'1 per REPL_MRT and REPL_T',n:need.radio}];
   Object.keys(sizes).sort((a,b)=>(+a||999)-(+b||999)).forEach(z=>items.push({k:'m'+z,label:'Meters '+(SIZE_LBL[z]||(z==='?'?'— size not listed':z+' mm')),sub:'REPL_MRT',n:sizes[z]}));
   for(const k in adj)if(!items.some(i=>i.k===k))items.push({k,label:k==='radio'?'Radios':'Meters '+(SIZE_LBL[k.slice(1)]||k.slice(1)+' mm'),sub:'extra',n:0});
-  return items.map(i=>Object.assign(i,{total:Math.max(0,i.n+(+adj[i.k]||0)),adj:+adj[i.k]||0,got:!!got[i.k]})).filter(i=>i.total>0||i.n>0||i.adj);
+  const taken=pk.taken||{};
+  return items.map(i=>{const want=Math.max(0,i.n+(+adj[i.k]||0)),onT=Math.max(0,+stk[i.k]||0);return Object.assign(i,{want,onTruck:got[i.k]?Math.max(0,onT-(+taken[i.k]||0)):onT,total:got[i.k]?(+taken[i.k]||0):Math.max(0,want-onT),adj:+adj[i.k]||0,got:!!got[i.k]})}).filter(i=>i.want>0||i.n>0||i.adj);
 }
 function pickHtml(date,compact){
   const it=pickItems(date);if(!it.length)return '';
   const left=it.filter(i=>!i.got).length;
   return `<div class="card" data-pkdate="${date}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b style="font-size:18px">Shop pickup</b><span class="note">${left?left+' to load':'All loaded ✓'}</span></div>
   <div class="note" style="margin:2px 0 6px">${esc(S.settings.shopAddr)} · from ${longD(date)}'s schedule</div>
-  ${it.map(i=>`<label class="pk${i.got?' got':''}"><input type="checkbox" data-pkgot="${i.k}" ${i.got?'checked':''}><div><div class="pl">${esc(i.label)}</div><div class="ps">${i.n} on schedule${i.adj?` · ${i.adj>0?'+':''}${i.adj} spare`:''}</div></div><div class="pn"><button type="button" data-pkadj="${i.k}" data-v="-1" aria-label="One less">−</button><b>${i.total}</b><button type="button" data-pkadj="${i.k}" data-v="1" aria-label="One more">+</button></div></label>`).join('')}
+  ${it.map(i=>`<label class="pk${i.got?' got':''}"><input type="checkbox" data-pkgot="${i.k}" ${i.got?'checked':''}><div><div class="pl">${esc(i.label)}</div><div class="ps">${i.n} on schedule${i.adj?` · ${i.adj>0?'+':''}${i.adj} spare`:''}${i.onTruck?` · ${i.onTruck} already on truck`:''}</div></div><div class="pn"><button type="button" data-pkadj="${i.k}" data-v="-1" aria-label="One less">−</button><b>${i.total}</b><button type="button" data-pkadj="${i.k}" data-v="1" aria-label="One more">+</button></div></label>`).join('')}
   <div class="grid2" style="margin-top:8px"><button type="button" data-pkadd="1">+ Other size</button><button type="button" data-pkall="1">All loaded</button></div>
   <p class="note" style="margin:8px 0 0">Meter sizes come from the schedule and aren't always right — grab a spare of the common size if unsure.</p></div>`;
 }
@@ -834,10 +1032,13 @@ function pickState(date){const d=day(date);d.pick=d.pick||{};d.pick.adj=d.pick.a
 function rerenderPick(date){const html=pickHtml(date);document.querySelectorAll(`[data-pkdate="${date}"]`).forEach(el=>{const tmp=document.createElement('div');tmp.innerHTML=html;el.replaceWith(tmp.firstElementChild||tmp)})}
 document.addEventListener('click',e=>{const box=e.target.closest('[data-pkdate]');if(!box)return;const date=box.dataset.pkdate;
   const a=e.target.closest('[data-pkadj]');if(a){e.preventDefault();const P=pickState(date);P.adj[a.dataset.pkadj]=(+P.adj[a.dataset.pkadj]||0)+(+a.dataset.v);touch(date);rerenderPick(date);return}
-  if(e.target.closest('[data-pkall]')){const P=pickState(date);pickItems(date).forEach(i=>P.got[i.k]=true);touch(date);rerenderPick(date);toast('All loaded — have a good day');if(date===TODAY)renderToday();return}
+  if(e.target.closest('[data-pkall]')){pickItems(date).forEach(i=>loadItem(date,i.k,true));renderStock();touch(date);rerenderPick(date);toast('All loaded — have a good day');if(date===TODAY)renderToday();return}
   if(e.target.closest('[data-pkadd]')){$('sheetT').textContent='Add a meter size';$('sheetB').innerHTML=['15','20','25','40','50'].map(z=>`<button data-pksz="${z}">${SIZE_LBL[z]}</button>`).join('');$('sheet').hidden=false;
     $('sheetB').onclick=ev=>{const b=ev.target.closest('[data-pksz]');if(!b)return;const P=pickState(date);P.adj['m'+b.dataset.pksz]=(+P.adj['m'+b.dataset.pksz]||0)+1;touch(date);$('sheet').hidden=true;rerenderPick(date)};$('sheetX').onclick=()=>{$('sheet').hidden=true};return}});
-document.addEventListener('change',e=>{const c=e.target.closest('[data-pkgot]');if(!c)return;const date=c.closest('[data-pkdate]').dataset.pkdate,P=pickState(date);P.got[c.dataset.pkgot]=c.checked;touch(date);rerenderPick(date)});
+function loadItem(date,k,on){const P=pickState(date);P.taken=P.taken||{};const it=pickItems(date).find(i=>i.k===k);if(!it)return;S.stock=S.stock||{};
+  if(on&&!P.got[k]){P.taken[k]=it.total;S.stock[k]=(+S.stock[k]||0)+it.total;P.got[k]=true}else if(!on&&P.got[k]){S.stock[k]=(+S.stock[k]||0)-(+P.taken[k]||0);delete P.taken[k];P.got[k]=false}touch(date)}
+document.addEventListener('change',async e=>{if(e.target.id==='payFile'&&e.target.files[0]){try{showSheetResult(await readSheetFile(e.target.files[0]))}catch(err){$('payOut').innerHTML='<p class="msg err">Couldn\'t read that file.</p>'}e.target.value=''}});
+document.addEventListener('change',e=>{const c=e.target.closest('[data-pkgot]');if(!c)return;const date=c.closest('[data-pkdate]').dataset.pkdate;loadItem(date,c.dataset.pkgot,c.checked);rerenderPick(date);renderStock()});
 function pickSpeech(date){const it=pickItems(date).filter(i=>i.total>0);return it.map(i=>i.total+' '+(i.k==='radio'?'radios':(i.k==='m?'?'meters with no size listed':i.label.replace(/^Meters /,'').replace(/ ·.*$/,'').replace('mm','millimetre')+' meters'))).join(', ')}
 function checkShop(){
   if(!MAP||!gpsFresh()||!shopDay(TODAY)||!S.settings.shopAddr)return;const d=S.days[TODAY];if(!d||!d.stops||(d.pick&&d.pick.shown))return;
@@ -1155,6 +1356,7 @@ function renderTomorrow(){
   el.innerHTML=`<div class="card"><div style="font-weight:800">${longD(nd)} is planned</div>${TW?`<div class="note" style="margin-top:4px">Weather: ${WMO[TW.code]||''}, ${Math.round(TW.min)}° to ${Math.round(TW.max)}°${TW.pp?', rain '+TW.pp+'%':''}${TA.length?' — <b>'+esc(TA[0].t)+'</b>':''}</div>`:''}${pk.length?`<div class="note" style="margin-top:4px">Shop: ${pk.map(i=>i.total+' '+(i.k==='radio'?'radios':i.label.replace(/^Meters /,'').replace(/ ·.*$/,'')+' meters')).join(' · ')}</div>`:''}<div class="note" style="color:var(--ink);margin-top:4px">${P.from==='home'?'Leave home '+P.leave:'Start '+P.leave}${P.shop?' · shop '+P.shop.eta:''}${P.school?' · leave for class by '+P.school.leaveBy:P.home?' · home ~'+P.home.eta:''} · ${D.stops.length} WOs</div><div class="grid2" style="margin-top:10px"><button data-ics="${nd}">Add alarms to calendar</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;
 }
 function renderToday(){
+  {const n=followUps().length;$('tFollow').innerHTML=n?`<button class="linkcard" data-go="route" style="padding:12px 16px"><b>${n} follow-up${n>1?'s':''} open</b> <span class="note">— stops not done yet from earlier days</span></button>`:''}
   {const st=S.settings,miss=[!st.tag&&'your schedule name',!Object.values(st.rates||{}).some(v=>+v)&&'pay rates',!st.hourly&&'hourly rate',!st.homeAddr&&'home address'].filter(Boolean);$('tSetup').innerHTML=miss.length?`<button class="linkcard" data-go="setup" style="border:2px solid var(--ink)"><div style="font-weight:800">Finish setup</div><div class="note">Missing: ${miss.join(', ')}. Open your settings file in Setup → Backup → Restore, or fill them in.</div></button>`:''}
   renderWx();if(!WX||Date.now()-WX.at>25*60000)wxRefresh(false);
   {const it=shopDay(TODAY)?pickItems(TODAY):[];$('tShop').innerHTML=it.length&&it.some(i=>!i.got)&&!groupsOf(TODAY).some(g=>g.state)?pickHtml(TODAY):''}
@@ -1175,7 +1377,7 @@ function weekMsg(ws,t){const left=(+S.settings.target||0)-t.total;if(left<=0)ret
   return money(left)+' to go'+(n?' · about '+money(left/n)+'/day over '+n+' day'+(n>1?'s':''):'');}
 
 /* ---------- log ---------- */
-function renderLog(){
+function renderLog(){renderStock();
   const d=S.days[logDate]||{h:0,km:0,c:{}};
   $('lDate').value=logDate;$('logTitle').textContent=logDate===TODAY?'Today':longD(logDate);
   if(document.activeElement!==$('lHours'))$('lHours').value=+d.h?d.h:'';
@@ -1197,7 +1399,7 @@ $('clearDay').onclick=()=>{const b=$('clearDay');if(b.dataset.arm!=='1'){b.datas
   const st=S.days[logDate]&&S.days[logDate].stops;S.days[logDate]={h:0,km:0,c:{}};if(st)S.days[logDate].stops=st.map(s=>Object.assign(s,{st:''}));touch(logDate);renderAll();toast('Day cleared')};
 
 /* ---------- week ---------- */
-function renderWeek(){renderInsights();
+function renderWeek(){renderInsights();renderTax();
   const ws=weekStart(weekRef),t=weekSum(ws),tg=+S.settings.target||0;
   $('wRange').textContent=fmtD(ws)+' – '+fmtD(addDays(ws,6))+(ws===weekStart(TODAY)?' · this week':'');
   $('wTotal').textContent=money(t.total);$('wOf').textContent='of '+money(tg)+' target';$('wBar').style.width=Math.min(100,tg?t.total/tg*100:0)+'%';
@@ -1222,7 +1424,7 @@ $('copy').onclick=async()=>{
 };
 
 /* ---------- setup ---------- */
-function renderSetup(){
+function renderSetup(){renderGH();
   if(document.activeElement&&document.activeElement.closest('#v-setup'))return;
   $('sTag').value=S.settings.tag||'';$('sHome').value=S.settings.homeAddr||'';$('sHomeCity').value=S.settings.homeCity||'';$('sShop').value=S.settings.shopAddr||'';$('sShopCity').value=S.settings.shopCity||'';$('sShopMin').value=S.settings.shopMin;$('sEndHome').checked=!!S.settings.endHome;$('sTax').value=S.settings.taxPct;$('sLearn').checked=!!S.settings.learn;$('sGps').checked=!!S.settings.useGps;$('sVoice').checked=!!S.settings.voice;$('sArrive').checked=!!S.settings.autoArrive;$('sMe').value=S.settings.myName||'';$('sTpl').value=S.settings.smsTpl||'';$('sSchool').value=S.settings.schoolAddr||'';$('sSchoolCity').value=S.settings.schoolCity||'';$('sClass').value=S.settings.classAt||'17:30';$('sClassLate').value=S.settings.classLatest||'17:45';$('sSchoolBuf').value=S.settings.schoolBuf;$('sSchoolDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-cd="${i+1}" class="${String(S.settings.schoolDays).includes(i+1)?'primary':''}">${n}</button>`).join('');$('sShopDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-sd="${i+1}" class="${String(S.settings.shopDays).includes(i+1)?'primary':''}">${n}</button>`).join('');const nf=Object.keys(S.settings.fix||{}).length;$('clearFix').textContent=nf?'Clear '+nf+' map pin fix'+(nf>1?'es':''):'No map pin fixes';$('clearFix').disabled=!nf;$('sDay').value=S.settings.dayStart||'08:00';$('sMinA').value=S.settings.minAppt;$('sMinR').value=S.settings.minRT;$('sTarget').value=S.settings.target;$('sHourly').value=S.settings.hourly;$('sKm').value=S.settings.kmRate;
   $('rateList').innerHTML=JOBS.map(([id,n])=>`<label class="f">${n}<input type="number" inputmode="decimal" step="0.01" data-r="${id}" value="${rate(id)}"></label>`).join('');
@@ -1244,6 +1446,9 @@ function renderAll(fromSnap){const cur=VIEWS.find(x=>$('v-'+x).classList.contain
   if(fromSnap&&cur==='log'&&document.activeElement&&document.activeElement.closest('#v-log'))return;
   render(cur);if(cur!=='today')renderClock();}
 show(location.hash.slice(1)||'today');
+takeShared();
+$('mic').onclick=micStart;{const m=$('mic');m.hidden=!(SR&&['today','route'].includes((location.hash.slice(1)||'today')))}
+if(GH.token)ghPull(false);
 connect();
 }
 </script>

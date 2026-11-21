@@ -1,5 +1,5 @@
 // Pay & Route offline cache. Bump VERSION when app files change.
-const VERSION = 'pr-v7';
+const VERSION = 'pr-v8';
 const SHELL = ['./', './index.html', './router.js', './manifest.json', './maplibre-gl.js', './maplibre-gl.css', './icon-180.png', './icon-192.png', './icon-512.png'];
 const MAP = './halton-map.txt';
 const TILES = 'pr-tiles';
@@ -7,11 +7,22 @@ self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => ![VERSION, 'pr-map', TILES].includes(k)).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => ![VERSION, 'pr-map', TILES, 'pr-share'].includes(k)).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 async function trimTiles(c) { const ks = await c.keys(); if (ks.length > 6000) for (const k of ks.slice(0, ks.length - 5000)) await c.delete(k); }
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
+  if (e.request.method === 'POST' && url.pathname.endsWith('/share-target')) {
+    // Android "Share → Pay & Route": keep the shared text, then open the app
+    e.respondWith((async () => {
+      const fd = await e.request.formData();
+      let text = (fd.get('title') || '') + '\n' + (fd.get('text') || '');
+      const f = fd.get('file'); if (f && f.text) text += '\n' + await f.text();
+      const c = await caches.open('pr-share'); await c.put('./shared.txt', new Response(text));
+      return Response.redirect('./index.html#route', 303);
+    })());
+    return;
+  }
   if (e.request.method !== 'GET') return;
   if (url.hostname === 'tiles.openfreemap.org') {
     // online map: use saved copy when there is one, so areas you've viewed work without signal
