@@ -1,10 +1,10 @@
 // Pay & Route offline cache. Bump VERSION when app files change.
-const VERSION = 'pr-v15';
+const VERSION = 'pr-v16';
 const SHELL = ['./', './index.html', './router.js', './config.js', './supabase.js', './manifest.json', './maplibre-gl.js', './maplibre-gl.css', './icon-180.png', './icon-192.png', './icon-512.png', './pdf.min.js', './pdf.worker.min.js'];
 const MAP = './halton-map.txt';
 const TILES = 'pr-tiles';
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => ![VERSION, 'pr-map', TILES, 'pr-share'].includes(k)).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -43,6 +43,7 @@ self.addEventListener('fetch', e => {
     }));
     return;
   }
-  e.respondWith(fetch(e.request).then(r => { if (r.ok) { const cl = r.clone(); caches.open(VERSION).then(c => c.put(e.request, cl)); } return r; })
+  // always ask the server first (skip the browser's 10-minute cache) so uploads show up right away
+  e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(r => { if (r.ok) { const cl = r.clone(); caches.open(VERSION).then(c => c.put(e.request, cl)); } return r; })
     .catch(() => caches.match(e.request).then(r => r || caches.match('./index.html'))));
 });
