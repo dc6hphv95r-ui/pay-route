@@ -28,7 +28,8 @@
 *{box-sizing:border-box;min-width:0}
 [hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Hanken Grotesk",system-ui,sans-serif;overflow-x:clip}
-main{max-width:680px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top)) max(4vw,14px) calc(96px + env(safe-area-inset-bottom))}
+html{min-height:100%;background:var(--bg)}
+main{min-height:100vh;min-height:100lvh;max-width:680px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top)) max(4vw,14px) calc(96px + env(safe-area-inset-bottom))}
 .view{display:none}.view.on{display:block}
 h2{font-size:26px;line-height:1.1;margin:4px 0 14px;font-weight:800}
 h3{font-size:17px;margin:22px 0 8px;font-weight:800}
@@ -1325,15 +1326,23 @@ function micStart(){if(!SR){toast('Voice commands need Chrome on Android');retur
 /* ---------- weather (Open-Meteo, free, no key) ---------- */
 const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Fog',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail'};
 let WX=null;try{WX=JSON.parse(ls.get('wx')||'null')}catch(e){}
-function wxPlace(){if(gpsFresh())return{lat:GPS.lat,lon:GPS.lon,name:'your location'};
+let WXPOS=null;try{WXPOS=JSON.parse(ls.get('wxpos')||'null')}catch(e){}
+function nearTown(lat,lon){try{if(!MAP||!MAP.cityC)return '';const q=MAP.ll2q(lon,lat);let bd=1e18,c='';for(const[n,o]of MAP.cityC){const d=Math.hypot((q[0]-o.x)*MAP.MX,(q[1]-o.y)*MAP.MY);if(d<bd){bd=d;c=n}}return bd<15000?c:''}catch(e){return ''}}
+function wxLocate(){return new Promise(res=>{if(!S.settings.useGps||!navigator.geolocation)return res(null);if(WXPOS&&Date.now()-WXPOS.at<120000)return res(WXPOS);
+  navigator.geolocation.getCurrentPosition(p=>{WXPOS={lat:p.coords.latitude,lon:p.coords.longitude,at:Date.now()};ls.set('wxpos',JSON.stringify(WXPOS));res(WXPOS)},()=>res(null),{enableHighAccuracy:false,maximumAge:600000,timeout:8000})})}
+const kmApart=(a,b)=>Math.hypot((a.lat-b.lat)*111,(a.lon-b.lon)*111*Math.cos(a.lat*Math.PI/180));
+function wxPlace(){const nm=(la,lo)=>{const t=nearTown(la,lo);return t?'near '+t:'your location'};
+  if(gpsFresh())return{lat:GPS.lat,lon:GPS.lon,name:nm(GPS.lat,GPS.lon)};
+  if(WXPOS&&Date.now()-WXPOS.at<3*3600e3)return{lat:WXPOS.lat,lon:WXPOS.lon,name:nm(WXPOS.lat,WXPOS.lon)};
   if(MAP&&S.settings.homeAddr){const h=locate(S.settings.homeAddr,S.settings.homeCity);if(h){const ll=MAP.q2ll(h.x,h.y);return{lat:ll[1],lon:ll[0],name:'home'}}}
   return{lat:43.51,lon:-79.88,name:'Milton'}}
 async function wxFetch(force){
-  if(!force&&WX&&Date.now()-WX.at<25*60000)return WX;if(!navigator.onLine)return WX;
-  const pl=wxPlace();
+  if(!navigator.onLine)return WX;await wxLocate();const pl=wxPlace();
+  const moved=WX&&WX.lat!=null&&kmApart({lat:WX.lat,lon:WX.lon},pl)>5;
+  if(!force&&!moved&&WX&&Date.now()-WX.at<15*60000)return WX;
   const u='https://api.open-meteo.com/v1/forecast?latitude='+pl.lat.toFixed(3)+'&longitude='+pl.lon.toFixed(3)+'&current=temperature_2m,apparent_temperature,weather_code,wind_gusts_10m,precipitation&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_gusts_10m,snowfall&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum,snowfall_sum,wind_gusts_10m_max,sunset&timezone=America%2FToronto&forecast_days=3';
   try{const r=await fetch(u);if(!r.ok)throw 0;const data=await r.json();
-    const prev=WX;WX={at:Date.now(),place:pl.name,data};ls.set('wx',JSON.stringify(WX));wxCompare(prev,WX);return WX}catch(e){return WX}}
+    const prev=WX;WX={at:Date.now(),place:pl.name,lat:pl.lat,lon:pl.lon,data};ls.set('wx',JSON.stringify(WX));wxCompare(prev,WX);return WX}catch(e){return WX}}
 function wxDay(date){if(!WX)return null;const D=WX.data.daily,i=D.time.indexOf(date);if(i<0)return null;return{max:D.temperature_2m_max[i],min:D.temperature_2m_min[i],code:D.weather_code[i],pp:D.precipitation_probability_max[i],rain:D.precipitation_sum[i],snow:D.snowfall_sum[i],gust:D.wind_gusts_10m_max[i]}}
 function wxHours(date,from,to){if(!WX)return [];const H=WX.data.hourly,out=[];H.time.forEach((t,i)=>{if(t.slice(0,10)!==date)return;const h=+t.slice(11,13);if(h<from||h>to)return;out.push({h,t:H.temperature_2m[i],f:H.apparent_temperature[i],pp:H.precipitation_probability[i]||0,code:H.weather_code[i],g:H.wind_gusts_10m[i],sn:H.snowfall[i]||0})});return out}
 const hh12=h=>(h%12||12)+(h<12?'a':'p');
@@ -1358,13 +1367,14 @@ function renderWx(){
   const el=$('tWx');if(!el)return;if(!WX){el.innerHTML='';return}
   const c=WX.data.current,D=wxDay(TODAY),al=wxAlerts(TODAY),hrs=wxHours(TODAY,new Date().getHours(),19),nw=(()=>{try{const x=JSON.parse(ls.get('wxnew')||'null');return x&&Date.now()-x.at<3*3600e3?x.list:[]}catch(e){return []}})();
   const age=Math.round((Date.now()-WX.at)/60000);
-  el.innerHTML=`<div class="card wx"><div class="wn"><span class="wt">${Math.round(c.temperature_2m)}°</span><div><b>${WMO[c.weather_code]||''}</b><div class="note">Feels ${Math.round(c.apparent_temperature)}° · ${D?'today '+Math.round(D.min)+'° to '+Math.round(D.max)+'°':''}${D&&D.pp?' · rain '+D.pp+'%':''}</div></div></div>
+  el.innerHTML=`<div class="card wx"><div class="wn"><span class="wt">${Math.round(c.temperature_2m)}°</span><div><b>${WMO[c.weather_code]||''}</b><div class="note">Feels ${Math.round(c.apparent_temperature)}° · ${D?Math.round(D.min)+'° to '+Math.round(D.max)+'°':''}</div><div class="note">${c.precipitation>0?'<b style="color:var(--ink)">'+c.precipitation+' mm falling now</b> · ':''}${(()=>{const w=hrs.find(x=>x.pp>=40);return w?'Rain/snow likely from '+hh12(w.h)+' ('+w.pp+'%)':D&&D.pp?'Precip. chance '+D.pp+'%':'No rain expected'})()}</div></div></div>
    ${nw.map(a=>`<div class="wxa bad">Changed: ${esc(a.t)}</div>`).join('')}
    ${al.filter(a=>!nw.some(n=>n.k===a.k)).map(a=>`<div class="wxa${a.bad?' bad':''}">${esc(a.t)}</div>`).join('')}
    ${hrs.length?`<div class="hrs">${hrs.map(x=>`<div class="hr">${hh12(x.h)}<b>${Math.round(x.t)}°</b>${x.pp}%<span class="pp"><i style="width:${x.pp}%"></i></span></div>`).join('')}</div>`:''}
    <div class="note" style="margin-top:6px">${esc(WX.place)} · updated ${age<2?'just now':age+' min ago'} · <a href="https://open-meteo.com/" target="_blank" rel="noopener" style="color:inherit">Weather data by Open-Meteo.com</a></div></div>`;
 }
-async function wxRefresh(force){await wxFetch(force);renderWx();if(location.hash==='#today'||!location.hash)renderTomorrow()}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(location.hash==='#today'||!location.hash))wxRefresh(false)});
+let wxBusy=false;async function wxRefresh(force){if(wxBusy)return;wxBusy=true;try{await wxFetch(force)}finally{wxBusy=false}renderWx();if(location.hash==='#today'||!location.hash)renderTomorrow()}
 setInterval(()=>{if(document.visibilityState==='visible')wxRefresh(false)},30*60000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wxRefresh(false)});
 
@@ -1724,7 +1734,7 @@ function renderTomorrow(){
 function renderToday(){
   {const n=followUps().length;$('tFollow').innerHTML=n?`<button class="linkcard" data-go="route" style="padding:12px 16px"><b>${n} follow-up${n>1?'s':''} open</b> <span class="note">— stops not done yet from earlier days</span></button>`:''}
   {const st=S.settings,miss=[!st.tag&&'your schedule name',!Object.values(st.rates||{}).some(v=>+v)&&'pay rates',!st.hourly&&'hourly rate',!st.homeAddr&&'home address'].filter(Boolean);$('tSetup').innerHTML=miss.length?`<button class="linkcard" data-go="setup" style="border:2px solid var(--ink)"><div style="font-weight:800">Finish setup</div><div class="note">Missing: ${miss.join(', ')}</div></button>`:''}
-  renderWx();if(!WX||Date.now()-WX.at>25*60000)wxRefresh(false);
+  renderWx();wxRefresh(false);
   {const it=shopDay(TODAY)?pickItems(TODAY):[];$('tShop').innerHTML=it.length&&it.some(i=>!i.got)&&!groupsOf(TODAY).some(g=>g.state)?pickHtml(TODAY):''}
   $('dateLine').textContent=longD(TODAY);startGPS();renderTomorrow();if(!MAP&&S.days[TODAY]&&S.days[TODAY].stops)loadMap().catch(()=>{});
   renderClock();
