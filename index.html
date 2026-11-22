@@ -13,6 +13,8 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <title>Pay &amp; Route</title>
+<meta name="author" content="Yonas Yohans">
+<!-- Pay & Route © 2026 Yonas Yohans. All rights reserved. See LICENSE.txt. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -78,8 +80,8 @@ label.f input{margin-top:4px}
 .chip{font-size:12px;font-weight:800;border:1px solid var(--line);border-radius:999px;padding:2px 9px;background:var(--bg)}
 .nb{margin-top:8px;font-size:14px;background:var(--bg);border-radius:10px;padding:8px 10px}
 .nb.flag{background:var(--y);color:#111;font-weight:700}
-.acts{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto auto;gap:6px;margin-top:12px}
-.acts.any{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto auto auto}
+.acts{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);grid-auto-flow:column;grid-auto-columns:auto;gap:6px;margin-top:12px}
+.acts .sm{padding:0 8px;min-width:42px}.acts>*{white-space:nowrap;padding-left:8px;padding-right:8px}
 .units{margin-top:10px;background:var(--bg);border-radius:12px;overflow:hidden}
 .uh{display:flex;justify-content:space-between;padding:8px 10px;font-size:13px;font-weight:700;color:var(--mute);border-bottom:1px solid var(--line)}
 .ub{display:flex;gap:6px}.ur .ck.sk,.ur.cur .ck.sk,.ur.ok .ck.sk{background:var(--bg);color:var(--ink);border-color:var(--line)}
@@ -178,6 +180,12 @@ tr.go{cursor:pointer}
 .msg{min-height:22px;font-size:14px;font-weight:700;margin:8px 0}
 .msg.err{color:var(--warn)}
 .rates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+/* REPL_T card */
+.rtg{display:grid;gap:4px;margin-top:8px}
+.rtr{display:grid;grid-template-columns:4.2em minmax(0,1fr);align-items:center;gap:8px;font-size:14px;color:var(--mute);font-weight:700}
+.rtv{justify-self:start;min-height:34px;padding:0 10px;border-radius:9px;background:var(--bg);font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.rta{justify-self:start;min-height:34px;padding:0 12px;border-radius:9px;font-size:14px;border-style:dashed}
+.rtm{color:var(--mute)}
 /* sub-sections */
 .vh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.vh h2{margin:0}
 .dnav{display:flex;gap:4px;align-items:center}.dnav input{width:auto;min-width:0;max-width:11.5em;padding:0 8px}.dnav button{width:40px;padding:0;font-size:22px}
@@ -191,16 +199,43 @@ tr.go{cursor:pointer}
 .pwc{display:flex;flex-direction:column;align-items:flex-start;gap:0;min-height:0;padding:10px 12px;border:0;border-radius:12px;background:var(--bg);text-align:left;font-weight:500}
 .mid{font-size:clamp(24px,7vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.01em}
 details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;font-weight:700;opacity:.75}details.odo label{margin-top:6px}
+/* sign-in screen */
+#gate{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top)) 22px calc(20px + env(safe-area-inset-bottom));overflow:auto}
+#gate .gbox{width:100%;max-width:380px}
+#gate img{width:72px;height:72px;border-radius:18px;display:block;margin-bottom:16px}
+#gate h1{font-size:30px;line-height:1.1;margin:0 0 4px;font-weight:800}
+#gate .gerr{min-height:20px;color:#c62828;font-weight:700;font-size:14px;margin:8px 0 0}
+/* chat — WhatsApp-style */
+:root{--wa:#00a884;--wabg:light-dark(#efeae2,#0b141a);--win:light-dark(#fff,#202c33);--wout:light-dark(#d9fdd3,#005c4b);--wtx:light-dark(#111b21,#e9edef);--wsub:light-dark(#667781,#8696a0)}
+.clist{margin:0 -4px}
+.crow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;min-height:72px;padding:8px 4px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;text-align:left;font-weight:400}
+.av{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px;flex:none}
+.crow .cn{font-weight:800;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crow .cp{font-size:14px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crow .ct2{font-size:12px;color:var(--mute);text-align:right;display:grid;gap:6px;justify-items:end}
+.crow .ct2.un{color:var(--wa);font-weight:700}
+.ub2{min-width:22px;height:22px;border-radius:11px;background:var(--wa);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;padding:0 6px}
+#thread{position:fixed;inset:0;z-index:25;display:flex;flex-direction:column;background:var(--wabg);height:100dvh}
+.th{display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px 4px;background:light-dark(#f0f2f5,#202c33);color:var(--wtx)}
+.th .back{border:0;background:none;width:40px;min-height:44px;padding:0;font-size:30px;line-height:1;color:inherit}
+.th .av{width:40px;height:40px;font-size:15px}
+.th .tn{font-weight:800;font-size:17px;line-height:1.2}.th .ts{font-size:13px;color:var(--wsub)}
+.tmsgs{flex:1;overflow-y:auto;padding:10px 10px 6px;display:flex;flex-direction:column;gap:2px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.dchip{align-self:center;background:light-dark(#fff,#182229);color:var(--wsub);font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;margin:10px 0 6px;box-shadow:0 1px .5px rgba(0,0,0,.13)}
+.bb{max-width:80%;padding:6px 8px 4px 9px;border-radius:9px;background:var(--win);color:var(--wtx);align-self:flex-start;box-shadow:0 1px .5px rgba(0,0,0,.13);font-size:15.5px;line-height:1.35;word-wrap:break-word;overflow-wrap:anywhere;white-space:pre-wrap;margin-top:2px}
+.bb.me{align-self:flex-end;background:var(--wout)}
+.bb.first{margin-top:8px}.bb.first:not(.me){border-top-left-radius:0}.bb.first.me{border-top-right-radius:0}
+.bb .bn{font-size:13px;font-weight:800;margin-bottom:1px;white-space:nowrap}
+.bb .bt{float:right;font-size:11px;color:var(--wsub);margin:6px 0 -2px 10px;white-space:nowrap}
+.bb .bt i{font-style:normal;color:#53bdeb;margin-left:3px}
+.tempty{align-self:center;margin:auto;background:light-dark(#fff8c6,#182229);color:var(--wsub);font-size:13px;padding:8px 12px;border-radius:8px;text-align:center;max-width:300px}
+.tcomp{display:flex;gap:6px;align-items:flex-end;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:transparent}
+.tcomp textarea{flex:1;min-height:44px;max-height:120px;border-radius:22px;border:0;background:var(--win);color:var(--wtx);padding:11px 16px;resize:none;font-size:16px;line-height:1.35;box-shadow:0 1px .5px rgba(0,0,0,.13)}
+.tcomp textarea:focus-visible{outline:2px solid var(--wa);outline-offset:0}
+.tcomp button{width:46px;height:46px;min-height:46px;border-radius:50%;border:0;background:var(--wa);color:#fff;padding:0;flex:none}
 /* tabs */
 .tabs{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));padding:4px 2px env(safe-area-inset-bottom);z-index:5}
 .tabs button{position:relative}.cbadge{position:absolute;top:4px;right:calc(50% - 22px);min-width:18px;height:18px;border-radius:9px;background:#c62828;color:#fff;font-size:11px;line-height:18px;padding:0 5px}
-#v-chat.on{display:flex;flex-direction:column;min-height:calc(100dvh - 150px)}
-.rooms{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}.rooms button{flex:none}
-.msgs{flex:1;display:flex;flex-direction:column;gap:6px;padding:8px 0}
-.mg{max-width:82%;padding:8px 12px;border-radius:16px;background:var(--plane);align-self:flex-start;word-wrap:break-word}
-.mg.me{align-self:flex-end;background:#ffe600;color:#111}
-.mg .who2{font-size:12px;font-weight:800;opacity:.7}.mg .t2{font-size:11px;opacity:.6;margin-top:2px}
-.composer{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom));background:var(--bg);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:8px 0}
 .tabs button{border:0;border-radius:10px;min-height:56px;flex-direction:column;gap:2px;font-size:12px;font-weight:700;color:var(--mute);background:none}
 .tabs button svg{width:22px;height:22px}
 .tabs button.on{color:var(--ink)}
@@ -273,7 +308,6 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
     <div data-pane="add" hidden>
       <div class="card">
         <b>Schedule email</b>
-        <p class="note" style="margin:4px 0 10px">Print the email to PDF (Share → Print → Save to Files / Save as PDF), then open it here. Or copy the whole email and paste it.</p>
         <label class="btn primary wide">Open schedule PDF<input type="file" id="pdfFile" accept="application/pdf,.pdf,text/plain,.txt,.eml" hidden></label>
         <div class="grid2" style="margin-top:8px"><button id="clipBtn">Paste from clipboard</button><button id="pasteBtn">Type / paste here</button></div>
         <div class="mails" id="mails"></div>
@@ -284,7 +318,6 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
       </div>
       <div class="card">
         <b>REPL_T / extra stops</b>
-        <p class="note" style="margin:4px 0 8px">One address per line — e.g. <i>760 Miriam Cres Burlington</i>. A WO # at the start is fine. You can also paste the REPL_T rows from an email.</p>
         <button class="wide" id="addBtn">Add stops with no appointment</button>
         <div id="addBox" hidden style="margin-top:8px">
           <textarea id="addText" placeholder="1712416 760 MIRIAM CRES BURLINGTON&#10;2076 FAIRMONT COMMON, BURLINGTON"></textarea>
@@ -312,7 +345,6 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
     <p class="note" id="lTimes"></p>
     <div id="jobs"></div>
     <div class="sum"><div class="p money" id="lPay">$0.00</div><div class="note" id="lSplit"></div></div>
-    <p class="note">Changes save by themselves.</p>
     <button id="clearDay">Clear this day</button>
     </div>
   </section>
@@ -336,7 +368,6 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
     </div>
     <div data-pane="check" hidden>
     <div class="card">
-      <p class="note" style="margin-top:0">Open the pay breakdown Excel file, or copy the rows (from the date column to Bonus) and paste them. The app compares each day with what you logged.</p>
       <label class="btn wide">Open Excel / CSV file<input type="file" id="payFile" accept=".xlsx,.xls,.csv,.ods,.txt" hidden></label>
       <textarea id="payText" placeholder="…or paste rows here" style="margin-top:8px;min-height:90px"></textarea>
       <button class="primary wide" id="payGo" style="margin-top:6px">Check pasted rows</button>
@@ -348,7 +379,6 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
     <h3 style="margin-top:4px">All weeks</h3>
     <div class="scroll"><table><thead><tr><th>Week of</th><th>Hours</th><th>Reg</th><th>Piece</th><th>Bonus</th><th>Total</th></tr></thead><tbody id="wHist"></tbody></table></div>
     <h3>Monthly KM</h3>
-    <p class="note">Business km is worked out by itself: shop (or your first stop) → every stop in the order you did them → last stop, on the road map. Home and the drive to class aren't counted — compare it with the MileIQ payout. Not counted in weekly pay.</p>
     <div class="scroll"><table><thead><tr><th>Month</th><th>Days</th><th>Business km</th><th>Odometer km</th><th>Mileage pay</th></tr></thead><tbody id="kmHist"></tbody></table></div>
     <button id="copy" style="margin-top:14px">Copy all days as CSV</button>
     </div>
@@ -356,14 +386,9 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
 
   <!-- CHAT -->
   <section class="view" id="v-chat">
-    <h2 style="margin-bottom:8px">Chat</h2>
+    <h2 style="margin-bottom:8px">Chats</h2>
     <div id="chatGate" class="card" hidden></div>
-    <div id="chatMain" hidden>
-      <div class="rooms" id="rooms"></div>
-      <div class="msgs" id="msgs"></div>
-      <p class="note" style="margin:0">Don't post customer names, phone numbers or addresses here — use WO numbers.</p>
-      <form class="composer" id="composer"><input id="chatIn" placeholder="Message" autocomplete="off" enterkeyhint="send"><button class="primary" type="submit">Send</button></form>
-    </div>
+    <div id="chatMain" hidden><div class="clist" id="rooms"></div></div>
   </section>
 
   <!-- SETUP -->
@@ -380,7 +405,6 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
     </div>
     <h3>Piece rates</h3>
     <div class="rates" id="rateList"></div>
-    <p class="note">Day pay = hours × hourly + bonus. Bonus = piece total minus regular pay when piece is higher. Weeks run Sunday to Saturday. Amounts are before tax. Marking a stop done adds: REPL_MRT → REPL MRT install, REPL_T → TC outside, REPAIR → TP repair investigation.</p>
     </div>
     <div data-pane="route" hidden>
     <div class="grid2">
@@ -399,7 +423,6 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
       <label class="f">Min / REPL_T<input type="number" id="sMinR" inputmode="numeric"></label>
     </div>
     <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sEndHome" style="width:22px;min-height:22px"> End the day at home</label>
-    <p class="note">Best order plans: home → shop (on pickup days) → stops → home. Drive times add rush-hour slowdowns (7–9:30 AM, 3:30–6:30 PM). Once you finish a stop or tap “I'm here” on the map, it plans from there.</p>
     <h3>School</h3>
     <div class="grid2">
       <label class="f">School address<input id="sSchool"></label>
@@ -410,7 +433,6 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
     </div>
     <div class="f" style="margin-top:10px;font-size:13px;color:var(--mute);font-weight:700">Class days (go straight from work)</div>
     <div class="wl" id="sSchoolDays" style="margin-top:4px"></div>
-    <p class="note">On class days the plan ends at school instead of home and tells you when to leave your last stop. The drive to Toronto is counted 50% slower for 401 rush hour.</p>
     <button id="clearFix" style="margin-top:12px">Clear map pin fixes</button>
     </div>
     <div data-pane="phone" hidden>
@@ -421,7 +443,7 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
     <h3>Text to customers</h3>
     <label class="f">Your name in texts<input id="sMe"></label>
     <label class="f" style="margin-top:8px">Message<textarea id="sTpl" style="min-height:110px"></textarea></label>
-    <p class="note">{first} = customer's first name, {addr} = address, {min} = minutes away, {eta} = arrival time, {me} = your name. The text opens in Messages for you to send — nothing is sent by itself.</p>
+    <p class="note">{first} {addr} {min} {eta} {me}</p>
     </div>
     <div data-pane="acct" hidden>
     <div class="card" id="acctCard" hidden>
@@ -433,7 +455,6 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
         <button class="primary wide" id="acSend" style="margin-top:8px">Sign in</button>
       </div>
       <div id="acctIn" hidden><div class="grid2"><button id="acSync">Sync now</button><button id="acOut">Sign out</button></div><button class="wide" id="acPw" style="margin-top:8px">Change my password</button></div>
-      <p class="note" style="margin:10px 0 0">Your pay, hours, mileage, stock, expenses and settings are saved to your account. Customer names, phones, addresses and work orders stay on this phone only.</p>
     </div>
     <h3 style="margin-top:4px">Cloud backup (GitHub)</h3>
     <div class="card">
@@ -441,16 +462,15 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
       <div class="grid2"><label class="f">GitHub username<input id="ghOwner" autocomplete="off" autocapitalize="off"></label><label class="f">Private repo name<input id="ghRepo" autocomplete="off" autocapitalize="off" placeholder="pay-route-data"></label></div>
       <label class="f" style="margin-top:8px">Access token<input id="ghToken" type="password" autocomplete="off" placeholder="github_pat_…"></label>
       <div class="grid2" style="margin-top:8px"><button class="primary" id="ghConnect">Connect &amp; back up</button><button id="ghPull">Restore from cloud</button></div>
-      <p class="note">Saves automatically a minute after changes. The token stays on this phone only and is never put in backups.</p>
     </div>
     <h3>Backup</h3>
     <p class="note" id="storeNote"></p>
     <div class="grid2"><button id="bkSave">Save backup file</button><button id="bkCopy">Copy backup</button></div>
     <button class="wide" id="shareSetup" style="margin-top:8px">Share my setup with a coworker</button>
-    <p class="note">Sends your pay rates, shop and work settings — not your name, home, school, saved days or notes. They open it in their app under Restore from file.</p>
     <label class="btn wide" style="margin-top:8px">Restore from file<input type="file" id="bkFile" accept=".json,application/json,text/plain" hidden></label>
     <textarea id="bkText" placeholder="…or paste a backup here" style="margin-top:8px;min-height:80px"></textarea>
     <button id="bkPaste" class="wide" style="margin-top:6px">Restore from pasted text</button>
+    <p class="note" style="text-align:center;margin-top:28px">© 2026 Yonas Yohans. All rights reserved.<br>Map data © OpenStreetMap contributors.</p>
     </div>
   </section>
 </main>
@@ -464,6 +484,21 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
   <button data-go="setup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Setup</button>
 </nav>
 <button id="mic" aria-label="Voice command" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="26" height="26"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+<div id="thread" hidden role="dialog" aria-label="Chat">
+  <div class="th"><button class="back" id="thBack" aria-label="Back to chats">‹</button><div id="thAv"></div><div style="min-width:0"><div class="tn" id="thName"></div><div class="ts" id="thSub"></div></div></div>
+  <div class="tmsgs" id="msgs"></div>
+  <form class="tcomp" id="composer"><textarea id="chatIn" rows="1" placeholder="Message" enterkeyhint="send" autocomplete="off"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button></form>
+</div>
+<div id="gate" hidden><div class="gbox">
+  <img src="icon-192.png" alt="">
+  <h1>Pay &amp; Route</h1>
+  <div style="height:18px"></div>
+  <label class="f">Email<input id="gEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="off"></label>
+  <label class="f" style="margin-top:10px">Password<input id="gPass" type="password" autocomplete="current-password"></label>
+  <button class="primary wide" id="gGo" style="margin-top:14px;min-height:52px">Sign in</button>
+  <p class="gerr" id="gErr" role="alert"></p>
+  <p class="note" style="margin-top:28px;text-align:center">© 2026 Yonas Yohans</p>
+</div></div>
 <div class="toast" id="toast" role="status"></div>
 <div id="sheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetT"><div id="sheetT" style="font-weight:800;font-size:18px;margin-bottom:10px"></div><div id="sheetB" style="display:grid;gap:8px"></div><button id="sheetX" class="wide" style="margin-top:10px">Cancel</button></div></div>
 
@@ -567,7 +602,7 @@ async function connect(){
 
 /* ---------- tabs ---------- */
 const VIEWS=['today','route','log','week','chat','setup'];
-function show(v){if(!VIEWS.includes(v))v='today';{const m=$('mic');if(m)m.hidden=!(SR&&(v==='today'||v==='route'))}
+function show(v){if(!VIEWS.includes(v))v='today';if(v!=='chat'&&typeof THREAD!=='undefined'&&THREAD)closeThread(true);{const m=$('mic');if(m)m.hidden=!(SR&&(v==='today'||v==='route'))}
   for(const x of VIEWS){$('v-'+x).classList.toggle('on',x===v)}
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.go===v));
   if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);
@@ -625,7 +660,20 @@ const full=g=>g.addr+(g.city?', '+g.city:'')+', ON';
 const navUrl=g=>'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination='+encodeURIComponent(full(g));
 function routeUrl(list){const l=list.map(full);const dest=l.pop();return 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination='+encodeURIComponent(dest)+(l.length?'&waypoints='+encodeURIComponent(l.join('|')):'')}
 const FLAG=/(call|after \d|before|supervisor|book with|must|dog|meter room|onsite|key)/i;
+function rtCard(g,n,date,isNext){
+  const s=g.items[0],done=g.state==='done';
+  const row=(lbl,v,copy,act)=>`<div class="rtr"><span>${lbl}</span>${v?`<button class="rtv" ${act?`data-a="${act}" data-wo="${esc(s.wo)}"`:`data-copy="${esc(v)}"`}>${esc(v)}</button>`:copy}</div>`;
+  return `<div class="stop rt ${g.state}${isNext?' next':''}" data-k="${esc(g.key)}" data-date="${date}">
+  <div class="sh"><div class="num">${done?'✓':n}</div><div style="min-width:0">
+   <div class="addr">${esc(g.addr)}</div>
+   <div class="rtg">${s.unit?row('Unit',s.unit,''):''}${row('WO',s.wo,'<span class="rtm">—</span>','copy')}${row('Serial',s.meter,done?'<span class="rtm">—</span>':`<button class="rta" data-a="serial" data-wo="${esc(s.wo)}">+ Add</button>`)}</div>
+   ${s.st==='skip'?`<div class="nb att">Not done — ${esc(s.why||'skipped')}</div>`:''}${myNote(g)?`<div class="nb mine">${esc(myNote(g))}</div>`:''}
+  </div></div>
+  <div class="acts"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a><button data-a="done">${done?'Undo':'Done'}</button><button data-a="skip" class="sm" aria-label="Can't do it">${g.state==='skip'?'↺':'✕'}</button><button data-a="up" class="sm" aria-label="Move earlier">↑</button><button data-a="slot" class="sm" aria-label="Move ${g.win<0?'after':'before'} appointments">${g.win<0?'PM':'AM'}</button></div>
+ </div>`;
+}
 function stopCard(g,n,date,isNext){
+  if(g.items.length===1&&g.items[0].type==='REPL_T')return rtCard(g,n,date,isNext);
   const names=[...new Set(g.items.map(s=>s.name))],units=g.items.map(s=>s.unit).filter(Boolean),notes=[...new Set(g.items.map(s=>s.notes).filter(Boolean))];
   const phones=[...new Set(g.items.flatMap(s=>[s.ph,s.ph2]).filter(Boolean))];
   const types={};g.items.forEach(s=>types[s.type]=(types[s.type]||0)+1);
@@ -633,24 +681,24 @@ function stopCard(g,n,date,isNext){
   let unitHtml='';
   if(ul){const so=[...g.items].sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9)||String(a.unit).localeCompare(String(b.unit)));
     const cur=so.find(s=>!s.st),dn=so.filter(s=>s.st==='done').length;
-    unitHtml=`<div class="units"><div class="uh"><span>Unit · WO (tap to copy)</span><span>${dn}/${so.length} done${so.some(s=>s.st==='skip')?' · '+so.filter(s=>s.st==='skip').length+' not done':''}</span></div>${so.map(s=>`<div class="ur${s===cur?' cur':''}${s.st==='done'?' ok':s.st?' ok':''}"><div class="u">${esc(s.unit||'—')}</div><div><button class="wo" data-a="copy" data-wo="${esc(s.wo)}">${esc(s.wo||'no WO')}</button><div class="nm">${esc(s.name)}</div>${s.meter?`<div class="mt">Meter <button data-copy="${esc(s.meter)}">${esc(s.meter)}</button></div>`:''}${s.st==='skip'?`<div class="mt" style="color:#c62828;font-weight:700">Not done — ${esc(s.why||'skipped')}</div>`:''}</div><div class="ub">${s.st==='done'?'':`<button class="ck sk" data-a="skipone" data-wo="${esc(s.wo)}" aria-label="${s.st==='skip'?'Undo skip':'Can\'t do unit '+esc(s.unit)}">${s.st==='skip'?'↺':'✕'}</button>`}${s.st==='skip'?'':`<button class="ck" data-a="one" data-wo="${esc(s.wo)}" aria-label="Unit ${esc(s.unit)} done">✓</button>`}</div></div>`).join('')}</div>`;}
+    unitHtml=`<div class="units"><div class="uh"><span>Unit · WO · Serial</span><span>${dn}/${so.length} done${so.some(s=>s.st==='skip')?' · '+so.filter(s=>s.st==='skip').length+' not done':''}</span></div>${so.map(s=>`<div class="ur${s===cur?' cur':''}${s.st==='done'?' ok':s.st?' ok':''}"><div class="u">${esc(s.unit||'—')}</div><div><button class="wo" data-a="copy" data-wo="${esc(s.wo)}">${esc(s.wo||'no WO')}</button>${s.type==='REPL_T'?'':`<div class="nm">${esc(s.name)}</div>`}${s.meter?`<div class="mt">Serial <button data-copy="${esc(s.meter)}">${esc(s.meter)}</button></div>`:s.type==='REPL_T'&&!s.st?`<div class="mt"><button data-a="serial" data-wo="${esc(s.wo)}">+ Serial</button></div>`:''}${s.st==='skip'?`<div class="mt" style="color:#c62828;font-weight:700">Not done — ${esc(s.why||'skipped')}</div>`:''}</div><div class="ub">${s.st==='done'?'':`<button class="ck sk" data-a="skipone" data-wo="${esc(s.wo)}" aria-label="${s.st==='skip'?'Undo skip':'Can\'t do unit '+esc(s.unit)}">${s.st==='skip'?'↺':'✕'}</button>`}${s.st==='skip'?'':`<button class="ck" data-a="one" data-wo="${esc(s.wo)}" aria-label="Unit ${esc(s.unit)} done">✓</button>`}</div></div>`).join('')}</div>`;}
   return `<div class="stop ${g.state}${isNext?' next':''}" data-k="${esc(g.key)}" data-date="${date}">
   <div class="sh"><div class="num">${g.state==='done'?'✓':n}</div><div>
    <div class="addr">${esc(g.addr)}</div>
    <div class="sub">${esc(g.city||'')}${ul?' · '+g.items.length+' units':units.length?' · Unit '+esc(units.join(', ')):''} · ${g.any?'No appointment':esc(g.time)+' window'}</div>
-   ${ul?'':`<div class="who">${esc(names.slice(0,3).join(' · '))}${names.length>3?' +'+(names.length-3):''}</div>`}
+   ${ul||g.items.every(s=>s.type==='REPL_T')?'':`<div class="who">${esc(names.slice(0,3).join(' · '))}${names.length>3?' +'+(names.length-3):''}</div>`}
    <div class="who">${phones.map(p=>{const d=p.replace(/[^\d]/g,'').slice(0,11);return d.length>=10?`<a href="tel:${d}">${esc(p)}</a>`:esc(p)}).join(' · ')}</div>
    <div class="chips">${call&&g.state!=='done'?'<span class="chip call">Text before arriving</span>':''}${callOnArrival(g)&&g.state!=='done'?'<span class="chip call">Call when you arrive</span>':''}${arr&&g.state!=='done'?`<span class="chip here">On site since ${tm(new Date(arr.arriveAt).toISOString())}</span>`:''}${legChips(date,g)}${g.any?'<span class="chip any">Anytime</span>':''}${Object.entries(types).map(([t,c])=>`<span class="chip">${c>1?c+' × ':''}${esc(t||'—')}</span>`).join('')}${!ul&&g.items.some(s=>s.wo)?`<span class="chip">WO ${esc(g.items.map(s=>s.wo).filter(Boolean).join(', '))}</span>`:''}${!ul?g.items.filter(s=>s.meter).map(s=>`<button class="chip" data-copy="${esc(s.meter)}" style="min-height:0;cursor:pointer">Meter ${esc(s.meter)}</button>`).join(''):''}</div>
    ${notes.map(t=>`<div class="nb${FLAG.test(t)?' flag':''}">${esc(t)}</div>`).join('')}${myNote(g)?`<div class="nb mine"><b>Your note:</b> ${esc(myNote(g))}</div>`:''}${attemptChip(g,date)}
   </div></div>${unitHtml}
   ${g.state==='done'?'':`<div class="acts2">${arr?'':`<button data-a="arrive">I'm here</button>`}<button data-a="note">${myNote(g)?'Edit note':'Add note'}</button>${smsLink(g,date)?`<a class="btn${call?' sms':''}" href="${smsLink(g,date)}" data-smsk="${esc(g.key)}">Text customer</a>`:''}</div>`}
-  <div class="acts${g.any?' any':''}"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a>${ul&&g.items.length>4&&g.state!=='done'?`<button disabled>${g.items.filter(s=>s.st==='done').length}/${g.items.length}</button>`:`<button data-a="done">${g.state==='done'?'Undo':ul?'All done':'Done'}</button>`}<button data-a="skip" class="sm" aria-label="No access / skip">${g.state==='skip'?'↺':'✕'}</button><button data-a="up" class="sm" aria-label="Move earlier">↑</button>${g.any?`<button data-a="slot" class="sm" aria-label="Move ${g.win<0?'after':'before'} appointments">${g.win<0?'PM':'AM'}</button>`:''}${g.items.every(s=>s.manual)?'<button data-a="del" class="sm" aria-label="Remove stop">Del</button>':''}</div>
+  <div class="acts${g.any?' any':''}"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a>${ul&&g.items.length>4&&g.state!=='done'?`<button disabled>${g.items.filter(s=>s.st==='done').length}/${g.items.length}</button>`:`<button data-a="done">${g.state==='done'?'Undo':ul?'✓ All':'Done'}</button>`}<button data-a="skip" class="sm" aria-label="No access / skip">${g.state==='skip'?'↺':'✕'}</button><button data-a="up" class="sm" aria-label="Move earlier">↑</button>${g.any?`<button data-a="slot" class="sm" aria-label="Move ${g.win<0?'after':'before'} appointments">${g.win<0?'PM':'AM'}</button>`:''}${g.items.every(s=>s.manual)?'<button data-a="del" class="sm" aria-label="Remove stop"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>':''}</div>
  </div>`;
 }
 function renderRoute(){
   $('rDate').value=routeDate;
   const gs=groupsOf(routeDate);$('planBar').hidden=!gs.length;if(!$('mapWrap').hidden)requestAnimationFrame(drawMap);
-  if(!gs.length){$('rBody').innerHTML=`<div class="card empty"><b>No stops for ${longD(routeDate)}</b><p class="note">Open the schedule PDF or paste the email under “Load schedule”.</p><button class="primary" data-p2="add">Load schedule</button></div>`;return}
+  if(!gs.length){$('rBody').innerHTML=`<div class="card empty"><b>No stops for ${longD(routeDate)}</b><button class="primary" data-p2="add">Load schedule</button></div>`;return}
   const all=gs.flatMap(g=>g.items),done=all.filter(s=>s.st==='done').length;
   const next=gs.find(g=>!g.state);
   let html=`<div class="card"><div style="font-weight:800;font-size:18px">${longD(routeDate)}</div><div class="note">${gs.length} stops · ${all.length} work orders · ${done} done</div>${planLine(gs)}${planInfo(routeDate)}<div class="bar"><i style="width:${all.length?done/all.length*100:0}%"></i></div></div>`;
@@ -662,13 +710,16 @@ function renderRoute(){
     const head=w<0?'REPL_T · before appointments':w>=5000?'REPL_T · after appointments':winLabel(w)+' appointments';
     html+=`<div class="win"><h3>${head}</h3><div class="wl">${parts.map((p,i)=>`<a class="btn" href="${routeUrl(p)}" target="_blank" rel="noopener">Route${parts.length>1?' '+(i+1):''} in Maps</a>`).join('')}</div></div>`;
     for(const g of wg){n++;html+=stopCard(g,n,routeDate,g===next)}}
-  html+=`<button id="clearRoute" style="margin-top:8px">Remove this route</button><p class="note">Maps opens each window's stops in order, up to 4 at a time. Stops at the same address are grouped.</p>`;
+  html+=`<button id="clearRoute" style="margin-top:8px">Remove this route</button>`;
   $('rBody').innerHTML=html;
 }
 function stopAction(date,key,a,wo){if(['done','one','skip','del'].includes(a))setTimeout(()=>refreshBiz(date),400);
   const d=day(date),gs=groupsOf(date),g=gs.find(x=>x.key===key);if(!g)return;
   if(a==='note'){editNote(g,date);return}
   if(a==='arrive'){arriveAt(g,date,false);toast('Arrived — timing this job');return}
+  if(a==='serial'){const s=g.items.find(x=>x.wo===wo)||g.items[0];if(!s)return;
+    $('sheetT').textContent='Meter serial'+(s.unit?' · unit '+s.unit:'')+' · WO '+(s.wo||'');$('sheetB').innerHTML=`<input id="serIn" inputmode="numeric" autocomplete="off" value="${esc(s.meter||'')}" placeholder="e.g. 54198485"><button class="primary" id="serOk">Save</button>`;$('sheet').hidden=false;$('sheetB').onclick=null;setTimeout(()=>$('serIn').focus(),50);
+    const save=()=>{s.meter=$('serIn').value.replace(/\s+/g,'').trim();$('sheet').hidden=true;touch(date);renderAll()};$('serOk').onclick=save;$('serIn').onkeydown=e=>{if(e.key==='Enter')save()};return}
   if(a==='copy'){if(!wo)return;navigator.clipboard.writeText(wo).then(()=>toast('WO '+wo+' copied — paste it in Clevest'),()=>toast('WO '+wo));return}
   if(a==='skipone'){const s=g.items.find(x=>x.wo===wo);if(!s)return;if(s.st==='skip'){s.st='';delete s.why;delete s.skipAt;touch(date);renderAll();toast('Unit '+s.unit+' back on the list');return}askWhy(g,date,s);return}
   if(a==='one'){const s=g.items.find(x=>x.wo===wo);if(!s)return;const j=TYPE_JOB[s.type];
@@ -686,7 +737,7 @@ function stopAction(date,key,a,wo){if(['done','one','skip','del'].includes(a))se
   if(['up','slot','del','skip','done'].includes(a)&&d.plan){if(MAP)planRoute(date,false);else{delete d.plan;touch(date)}}
 }
 document.addEventListener('click',e=>{const ic=e.target.closest('[data-ics]');if(ic){saveIcs(ic.dataset.ics);return}const rp=e.target.closest('[data-rep]');if(rp){shareReport(rp.dataset.rep);return}
-  const tm2=e.target.closest('[data-tmr]');if(tm2){routeDate=tm2.dataset.tmr;if(tm2.dataset.act==='clip'){(async()=>{let t='';try{t=await navigator.clipboard.readText()}catch(err){show('route');pane('route','add');$('pasteBox').hidden=false;rMsg('Paste the email for '+longD(routeDate)+' below.',true);return}await smartImport(t,routeDate)})()}else if(tm2.dataset.act==='plan'){show('route');planRoute(routeDate,true)}else show('route');return}
+  const tm2=e.target.closest('[data-tmr]');if(tm2){routeDate=tm2.dataset.tmr;if(tm2.dataset.act==='clip'){(async()=>{let t='';try{t=await navigator.clipboard.readText()}catch(err){show('route');pane('route','add');$('pasteBox').hidden=false;rMsg('Paste the email for '+longD(routeDate)+' below.',true);return}await smartImport(t,routeDate)})()}else if(tm2.dataset.act==='plan'){show('route');planRoute(routeDate,true)}else if(tm2.dataset.act==='load'){show('route');pane('route','add')}else show('route');return}
   const b=e.target.closest('[data-a]');if(!b)return;const c=b.closest('.stop');if(c)stopAction(c.dataset.date,c.dataset.k,b.dataset.a,b.dataset.wo)});
 $('rBody').addEventListener('click',e=>{if(e.target.id==='clearRoute'){const b=e.target;if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Tap again to remove';setTimeout(()=>{b.dataset.arm='';b.textContent='Remove this route'},3000);return}delete day(routeDate).stops;touch(routeDate);renderAll()}});
 $('rDate').onchange=e=>{if(e.target.value){routeDate=e.target.value;renderRoute()}};
@@ -700,18 +751,21 @@ function loadStops(text,date,source,pre){
   rMsg('Loaded '+r.stops.length+' work orders for '+longD(date)+(source?' from '+source:'')+(r.found?'':' (whole email — your name wasn\'t found)'));
   $('mails').innerHTML='';$('pasteBox').hidden=true;return true;
 }
-function parseTable(text,date){
-  const c=toCells(text).filter(x=>x!==''),isWO=x=>/^\d{6,8}$/.test(x||'');
+function parseTable(text,date){const a=parseTable1(text,date,true),b=parseTable1(text,date,false);return a.length>=b.length?a:b}
+function parseTable1(text,date,keepEmpty){
+  const c0=toCells(text),c=keepEmpty?c0.slice(c0.findIndex(x=>/^(host order|wo)\s*#?/i.test(x))):c0.filter(x=>x!==''),isWO=x=>/^\d{6,8}$/.test(x||'');
   const h=c.findIndex(x=>/^(host order|wo)\s*#?/i.test(x));if(h<0)return [];
   let n=0;while(h+n<c.length&&!isWO(c[h+n])&&n<20)n++;
   const hd=c.slice(h,h+n).map(x=>x.toLowerCase()),col=re=>hd.findIndex(x=>re.test(x));
-  const iName=col(/name/),iAddr=col(/^address/),iStreet=col(/street/),iUnit=col(/unit/),iTime=col(/^time/),iType=col(/maint|type/),iPh=col(/phone/),iNote=col(/note/),iMeter=col(/mtr|meter|serial/);
+  const iName=col(/name/),iAddr=col(/^address/),iStreet=col(/street/),iUnit=col(/unit/),iTime=col(/^time/),iType=col(/maint|type/),iPh=col(/phone/),iNote=col(/note/),iMeter=col(/mtrsn|serial|(meter|mtr)\s*(#|no\b|num)/),iSize=col(/size/),iInst=col(/installer|assigned to|^tech/);
+  const me=[String(S.settings.tag||'').replace(/^.*?_/,''),String(S.settings.myName||'').split(/\s+/)[0]].map(x=>x.toLowerCase()).filter(x=>x.length>1);
   const known=((S.days[date]&&S.days[date].stops)||[]).map(s=>s.city).filter(Boolean);
   const defCity=known.sort((a,b)=>known.filter(x=>x===b).length-known.filter(x=>x===a).length)[0]||'Milton';
   const out=[];
   for(let i=h+n;isWO(c[i]);i+=n){const r=c.slice(i,i+n),g=k=>k>=0?(r[k]||''):'';
     const t=g(iTime),addr=g(iAddr)||g(iStreet);if(!addr)continue;
-    out.push({wo:r[0],time:t,win:t?winMin(t):9999,slot:'am',name:g(iName),addr:addr.toUpperCase(),unit:g(iUnit)==='0'?'':g(iUnit),ward:'',city:defCity,ph:g(iPh)==='0'?'':g(iPh),ph2:'',size:'',meter:g(iMeter)==='0'?'':g(iMeter),notes:g(iNote),problem:'',program:'',type:(g(iType)||'REPL_T').toUpperCase(),st:'',manual:true});}
+    if(iInst>=0&&me.length){const who=g(iInst).toLowerCase();if(who&&!me.some(m=>who.startsWith(m)||m.startsWith(who)))continue}
+    out.push({wo:r[0],time:t,win:t?winMin(t):9999,slot:'am',name:g(iName),addr:addr.toUpperCase(),unit:g(iUnit)==='0'?'':g(iUnit),ward:'',city:defCity,ph:g(iPh)==='0'?'':g(iPh),ph2:'',size:g(iSize)==='0'?'':g(iSize),meter:g(iMeter)==='0'?'':g(iMeter),notes:g(iNote),problem:'',program:'',type:(g(iType)||'REPL_T').toUpperCase(),st:'',manual:true});}
   return out;
 }
 function addManual(list,date,source){
@@ -877,8 +931,7 @@ function renderInsights(){
   <h3>What paid most (last 4 weeks)</h3>
   ${mix.length?`<div class="mix">${mix.map(x=>`<span>${esc(x.n)}</span><span style="text-align:right">${x.cnt}</span><b style="text-align:right">${money(x.amt)}</b><div class="bar2"><i style="width:${x.amt/mixTot*100}%"></i></div>`).join('')}</div>`:'<p class="note">Log some jobs to see this.</p>'}
   <h3>Your real job times</h3>
-  <table><thead><tr><th>Job</th><th>Samples</th><th>Typical</th></tr></thead><tbody>${Object.entries(CAT).map(([k,n])=>`<tr><td>${n}</td><td>${L[k].n}</td><td>${L[k].n?Math.round(L[k].m)+' min'+(L[k].n<5?' (need 5)':''):'—'}</td></tr>`).join('')}</tbody></table>
-  <p class="note">Learned from the time between stops you mark Done, minus drive time. Planning uses them once there are 5 samples${S.settings.learn?'':' — turned off in Setup'}.</p>`;
+  <table><thead><tr><th>Job</th><th>Samples</th><th>Typical</th></tr></thead><tbody>${Object.entries(CAT).map(([k,n])=>`<tr><td>${n}</td><td>${L[k].n}</td><td>${L[k].n?Math.round(L[k].m)+' min'+(L[k].n<5?' (need 5)':''):'—'}</td></tr>`).join('')}</tbody></table>`;
 }
 
 
@@ -909,8 +962,7 @@ function followUps(){const done=new Set(),out=[],dates=Object.keys(S.days).sort(
   return out.sort((a,b)=>a.date<b.date?1:-1)}
 function followHtml(){const f=followUps();if(!f.length)return '';
   return `<details class="card" style="padding:12px 16px"><summary style="font-weight:800;min-height:40px;display:flex;align-items:center">Follow-ups (${f.length})</summary>
-  ${f.map(({date,s})=>`<div class="fu"><div><b>${esc(s.addr)}</b>${s.unit?' unit '+esc(s.unit):''}<div class="note">${fmtD(date)} · WO ${esc(s.wo||'—')} · ${esc(s.why||'not done')}${s.ph?' · '+esc(s.ph):''}</div></div><button data-fudone="${date}|${esc(s.wo||s.addr)}">Clear</button></div>`).join('')}
-  <p class="note" style="margin:8px 0 0">Stops you marked ✕ that haven't been done since. They clear by themselves when the WO is done on a later day.</p></details>`}
+  ${f.map(({date,s})=>`<div class="fu"><div><b>${esc(s.addr)}</b>${s.unit?' unit '+esc(s.unit):''}<div class="note">${fmtD(date)} · WO ${esc(s.wo||'—')} · ${esc(s.why||'not done')}${s.ph?' · '+esc(s.ph):''}</div></div><button data-fudone="${date}|${esc(s.wo||s.addr)}">Clear</button></div>`).join('')}</details>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-fudone]');if(!b)return;const[d,k]=b.dataset.fudone.split('|');const st=(S.days[d]&&S.days[d].stops)||[];st.forEach(s=>{if((s.wo||s.addr)===k&&s.st==='skip')s.resolved=true});touch(d);renderAll();toast('Cleared from follow-ups')});
 /* ---------- printed schedule (PDF) ---------- */
 let PDFJS=null;
@@ -1030,8 +1082,7 @@ function useStock(s,dir){const t=s.type||'';S.stock=S.stock||{};const sub=k=>{S.
   if(/REPL_MRT/.test(t)){sub('radio');sub('m'+(String(s.size||'').trim()||'?'))}else if(/REPL_T/.test(t))sub('radio')}
 function renderStock(){const el=$('stockCard');if(!el)return;const st=S.stock||{};
   el.innerHTML=`<details class="card" style="padding:12px 16px" ${Object.values(st).some(v=>+v)?'':'open'}><summary style="font-weight:800;min-height:40px;display:flex;align-items:center;justify-content:space-between">Truck stock <span class="note" style="font-weight:600">${stockKeys().filter(k=>+st[k]).map(k=>Math.max(0,+st[k])+' '+(k==='radio'?'radios':k.slice(1)+'mm')).join(' · ')||'empty'}</span></summary>
-  ${stockKeys().map(k=>`<div class="pk"><span></span><div><div class="pl">${esc(stockLabel(k))}</div>${+st[k]<0?'<div class="ps" style="color:#c62828">Below zero — fix the count</div>':''}</div><div class="pn"><button type="button" data-stk="${k}" data-v="-1">−</button><b>${+st[k]||0}</b><button type="button" data-stk="${k}" data-v="1">+</button></div></div>`).join('')}
-  <p class="note" style="margin:8px 0 0">Goes up when you tick items at the shop, down when you mark REPL_MRT (radio + meter) or REPL_T (radio) done. The shop list only asks for what's not already on the truck.</p></details>`}
+  ${stockKeys().map(k=>`<div class="pk"><span></span><div><div class="pl">${esc(stockLabel(k))}</div>${+st[k]<0?'<div class="ps" style="color:#c62828">Below zero — fix the count</div>':''}</div><div class="pn"><button type="button" data-stk="${k}" data-v="-1">−</button><b>${+st[k]||0}</b><button type="button" data-stk="${k}" data-v="1">+</button></div></div>`).join('')}</details>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-stk]');if(!b)return;S.stock=S.stock||{};S.stock[b.dataset.stk]=(+S.stock[b.dataset.stk]||0)+(+b.dataset.v);cache();renderStock()});
 
 /* ---------- pay sheet check ---------- */
@@ -1064,8 +1115,7 @@ function showSheetResult(rows){const el=$('payOut');const parsed=parseSheetRows(
   const{res,diff}=compareSheet(parsed);const bad=res.filter(x=>x.issues.length||Math.abs(x.money)>=0.5);
   el.innerHTML=`<div class="card" style="margin-top:10px"><b style="font-size:18px">${bad.length?bad.length+' day'+(bad.length>1?'s':'')+' don\'t match':'Everything matches ✓'}</b>
    <div class="note">${parsed.length} days checked · ${fmtD(parsed[0].date)} to ${fmtD(parsed[parsed.length-1].date)}${Math.abs(diff)>=0.5?` · <b style="color:${diff>0?'#c62828':'inherit'}">${diff>0?'you may be owed ':'sheet pays '}${money(Math.abs(diff))}${diff>0?'':' more than you logged'}</b>`:''}</div>
-   ${bad.map(x=>`<div class="fu"><div><b>${longD(x.r.date)}</b>${Math.abs(x.money)>=0.5?` · <span style="color:${x.money>0?'#c62828':'inherit'}">${x.money>0?'sheet pays '+money(x.money)+' less than you logged':'sheet pays '+money(-x.money)+' more than you logged'}</span>`:''}<div class="note">${x.issues.map(esc).join('<br>')||'pay total differs'}</div></div><span></span></div>`).join('')}
-   <p class="note" style="margin:8px 0 0">Your log might be the one that's off — double-check before raising it. Sheet pay = Reg Pay + Bonus.</p></div>`}
+   ${bad.map(x=>`<div class="fu"><div><b>${longD(x.r.date)}</b>${Math.abs(x.money)>=0.5?` · <span style="color:${x.money>0?'#c62828':'inherit'}">${x.money>0?'sheet pays '+money(x.money)+' less than you logged':'sheet pays '+money(-x.money)+' more than you logged'}</span>`:''}<div class="note">${x.issues.map(esc).join('<br>')||'pay total differs'}</div></div><span></span></div>`).join('')}</div>`}
 
 /* ---------- tax pack ---------- */
 const EXP_CATS=['Tools','Work clothing / boots','Training / courses','Phone','Vehicle','Other'];
@@ -1079,7 +1129,7 @@ function renderTax(){const el=$('taxCard');if(!el)return;const yrs=[...new Set(O
   <h3 style="margin-top:14px">Expenses</h3>
   ${ex.length?ex.sort((a,b)=>a.date<b.date?1:-1).map(x=>`<div class="fu"><div><b>${esc(x.item)}</b> · ${money(+x.amt||0)}<div class="note">${fmtD(x.date)} · ${esc(x.cat)}${x.note?' · '+esc(x.note):''}</div></div><button data-exdel="${x.id}" aria-label="Delete expense">✕</button></div>`).join(''):'<p class="note">None yet.</p>'}
   <div class="grid2" style="margin-top:10px"><button id="exAdd">Add expense</button><button class="primary" id="taxExport">Export ${y} for taxes</button></div>
-  <p class="note" style="margin:8px 0 0">Exports your daily earnings, mileage log (date, odometer, KM) and expenses as spreadsheet files. Logged pay is your own record — your employer T4 is what counts for tax. Ask an accountant which expenses you can claim as an employee.</p>`}
+  `}
 function csv(rows){return rows.map(r=>r.map(v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(',')).join('\n')}
 async function exportTax(y){
   const days=Object.keys(S.days).filter(d=>d.startsWith(y)).sort();
@@ -1139,7 +1189,7 @@ function cloudCopy(){const days={};for(const k in S.days){const d=S.days[k],o={}
 function mergeCloud(r){const days=Object.assign({},S.days);for(const k in r.days){const local=days[k]||{};days[k]=Object.assign({},local,r.days[k],{stops:local.stops,plan:local.plan})}
   S.days=days;S.settings=Object.assign({},DEF,r.settings,{fix:S.settings.fix||{}});S.stock=r.stock||{};S.expenses=r.expenses||[];ls.set('pt2',JSON.stringify(S));GEO.clear()}
 function acctUI(){const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;
-  $('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in with the email and password you were given to save your data and use Chat.'}
+  setSync(SBU?'cloud':'local',SBU?'Synced to your account':'Saved on this phone');$('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in with the email and password you were given to save your data and use Chat.'}
 async function sbPush(manual){if(!SBU||sbBusy)return;if(!navigator.onLine){return}sbBusy=true;
   try{const at=new Date().toISOString();const{error}=await SB.from('user_data').upsert({user_id:SBU.id,data:cloudCopy(),updated_at:at});if(error)throw error;SBS.last=Date.now();SBS.dirty=0;SBS.remoteAt=at;sbSave();acctUI();if(manual)toast('Synced')}
   catch(e){if(manual)toast('Sync failed: '+(e.message||e))}finally{sbBusy=false}}
@@ -1151,19 +1201,27 @@ async function sbPull(force){if(!SBU)return;try{const{data,error}=await SB.from(
 const ghSched=scheduleSync;
 scheduleSync=()=>{ghSched();if(!SBU)return;SBS.dirty=Date.now();sbSave();clearTimeout(sbTimer);sbTimer=setTimeout(()=>sbPush(false),20000)};
 async function acctStart(){if(!SB_ON){acctUI();return}try{await loadSB()}catch(e){return}
-  const{data}=await SB.auth.getSession();SBU=data.session?data.session.user:null;acctUI();if(SBU){sbPull(false);chatInit().catch(()=>{})}
-  SB.auth.onAuthStateChange((ev,sess)=>{SBU=sess?sess.user:null;acctUI()});
+  const{data}=await SB.auth.getSession();SBU=data.session?data.session.user:null;acctUI();gateUI();if(SBU){sbPull(false);chatInit().catch(()=>{})}
+  SB.auth.onAuthStateChange((ev,sess)=>{if(sess)SBU=sess.user;else if(ev==='SIGNED_OUT')SBU=null;acctUI();gateUI()});
   document.addEventListener('visibilitychange',()=>{if(!SBU)return;if(document.visibilityState==='hidden'&&SBS.dirty)sbPush(false);if(document.visibilityState==='visible')sbPull(false)})}
-$('acSend').onclick=async()=>{const em=$('acEmail').value.trim(),pw=$('acPass').value;if(!/^\S+@\S+\.\S+$/.test(em)){toast('Enter your email');return}if(!pw){toast('Enter your password');return}
-  const b=$('acSend');b.disabled=true;b.textContent='Signing in…';
-  try{await loadSB();const{data,error}=await SB.auth.signInWithPassword({email:em,password:pw});if(error)throw error;$('acPass').value='';SBU=data.user;acctUI();toast('Signed in');await sbPull(false);chatInit().catch(()=>{});renderAll()}
-  catch(e){toast(/invalid/i.test(e.message||'')?'Wrong email or password — ask whoever added you to reset it':'Couldn\'t sign in: '+(e.message||e))}
-  finally{b.disabled=false;b.textContent='Sign in'}};
+async function signIn(em,pw,btn,errEl){em=String(em||'').trim();const err=t=>{if(errEl)errEl.textContent=t;else toast(t)};
+  if(!/^\S+@\S+\.\S+$/.test(em)){err('Enter your email');return false}if(!pw){err('Enter your password');return false}
+  const lbl=btn.textContent;btn.disabled=true;btn.textContent='Signing in…';if(errEl)errEl.textContent='';
+  try{await loadSB();const{data,error}=await SB.auth.signInWithPassword({email:em,password:pw});if(error)throw error;SBU=data.user;acctUI();gateUI();toast('Signed in');await sbPull(false);chatInit().catch(()=>{});renderAll();return true}
+  catch(e){const m=e.message||String(e);err(/invalid/i.test(m)?'Wrong email or password.':/fetch|network|load/i.test(m)?'No connection — you need internet to sign in the first time.':'Couldn\'t sign in: '+m);return false}
+  finally{btn.disabled=false;btn.textContent=lbl}}
+$('acSend').onclick=async()=>{if(await signIn($('acEmail').value,$('acPass').value,$('acSend')))$('acPass').value=''};
+$('gGo').onclick=async()=>{if(await signIn($('gEmail').value,$('gPass').value,$('gGo'),$('gErr')))$('gPass').value=''};
+$('gPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('gGo').click()});
+/* sign-in screen: shown until you sign in. Once signed in it stays out of the way, even with no signal. */
+const hasSession=()=>{try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^sb-.*-auth-token$/.test(k)&&localStorage.getItem(k))return true}}catch(e){}return false};
+function gateUI(){const g=$('gate');if(!g)return;const on=SB_ON&&!SBU&&!hasSession();g.hidden=!on;if(on&&!$('gEmail').value)setTimeout(()=>{try{$('gEmail').focus()}catch(e){}},50)}
+gateUI();
 $('acPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('acSend').click()});
 $('acPw').onclick=()=>{$('sheetT').textContent='Change your password';$('sheetB').innerHTML='<label class="f">New password (8+ characters)<input id="pwNew" type="password" autocomplete="new-password"></label><button class="primary" id="pwOk">Save new password</button>';$('sheet').hidden=false;$('sheetB').onclick=null;
   $('pwOk').onclick=async()=>{const v=$('pwNew').value;if(v.length<8){toast('Use at least 8 characters');return}try{const{error}=await SB.auth.updateUser({password:v});if(error)throw error;$('sheet').hidden=true;toast('Password changed')}catch(e){toast('Couldn\'t change it: '+(e.message||e))}}};
 $('acSync').onclick=async()=>{await sbPull(false);await sbPush(true)};
-$('acOut').onclick=async()=>{if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();toast('Signed out — your data stays on this phone')};
+$('acOut').onclick=async()=>{if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();closeThread(true);gateUI();toast('Signed out — your data stays on this phone')};
 
 
 /* ---------- team chat (Supabase, invited coworkers only) ---------- */
@@ -1175,26 +1233,59 @@ async function chatInit(){if(!SBU||chatSub)return;
   await chatLoad();
   chatSub=SB.channel('msgs').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},pl=>{const m=pl.new;if(!m)return;
       if(m.to_user&&m.to_user!==SBU.id&&m.sender!==SBU.id)return;if(MSGS.some(x=>x.id===m.id))return;MSGS.push(m);
-      const visible=location.hash==='#chat'&&document.visibilityState==='visible';if(m.sender!==SBU.id&&!visible){toast(m.sender_name+': '+m.body.slice(0,80));speakChat(m)}
-      chatBadge();if(location.hash==='#chat')renderChat()}).subscribe();}
+      const room=m.to_user?(m.sender===SBU.id?m.to_user:m.sender):'team',visible=THREAD===room&&document.visibilityState==='visible';if(m.sender!==SBU.id&&!visible){toast(m.sender_name+': '+m.body.slice(0,80));speakChat(m)}
+      chatBadge();if(THREAD)renderThread(true);else if(location.hash==='#chat')renderChat()}).subscribe();}
 function speakChat(m){if(S.settings.voice)speak('Message from '+m.sender_name+'. '+m.body.slice(0,140))}
 async function chatLoad(){const{data,error}=await SB.from('messages').select('*').order('created_at',{ascending:false}).limit(200);if(!error){MSGS=(data||[]).reverse()}chatBadge()}
-function roomMsgs(){return MSGS.filter(m=>ROOM==='team'?!m.to_user:((m.sender===SBU.id&&m.to_user===ROOM)||(m.sender===ROOM&&m.to_user===SBU.id)))}
-function chatBadge(){const n=SBU?MSGS.filter(m=>m.sender!==SBU.id&&new Date(m.created_at).getTime()>chatSeen).length:0;const b=$('chatBadge');if(b){b.hidden=!n;b.textContent=n>9?'9+':n}}
+const AVC=['#00a884','#1f7aec','#e2662b','#a05fd6','#d63b5b','#0f8a8a','#c79100','#5b6bd6'];
+const avColor=id=>{let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return AVC[h%AVC.length]};
+const initials=n=>String(n||'?').replace(/^_+/,'').split(/[\s._-]+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('')||'?';
+const avHtml=(id,name)=>id==='team'?`<div class="av" style="background:#00a884"><svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.8"/><path d="M2 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5zM16.5 13.6c3 .2 5.5 2 5.5 5.4V20h-4.4c0-2.5-.4-4.6-1.1-6.4z"/></svg></div>`:`<div class="av" style="background:${avColor(id)}">${esc(initials(name))}</div>`;
+let THREAD=null;
+function msgsOf(room){return MSGS.filter(m=>room==='team'?!m.to_user:((m.sender===SBU.id&&m.to_user===room)||(m.sender===room&&m.to_user===SBU.id)))}
+function roomMsgs(){return msgsOf(ROOM)}
+const seenOf=room=>+(ls.get('chatSeen:'+room)||chatSeen||0);
+function markSeen(room){ls.set('chatSeen:'+room,Date.now());chatBadge()}
+const unreadOf=room=>msgsOf(room).filter(m=>m.sender!==SBU.id&&new Date(m.created_at).getTime()>seenOf(room)).length;
+function chatBadge(){let n=0;if(SBU){n=unreadOf('team');for(const p of PEOPLE)n+=unreadOf(p.user_id)}const b=$('chatBadge');if(b){b.hidden=!n;b.textContent=n>9?'9+':n}}
+const sameDay=(a,b)=>a.toDateString()===b.toDateString();
+function whenShort(t){const n=new Date(),y=new Date();y.setDate(n.getDate()-1);if(sameDay(t,n))return t.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'});if(sameDay(t,y))return 'Yesterday';return (n-t)<6*864e5?t.toLocaleDateString('en-CA',{weekday:'long'}):t.toLocaleDateString('en-CA',{month:'short',day:'numeric'})}
+function dayChip(t){const n=new Date(),y=new Date();y.setDate(n.getDate()-1);if(sameDay(t,n))return 'Today';if(sameDay(t,y))return 'Yesterday';return t.toLocaleDateString('en-CA',{weekday:(n-t)<6*864e5?'long':'short',month:(n-t)<6*864e5?undefined:'short',day:(n-t)<6*864e5?undefined:'numeric'})}
+function roomName(room){return room==='team'?'Team':((PEOPLE.find(p=>p.user_id===room)||{}).name||'Coworker')}
 function renderChat(){const gate=$('chatGate'),main=$('chatMain');
-  if(!SB_ON){gate.hidden=false;main.hidden=true;gate.innerHTML='<b>Chat needs accounts turned on.</b><p class="note">Finish the Supabase setup and sign in, then you can message invited coworkers here.</p>';return}
-  if(!SBU){gate.hidden=false;main.hidden=true;gate.innerHTML='<b>Sign in to chat</b><p class="note">Only coworkers you invite can see this chat.</p><button class="primary" data-go="setup" data-p="acct">Go to sign in</button>';return}
+  if(!SB_ON){gate.hidden=false;main.hidden=true;gate.innerHTML='<b>Chat needs accounts turned on.</b>';return}
+  if(!SBU){gate.hidden=false;main.hidden=true;gate.innerHTML='<b>Sign in to chat</b><button class="primary" data-go="setup" data-p="acct">Go to sign in</button>';return}
   gate.hidden=true;main.hidden=false;if(!chatSub){chatInit().then(renderChat);}
-  $('rooms').innerHTML=`<button class="${ROOM==='team'?'primary':''}" data-room="team">Team</button>`+PEOPLE.map(p=>`<button class="${ROOM===p.user_id?'primary':''}" data-room="${p.user_id}">${esc(p.name||'Coworker')}</button>`).join('');
-  const list=roomMsgs();
-  $('msgs').innerHTML=list.length?list.map(m=>{const me=m.sender===SBU.id;const t=new Date(m.created_at);return `<div class="mg${me?' me':''}">${me||ROOM!=='team'?'':`<div class="who2">${esc(m.sender_name)}</div>`}${esc(m.body)}<div class="t2">${t.toLocaleDateString('en-CA')===new Date().toLocaleDateString('en-CA')?'':t.toLocaleDateString('en-CA',{month:'short',day:'numeric'})+' '}${t.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'})}</div></div>`}).join(''):'<p class="note">No messages yet. Say hi.</p>';
-  chatSeen=Date.now();ls.set('chatSeen',chatSeen);chatBadge();setTimeout(()=>{const c=$('composer');if(c)c.scrollIntoView({block:'end'})},30)}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-room]');if(!b)return;ROOM=b.dataset.room;renderChat()});
-$('composer').addEventListener('submit',async e=>{e.preventDefault();const body=$('chatIn').value.trim();if(!body||!SBU)return;
+  const rooms=['team',...PEOPLE.map(p=>p.user_id)].map(r=>{const l=msgsOf(r),last=l[l.length-1];return{r,last,un:unreadOf(r)}});
+  rooms.sort((a,b)=>(a.r==='team'?-1:b.r==='team'?1:0)||((b.last?+new Date(b.last.created_at):0)-(a.last?+new Date(a.last.created_at):0))||roomName(a.r).localeCompare(roomName(b.r)));
+  $('rooms').innerHTML=rooms.map(({r,last,un})=>{const t=last?new Date(last.created_at):null;
+    const pre=last?(last.sender===SBU.id?'You: ':(r==='team'?last.sender_name.split(' ')[0]+': ':'')):'';
+    return `<button class="crow" data-room="${esc(r)}">${avHtml(r,roomName(r))}<div style="min-width:0"><div class="cn">${esc(roomName(r))}</div><div class="cp">${last?esc(pre+last.body.replace(/\s+/g,' ')):(r==='team'?'Everyone on the team':'Tap to start chatting')}</div></div><div class="ct2${un?' un':''}">${t?esc(whenShort(t)):''}${un?`<span class="ub2">${un>99?'99+':un}</span>`:''}</div></button>`}).join('')
+    +(PEOPLE.length?'':'<p class="note" style="padding:10px 4px">Coworkers show up here after they sign in for the first time.</p>');
+  if(THREAD)renderThread();chatBadge()}
+function renderThread(keepScroll){if(!THREAD||!SBU)return;const box=$('msgs'),atBottom=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+  $('thAv').innerHTML=avHtml(THREAD,roomName(THREAD));$('thName').textContent=roomName(THREAD);$('thSub').textContent=THREAD==='team'?(PEOPLE.length+1)+' people':'Coworker';
+  const list=msgsOf(THREAD);let html='',prevDay='',prevSender='';
+  for(const m of list){const t=new Date(m.created_at),dk=t.toDateString(),me=m.sender===SBU.id;
+    if(dk!==prevDay){html+=`<div class="dchip">${esc(dayChip(t))}</div>`;prevDay=dk;prevSender=''}
+    const first=m.sender!==prevSender;prevSender=m.sender;
+    html+=`<div class="bb${me?' me':''}${first?' first':''}">${first&&!me&&THREAD==='team'?`<div class="bn" style="color:${avColor(m.sender)}">${esc(m.sender_name)}</div>`:''}${esc(m.body)}<span class="bt">${esc(t.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}))}${me?'<i>✓</i>':''}</span></div>`}
+  box.innerHTML=html||`<div class="tempty">${THREAD==='team'?'Messages here go to everyone on the team.':'Messages here are only between you and '+esc(roomName(THREAD))+'.'}<br>Use WO numbers — not customer names or phone numbers.</div>`;
+  if(!keepScroll||atBottom)box.scrollTop=box.scrollHeight;
+  markSeen(THREAD)}
+function openThread(room){THREAD=ROOM=room;$('thread').hidden=false;$('mic').hidden=true;try{history.pushState({thread:room},'',location.hash)}catch(e){}renderThread();chatBadge()}
+function closeThread(silent){if(!THREAD)return;markSeen(THREAD);THREAD=null;$('thread').hidden=true;$('chatIn').blur();if(!silent&&history.state&&history.state.thread){try{history.back()}catch(e){}}if(location.hash==='#chat')renderChat()}
+addEventListener('popstate',()=>{if(THREAD){markSeen(THREAD);THREAD=null;$('thread').hidden=true;if(location.hash==='#chat')renderChat()}});
+$('thBack').onclick=()=>closeThread();
+document.addEventListener('click',e=>{const b=e.target.closest('[data-room]');if(!b)return;openThread(b.dataset.room)});
+{const ta=$('chatIn');const grow=()=>{ta.style.height='auto';ta.style.height=Math.min(120,ta.scrollHeight)+'px'};ta.addEventListener('input',grow);
+  ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&matchMedia('(pointer:fine)').matches){e.preventDefault();$('composer').requestSubmit()}});
+  ta.addEventListener('focus',()=>setTimeout(()=>{const b=$('msgs');b.scrollTop=b.scrollHeight},300))}
+$('composer').addEventListener('submit',async e=>{e.preventDefault();const body=$('chatIn').value.trim();if(!body||!SBU||!THREAD)return;
   if(/\b\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/.test(body)&&!confirm2()){return}
-  $('chatIn').value='';const row={sender:SBU.id,sender_name:meName(),body:body.slice(0,2000),to_user:ROOM==='team'?null:ROOM};
+  $('chatIn').value='';$('chatIn').style.height='auto';$('chatIn').focus();const row={sender:SBU.id,sender_name:meName(),body:body.slice(0,2000),to_user:THREAD==='team'?null:THREAD};
   const{data,error}=await SB.from('messages').insert(row).select().single();if(error){toast('Not sent: '+error.message);$('chatIn').value=body;return}
-  if(data&&!MSGS.some(x=>x.id===data.id))MSGS.push(data);renderChat()});
+  if(data&&!MSGS.some(x=>x.id===data.id))MSGS.push(data);renderThread()});
 function confirm2(){toast('That looks like a phone number — remove customer details before sending');return false}
 
 /* ---------- voice commands ---------- */
@@ -1292,8 +1383,7 @@ function pickHtml(date,compact){
   return `<div class="card" data-pkdate="${date}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b style="font-size:18px">Shop pickup</b><span class="note">${left?left+' to load':'All loaded ✓'}</span></div>
   <div class="note" style="margin:2px 0 6px">${esc(S.settings.shopAddr)} · from ${longD(date)}'s schedule</div>
   ${it.map(i=>`<label class="pk${i.got?' got':''}"><input type="checkbox" data-pkgot="${i.k}" ${i.got?'checked':''}><div><div class="pl">${esc(i.label)}</div><div class="ps">${i.n} on schedule${i.adj?` · ${i.adj>0?'+':''}${i.adj} spare`:''}${i.onTruck?` · ${i.onTruck} already on truck`:''}</div></div><div class="pn"><button type="button" data-pkadj="${i.k}" data-v="-1" aria-label="One less">−</button><b>${i.total}</b><button type="button" data-pkadj="${i.k}" data-v="1" aria-label="One more">+</button></div></label>`).join('')}
-  <div class="grid2" style="margin-top:8px"><button type="button" data-pkadd="1">+ Other size</button><button type="button" data-pkall="1">All loaded</button></div>
-  <p class="note" style="margin:8px 0 0">Meter sizes come from the schedule and aren't always right — grab a spare of the common size if unsure.</p></div>`;
+  <div class="grid2" style="margin-top:8px"><button type="button" data-pkadd="1">+ Other size</button><button type="button" data-pkall="1">All loaded</button></div></div>`;
 }
 function pickState(date){const d=day(date);d.pick=d.pick||{};d.pick.adj=d.pick.adj||{};d.pick.got=d.pick.got||{};return d.pick}
 function rerenderPick(date){const html=pickHtml(date);document.querySelectorAll(`[data-pkdate="${date}"]`).forEach(el=>{const tmp=document.createElement('div');tmp.innerHTML=html;el.replaceWith(tmp.firstElementChild||tmp)})}
@@ -1620,14 +1710,14 @@ function renderTomorrow(){
   const nowH=new Date().getHours(),sun=new Date().getDay()===0,el=$('tTomorrow');
   if(!(nowH>=15||sun)){el.innerHTML='';return}
   const nd=nextWorkday(),D=S.days[nd],has=D&&D.stops&&D.stops.length,P=D&&D.plan;
-  if(!has){el.innerHTML=`<div class="card" style="border:2px solid var(--ink)"><div style="font-weight:800;font-size:18px">Set up ${longD(nd)}</div><p class="note" style="margin:4px 0 10px">When the schedule email comes in: open it in Mail → Select All → Copy, then tap below. Do the same for the REPL_T list.</p><div class="grid2"><button class="primary" data-tmr="${nd}" data-act="clip">Paste schedule</button><button data-tmr="${nd}" data-act="open">Open route</button></div></div>`;return}
+  if(!has){el.innerHTML=`<div class="card" style="border:2px solid var(--ink)"><div style="font-weight:800;font-size:18px">Set up ${longD(nd)}</div><div class="grid2" style="margin-top:10px"><button class="primary" data-tmr="${nd}" data-act="load">Load schedule</button><button data-tmr="${nd}" data-act="clip">Paste</button></div></div>`;return}
   if(!P){el.innerHTML=`<div class="card"><b>${longD(nd)}: ${D.stops.length} work orders loaded.</b><div style="margin-top:8px" class="grid2"><button class="primary" data-tmr="${nd}" data-act="plan">Plan it</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;return}
   const pk=shopDay(nd)?pickItems(nd).filter(i=>i.total):[],TW=wxDay(nd),TA=wxAlerts(nd);
   el.innerHTML=`<div class="card"><div style="font-weight:800">${longD(nd)} is planned</div>${TW?`<div class="note" style="margin-top:4px">Weather: ${WMO[TW.code]||''}, ${Math.round(TW.min)}° to ${Math.round(TW.max)}°${TW.pp?', rain '+TW.pp+'%':''}${TA.length?' — <b>'+esc(TA[0].t)+'</b>':''}</div>`:''}${pk.length?`<div class="note" style="margin-top:4px">Shop: ${pk.map(i=>i.total+' '+(i.k==='radio'?'radios':i.label.replace(/^Meters /,'').replace(/ ·.*$/,'')+' meters')).join(' · ')}</div>`:''}<div class="note" style="color:var(--ink);margin-top:4px">${P.from==='home'?'Leave home '+P.leave:'Start '+P.leave}${P.shop?' · shop '+P.shop.eta:''}${P.school?' · leave for class by '+P.school.leaveBy:P.home?' · home ~'+P.home.eta:''} · ${D.stops.length} WOs</div><div class="grid2" style="margin-top:10px"><button data-ics="${nd}">Add alarms to calendar</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;
 }
 function renderToday(){
   {const n=followUps().length;$('tFollow').innerHTML=n?`<button class="linkcard" data-go="route" style="padding:12px 16px"><b>${n} follow-up${n>1?'s':''} open</b> <span class="note">— stops not done yet from earlier days</span></button>`:''}
-  {const st=S.settings,miss=[!st.tag&&'your schedule name',!Object.values(st.rates||{}).some(v=>+v)&&'pay rates',!st.hourly&&'hourly rate',!st.homeAddr&&'home address'].filter(Boolean);$('tSetup').innerHTML=miss.length?`<button class="linkcard" data-go="setup" style="border:2px solid var(--ink)"><div style="font-weight:800">Finish setup</div><div class="note">Missing: ${miss.join(', ')}. New here? Ask a coworker to share their setup, open it in Setup → Backup → Restore from file, then add your own name as it appears on the schedule (like _yonas) and your home address.</div></button>`:(SB_ON&&!SBU?'<button class="linkcard" data-go="setup" style="padding:12px 16px"><b>Sign in</b> <span class="note">— save your pay and settings to your account</span></button>':'')}
+  {const st=S.settings,miss=[!st.tag&&'your schedule name',!Object.values(st.rates||{}).some(v=>+v)&&'pay rates',!st.hourly&&'hourly rate',!st.homeAddr&&'home address'].filter(Boolean);$('tSetup').innerHTML=miss.length?`<button class="linkcard" data-go="setup" style="border:2px solid var(--ink)"><div style="font-weight:800">Finish setup</div><div class="note">Missing: ${miss.join(', ')}</div></button>`:''}
   renderWx();if(!WX||Date.now()-WX.at>25*60000)wxRefresh(false);
   {const it=shopDay(TODAY)?pickItems(TODAY):[];$('tShop').innerHTML=it.length&&it.some(i=>!i.got)&&!groupsOf(TODAY).some(g=>g.state)?pickHtml(TODAY):''}
   $('dateLine').textContent=longD(TODAY);startGPS();renderTomorrow();if(!MAP&&S.days[TODAY]&&S.days[TODAY].stops)loadMap().catch(()=>{});

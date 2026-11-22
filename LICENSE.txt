@@ -1,0 +1,15 @@
+Pay & Route
+Copyright (c) 2026 Yonas Yohans. All rights reserved.
+
+This software and its source code are the property of Yonas Yohans.
+You may use the app at the published web address if you have been given an account.
+You may not copy, modify, redistribute, sell, or publish this software or any part of it
+without written permission from the copyright owner.
+
+Third-party parts keep their own licences and are not covered by the notice above:
+- MapLibre GL JS (maplibre-gl.js, maplibre-gl.css) - BSD 3-Clause licence
+- PDF.js (pdf.min.js, pdf.worker.min.js) - Apache License 2.0
+- SheetJS Community Edition (xlsx.full.min.js) - Apache License 2.0
+- Supabase JS client (supabase.js) - MIT licence
+- Map data (halton-map.txt) - (c) OpenStreetMap contributors, Open Database License (ODbL)
+- Map tiles - OpenFreeMap / OpenMapTiles
