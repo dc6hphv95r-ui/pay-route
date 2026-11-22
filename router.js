@@ -90,6 +90,23 @@ function geocode(M,address,city){
   const ms=ways.map(mid);ms.sort((a,b)=>a.x-b.x);const p=ms[ms.length>>1];return{x:p.x,y:p.y,how:'street'};
 }
 
+function citiesAt(M,address){
+  const A=M.A,m=/^\s*(\d+)\s*([A-Z])?\s+(.+)$/i.exec(String(address||'').toUpperCase());if(!m)return[];
+  const num=+m[1],st=norm(m[3]);let k=M.nameIdx.get(st);
+  if(k==null){for(const a of[st.replace(/\s+[NSEW]$/,''),st+' N',st+' S',st+' E',st+' W'])if(M.nameIdx.has(a)){k=M.nameIdx.get(a);break}}
+  if(k==null)return[];
+  const out=new Set();
+  for(const i of M.addrBy.get(k)||[]){if(A.aNum[i]!==num)continue;let c=M.hdr.cities[A.aCity[i]];
+    if(!c){let bd=1e18;for(const[n,o]of M.cityC){const d=Math.hypot((A.aX[i]-o.x)*MX,(A.aY[i]-o.y)*MY);if(d<bd){bd=d;c=n}}}
+    if(c)out.add(c)}
+  if(out.size)return[...out].map(c=>({c,exact:true}));
+  const near=(x,y)=>{let bd=1e18,c='';for(const[n,o]of M.cityC){const d=Math.hypot((x-o.x)*MX,(y-o.y)*MY);if(d<bd){bd=d;c=n}}return c};
+  const cnt=new Map(),add=c=>{if(c)cnt.set(c,(cnt.get(c)||0)+1)};
+  for(const i of M.addrBy.get(k)||[])add(M.hdr.cities[A.aCity[i]]||near(A.aX[i],A.aY[i]));
+  for(const w of M.wayBy.get(k)||[]){const n=A.wNodes[(A.wStart[w]+A.wStart[w+1])>>1];add(near(A.nx[n],A.ny[n]))}
+  return[...cnt].sort((a,b)=>b[1]-a[1]).map(([c])=>({c,exact:false}));
+}
+
 function snap(M,x,y){
   const{grid,G,gx,vNode,A}=M;let best=-1,bd=1e18;
   for(let r=1;r<=4&&best<0;r++){const cx=Math.floor(x/G),cy=Math.floor(y/G);
@@ -133,5 +150,5 @@ function orderSection(mat,idx,s,endT,wEnd){
   return best;
 }
 
-root.HaltonRouter={norm,build,geocode,snap,dijkstra,matrix,orderSection,ensureTail,pathGeom,MX,MY,canonCity};
+root.HaltonRouter={norm,build,geocode,citiesAt,snap,dijkstra,matrix,orderSection,ensureTail,pathGeom,MX,MY,canonCity};
 })(typeof window!=='undefined'?window:globalThis);

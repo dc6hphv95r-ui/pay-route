@@ -1,6 +1,6 @@
 // Pay & Route offline cache. Bump VERSION when app files change.
-const VERSION = 'pr-v9';
-const SHELL = ['./', './index.html', './router.js', './manifest.json', './maplibre-gl.js', './maplibre-gl.css', './icon-180.png', './icon-192.png', './icon-512.png'];
+const VERSION = 'pr-v14';
+const SHELL = ['./', './index.html', './router.js', './config.js', './supabase.js', './manifest.json', './maplibre-gl.js', './maplibre-gl.css', './icon-180.png', './icon-192.png', './icon-512.png', './pdf.min.js', './pdf.worker.min.js'];
 const MAP = './halton-map.txt';
 const TILES = 'pr-tiles';
 self.addEventListener('install', e => {
@@ -13,12 +13,13 @@ async function trimTiles(c) { const ks = await c.keys(); if (ks.length > 6000) f
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method === 'POST' && url.pathname.endsWith('/share-target')) {
-    // Android "Share → Pay & Route": keep the shared text, then open the app
+    // Android "Share → Pay & Route": keep the shared text or PDF, then open the app
     e.respondWith((async () => {
       const fd = await e.request.formData();
       let text = (fd.get('title') || '') + '\n' + (fd.get('text') || '');
-      const f = fd.get('file'); if (f && f.text) text += '\n' + await f.text();
-      const c = await caches.open('pr-share'); await c.put('./shared.txt', new Response(text));
+      const f = fd.get('file'), c = await caches.open('pr-share');
+      if (f && (/pdf/i.test(f.type) || /\.pdf$/i.test(f.name || ''))) await c.put('./shared.pdf', new Response(f, { headers: { 'Content-Type': 'application/pdf' } }));
+      else { if (f && f.text) text += '\n' + await f.text(); await c.put('./shared.txt', new Response(text)); }
       return Response.redirect('./index.html#route', 303);
     })());
     return;

@@ -24,8 +24,9 @@
 :root{color-scheme:light dark;--bg:light-dark(#fff,#161615);--ink:light-dark(#111,#f2f2ef);--mute:light-dark(#5f5f5a,#a8a8a2);--plane:light-dark(#ececE8,#242422);--line:light-dark(#d4d4cf,#383835);--y:#ffe600;--ok:light-dark(#1b6b2a,#8fe39c);--warn:light-dark(#8a4b00,#ffc875)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Hanken Grotesk",system-ui,sans-serif;overflow-x:clip}
-main{max-width:680px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) max(4vw,14px) calc(96px + env(safe-area-inset-bottom))}
+main{max-width:680px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top)) max(4vw,14px) calc(96px + env(safe-area-inset-bottom))}
 .view{display:none}.view.on{display:block}
 h2{font-size:26px;line-height:1.1;margin:4px 0 14px;font-weight:800}
 h3{font-size:17px;margin:22px 0 8px;font-weight:800}
@@ -81,13 +82,15 @@ label.f input{margin-top:4px}
 .acts.any{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto auto auto}
 .units{margin-top:10px;background:var(--bg);border-radius:12px;overflow:hidden}
 .uh{display:flex;justify-content:space-between;padding:8px 10px;font-size:13px;font-weight:700;color:var(--mute);border-bottom:1px solid var(--line)}
+.ub{display:flex;gap:6px}.ur .ck.sk,.ur.cur .ck.sk,.ur.ok .ck.sk{background:var(--bg);color:var(--ink);border-color:var(--line)}
 .ur{display:grid;grid-template-columns:3.4em minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 6px 6px 10px;border-bottom:1px solid var(--line)}
 .ur:last-child{border-bottom:0}
 .ur .u{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
 .ur .wo{border:0;background:none;min-height:36px;padding:0;justify-content:flex-start;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em;text-decoration:underline dotted;text-underline-offset:4px}
 .ur .nm{font-size:13px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ur .ck{width:48px;padding:0;font-size:18px}
-.ur.cur{background:var(--y);color:#111}.ur.cur .nm{color:#333}.ur.cur .ck{background:#111;color:#fff;border-color:#111}
+.ur.cur{background:light-dark(#fff6b3,#3a3415);box-shadow:inset 6px 0 0 #ffe600}.ur.cur .u,.ur.cur .wo{color:var(--ink)}.ur.cur .ck{background:#ffe600;color:#111;border-color:#ffe600}
+.ur .mt{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}.ur .mt button{border:0;background:none;min-height:28px;padding:0;color:inherit;font:inherit;text-decoration:underline dotted;text-underline-offset:3px}
 .ur.ok{opacity:.5}.ur.ok .ck{background:var(--ok);color:#fff;border-color:var(--ok)}
 .mapbox{position:relative;height:min(70vh,560px);border-radius:16px;overflow:hidden;background:var(--plane);margin-top:4px}
 #map{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
@@ -175,8 +178,29 @@ tr.go{cursor:pointer}
 .msg{min-height:22px;font-size:14px;font-weight:700;margin:8px 0}
 .msg.err{color:var(--warn)}
 .rates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+/* sub-sections */
+.vh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.vh h2{margin:0}
+.dnav{display:flex;gap:4px;align-items:center}.dnav input{width:auto;min-width:0;max-width:11.5em;padding:0 8px}.dnav button{width:40px;padding:0;font-size:22px}
+.seg{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;display:flex;gap:4px;background:var(--plane);border-radius:14px;padding:4px;margin:0 0 12px;box-shadow:0 6px 10px -8px rgba(0,0,0,.3)}
+.seg button{flex:1 1 0;min-height:40px;border:0;border-radius:10px;background:none;font-size:14px;padding:0 6px;color:var(--mute);white-space:nowrap}
+.seg button.on{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+[data-pane][hidden]{display:none!important}
+#v-route .msg:empty{display:none}
+#planBar{margin-bottom:10px}
+.paywk{padding:12px 14px}.pw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pwc{display:flex;flex-direction:column;align-items:flex-start;gap:0;min-height:0;padding:10px 12px;border:0;border-radius:12px;background:var(--bg);text-align:left;font-weight:500}
+.mid{font-size:clamp(24px,7vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.01em}
+details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;font-weight:700;opacity:.75}details.odo label{margin-top:6px}
 /* tabs */
-.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:4px 4px env(safe-area-inset-bottom);z-index:5}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));padding:4px 2px env(safe-area-inset-bottom);z-index:5}
+.tabs button{position:relative}.cbadge{position:absolute;top:4px;right:calc(50% - 22px);min-width:18px;height:18px;border-radius:9px;background:#c62828;color:#fff;font-size:11px;line-height:18px;padding:0 5px}
+#v-chat.on{display:flex;flex-direction:column;min-height:calc(100dvh - 150px)}
+.rooms{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}.rooms button{flex:none}
+.msgs{flex:1;display:flex;flex-direction:column;gap:6px;padding:8px 0}
+.mg{max-width:82%;padding:8px 12px;border-radius:16px;background:var(--plane);align-self:flex-start;word-wrap:break-word}
+.mg.me{align-self:flex-end;background:#ffe600;color:#111}
+.mg .who2{font-size:12px;font-weight:800;opacity:.7}.mg .t2{font-size:11px;opacity:.6;margin-top:2px}
+.composer{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom));background:var(--bg);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:8px 0}
 .tabs button{border:0;border-radius:10px;min-height:56px;flex-direction:column;gap:2px;font-size:12px;font-weight:700;color:var(--mute);background:none}
 .tabs button svg{width:22px;height:22px}
 .tabs button.on{color:var(--ink)}
@@ -192,7 +216,7 @@ tr.go{cursor:pointer}
 .ins span{font-size:13px;color:var(--mute)}
 .mix{display:grid;grid-template-columns:minmax(0,1fr) 3em 6em;gap:4px 10px;font-size:14px;align-items:center}
 .mix .bar2{grid-column:1/-1;height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:6px}.mix .bar2 i{display:block;height:100%;background:var(--ink)}
-@media(max-width:600px){.rates{grid-template-columns:minmax(0,1fr)}.grid3{gap:6px}}
+@media(max-width:600px){.rates{gap:8px}.rates label.f{font-size:12px;line-height:1.25}.grid3{gap:6px}}
 @media(prefers-reduced-motion:reduce){.bar i,.toast{transition:none}}
 </style>
 </head>
@@ -202,64 +226,43 @@ tr.go{cursor:pointer}
 
   <!-- TODAY -->
   <section class="view" id="v-today">
+    <div id="tSetup"></div>
     <div class="card clock" id="clock">
       <div class="row">
         <div><div class="cl" id="clockLabel">Not checked in</div><div class="ct" id="clockTime">Start your day</div></div>
         <button class="go primary" id="clockBtn">Check in</button>
       </div>
-      <label class="f odo"><span id="odoLabel">Odometer at check in (optional)</span><input type="number" id="odo" inputmode="decimal" placeholder="e.g. 84213"></label>
+      <details class="odo"><summary>Odometer (optional)</summary><label class="f"><span id="odoLabel">Odometer at check in (optional)</span><input type="number" id="odo" inputmode="decimal" placeholder="e.g. 84213"></label></details>
     </div>
 
-    <div class="card">
-      <div class="note">Today's pay</div>
-      <div class="big money" id="tPay">$0.00</div>
-      <div class="split" id="tSplit"></div>
-      <div style="display:flex;gap:8px;margin-top:12px"><button class="wide" data-go="log">Add jobs</button></div>
+    <div class="card paywk">
+      <div class="pw">
+        <button class="pwc" data-go="log"><span class="note">Today</span><span class="mid money" id="tPay">$0.00</span><span class="note">+ Add jobs</span></button>
+        <button class="pwc" data-go="week"><span class="note">This week</span><span class="mid money" id="tWeek"></span><span class="note" id="tWeekMsg"></span></button>
+      </div>
+      <div class="bar"><i id="tWeekBar" style="width:0"></i></div>
+      <div class="split" id="tSplit" style="margin-top:2px"></div>
     </div>
 
-    <div id="tSetup"></div>
-    <div id="tFollow"></div>
-    <div id="tWx"></div>
-    <div id="tShop"></div>
-    <div id="tTomorrow"></div>
     <div id="tClass"></div>
     <div id="tNext"></div>
-
-    <button class="linkcard" data-go="week">
-      <div class="note">This week</div>
-      <div style="font-size:22px;font-weight:800" class="money" id="tWeek"></div>
-      <div class="bar"><i id="tWeekBar" style="width:0"></i></div>
-      <div class="note" id="tWeekMsg"></div>
-    </button>
+    <div id="tShop"></div>
+    <div id="tWx"></div>
+    <div id="tFollow"></div>
+    <div id="tTomorrow"></div>
   </section>
 
   <!-- ROUTE -->
   <section class="view" id="v-route">
-    <h2>Route</h2>
-    <label class="f">Route day<input type="date" id="rDate"></label>
-    <div class="grid2" style="margin-top:10px">
-      <button class="primary" id="clipBtn">Paste from clipboard</button>
-      <button id="pasteBtn">Type / paste here</button>
-    </div>
-    <button class="wide" id="addBtn" style="margin-top:8px">Add REPL_T / extra stops</button>
+    <div class="vh"><h2>Route</h2>
+      <div class="dnav"><button id="rPrev" aria-label="Previous day">‹</button><input type="date" id="rDate" aria-label="Route day"><button id="rNext" aria-label="Next day">›</button></div></div>
+    <div class="seg" role="tablist"><button data-p="stops">Stops</button><button data-p="map">Map</button><button data-p="add">Load schedule</button></div>
     <div class="msg" id="rMsg" role="status"></div>
-    <div class="mails" id="mails"></div>
-    <div id="pasteBox" hidden>
-      <textarea id="pasteText" placeholder="Paste the schedule or REPL_T email here — the whole email is fine, it finds your part."></textarea>
-      <button class="primary wide" id="pasteGo" style="margin-top:8px">Load stops</button>
+    <div data-pane="stops">
+      <div id="planBar" hidden><button class="primary wide" id="optBtn">Best order</button><button id="mapBtn" style="display:none" tabindex="-1" aria-hidden="true">Show map</button></div>
+      <div id="rBody"></div>
     </div>
-    <div id="addBox" hidden class="card" style="margin-top:10px">
-      <b>Add stops with no appointment</b>
-      <p class="note" style="margin:4px 0 8px">One address per line — e.g. <i>760 Miriam Cres Burlington</i>. A WO # at the start is fine. You can also paste the REPL_T rows from an email.</p>
-      <textarea id="addText" placeholder="1712416 760 MIRIAM CRES BURLINGTON&#10;2076 FAIRMONT COMMON, BURLINGTON"></textarea>
-      <div class="grid2" style="margin-top:8px">
-        <label class="f">Job type<input id="addType" value="REPL_T"></label>
-        <label class="f">Do them<select id="addSlot"><option value="am">Before appointments</option><option value="pm">After appointments</option></select></label>
-      </div>
-      <button class="primary wide" id="addGo" style="margin-top:8px">Add to route</button>
-    </div>
-    <div id="planBar" hidden style="margin-top:12px">
-      <div class="grid2"><button class="primary" id="optBtn">Best order</button><button id="mapBtn">Show map</button></div>
+    <div data-pane="map" hidden>
       <div class="msg" id="mapMsg" role="status"></div>
       <div id="mapWrap" hidden>
         <div class="mapbox" id="mapbox"><div id="gl" hidden></div><div id="mapCard"></div><canvas id="map" aria-label="Map of route"></canvas>
@@ -267,13 +270,40 @@ tr.go{cursor:pointer}
         <div class="note" id="mapNote">Tap a numbered pin for details. Drag a pin if it's in the wrong place. H home · K shop · C class. Map © OpenStreetMap contributors, OpenFreeMap.</div>
       </div>
     </div>
-    <div id="rBody"></div>
+    <div data-pane="add" hidden>
+      <div class="card">
+        <b>Schedule email</b>
+        <p class="note" style="margin:4px 0 10px">Print the email to PDF (Share → Print → Save to Files / Save as PDF), then open it here. Or copy the whole email and paste it.</p>
+        <label class="btn primary wide">Open schedule PDF<input type="file" id="pdfFile" accept="application/pdf,.pdf,text/plain,.txt,.eml" hidden></label>
+        <div class="grid2" style="margin-top:8px"><button id="clipBtn">Paste from clipboard</button><button id="pasteBtn">Type / paste here</button></div>
+        <div class="mails" id="mails"></div>
+        <div id="pasteBox" hidden style="margin-top:8px">
+          <textarea id="pasteText" placeholder="Paste the schedule or REPL_T email here — the whole email is fine, it finds your part."></textarea>
+          <button class="primary wide" id="pasteGo" style="margin-top:8px">Load stops</button>
+        </div>
+      </div>
+      <div class="card">
+        <b>REPL_T / extra stops</b>
+        <p class="note" style="margin:4px 0 8px">One address per line — e.g. <i>760 Miriam Cres Burlington</i>. A WO # at the start is fine. You can also paste the REPL_T rows from an email.</p>
+        <button class="wide" id="addBtn">Add stops with no appointment</button>
+        <div id="addBox" hidden style="margin-top:8px">
+          <textarea id="addText" placeholder="1712416 760 MIRIAM CRES BURLINGTON&#10;2076 FAIRMONT COMMON, BURLINGTON"></textarea>
+          <div class="grid2" style="margin-top:8px">
+            <label class="f">Job type<input id="addType" value="REPL_T"></label>
+            <label class="f">Do them<select id="addSlot"><option value="am">Before appointments</option><option value="pm">After appointments</option></select></label>
+          </div>
+          <button class="primary wide" id="addGo" style="margin-top:8px">Add to route</button>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- LOG -->
   <section class="view" id="v-log">
     <h2 id="logTitle">Log</h2>
-    <div id="stockCard"></div>
+    <div class="seg" role="tablist"><button data-p="jobs">Jobs</button><button data-p="stock">Truck stock</button></div>
+    <div data-pane="stock" hidden><div id="stockCard"></div></div>
+    <div data-pane="jobs">
     <div class="grid3">
       <label class="f">Date<input type="date" id="lDate"></label>
       <label class="f">Hours<input type="number" id="lHours" inputmode="decimal" step="0.01" min="0" placeholder="0"></label>
@@ -284,12 +314,15 @@ tr.go{cursor:pointer}
     <div class="sum"><div class="p money" id="lPay">$0.00</div><div class="note" id="lSplit"></div></div>
     <p class="note">Changes save by themselves.</p>
     <button id="clearDay">Clear this day</button>
+    </div>
   </section>
 
   <!-- WEEK -->
   <section class="view" id="v-week">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 style="margin:0">Week</h2><div style="display:flex;gap:6px"><button id="wPrev" aria-label="Previous week">‹</button><button id="wNow">Now</button><button id="wNext" aria-label="Next week">›</button></div></div>
-    <div class="card" style="margin-top:12px">
+    <div class="seg" role="tablist" style="margin-top:10px"><button data-p="week">Week</button><button data-p="check">Pay sheet</button><button data-p="tax">Tax</button><button data-p="hist">History</button></div>
+    <div data-pane="week">
+    <div class="card">
       <div style="font-weight:700" id="wRange"></div>
       <div class="big money" id="wTotal">$0.00</div>
       <div class="note" id="wOf"></div>
@@ -300,7 +333,8 @@ tr.go{cursor:pointer}
     </div>
     <h3>Insights</h3>
     <div class="card" id="insights"></div>
-    <h3>Check your pay sheet</h3>
+    </div>
+    <div data-pane="check" hidden>
     <div class="card">
       <p class="note" style="margin-top:0">Open the pay breakdown Excel file, or copy the rows (from the date column to Bonus) and paste them. The app compares each day with what you logged.</p>
       <label class="btn wide">Open Excel / CSV file<input type="file" id="payFile" accept=".xlsx,.xls,.csv,.ods,.txt" hidden></label>
@@ -308,26 +342,47 @@ tr.go{cursor:pointer}
       <button class="primary wide" id="payGo" style="margin-top:6px">Check pasted rows</button>
       <div id="payOut"></div>
     </div>
-    <h3>Year-end tax pack</h3>
-    <div class="card" id="taxCard"></div>
-    <h3>All weeks</h3>
+    </div>
+    <div data-pane="tax" hidden><div class="card" id="taxCard"></div></div>
+    <div data-pane="hist" hidden>
+    <h3 style="margin-top:4px">All weeks</h3>
     <div class="scroll"><table><thead><tr><th>Week of</th><th>Hours</th><th>Reg</th><th>Piece</th><th>Bonus</th><th>Total</th></tr></thead><tbody id="wHist"></tbody></table></div>
     <h3>Monthly KM</h3>
-    <p class="note">Your odometer totals to check against the MileIQ payout. Not counted in weekly pay.</p>
-    <div class="scroll"><table><thead><tr><th>Month</th><th>Days</th><th>KM</th><th>Mileage pay</th></tr></thead><tbody id="kmHist"></tbody></table></div>
+    <p class="note">Business km is worked out by itself: shop (or your first stop) → every stop in the order you did them → last stop, on the road map. Home and the drive to class aren't counted — compare it with the MileIQ payout. Not counted in weekly pay.</p>
+    <div class="scroll"><table><thead><tr><th>Month</th><th>Days</th><th>Business km</th><th>Odometer km</th><th>Mileage pay</th></tr></thead><tbody id="kmHist"></tbody></table></div>
     <button id="copy" style="margin-top:14px">Copy all days as CSV</button>
+    </div>
+  </section>
+
+  <!-- CHAT -->
+  <section class="view" id="v-chat">
+    <h2 style="margin-bottom:8px">Chat</h2>
+    <div id="chatGate" class="card" hidden></div>
+    <div id="chatMain" hidden>
+      <div class="rooms" id="rooms"></div>
+      <div class="msgs" id="msgs"></div>
+      <p class="note" style="margin:0">Don't post customer names, phone numbers or addresses here — use WO numbers.</p>
+      <form class="composer" id="composer"><input id="chatIn" placeholder="Message" autocomplete="off" enterkeyhint="send"><button class="primary" type="submit">Send</button></form>
+    </div>
   </section>
 
   <!-- SETUP -->
   <section class="view" id="v-setup">
     <h2>Setup</h2>
+    <div class="seg" role="tablist"><button data-p="pay">Pay</button><button data-p="route">Route</button><button data-p="phone">Phone</button><button data-p="acct">Account</button></div>
+    <div data-pane="pay">
     <div class="grid2">
       <label class="f">Your name on schedule<input id="sTag" placeholder="_yourname"></label>
       <label class="f">Weekly target $<input type="number" id="sTarget" inputmode="decimal"></label>
       <label class="f">Hourly $<input type="number" id="sHourly" inputmode="decimal" step="0.01"></label>
       <label class="f">Mileage $/km<input type="number" id="sKm" inputmode="decimal" step="0.01"></label>
+      <label class="f">Set aside for tax %<input type="number" id="sTax" inputmode="decimal"></label>
     </div>
-    <h3>Routing</h3>
+    <h3>Piece rates</h3>
+    <div class="rates" id="rateList"></div>
+    <p class="note">Day pay = hours × hourly + bonus. Bonus = piece total minus regular pay when piece is higher. Weeks run Sunday to Saturday. Amounts are before tax. Marking a stop done adds: REPL_MRT → REPL MRT install, REPL_T → TC outside, REPAIR → TP repair investigation.</p>
+    </div>
+    <div data-pane="route" hidden>
     <div class="grid2">
       <label class="f">Home address<input id="sHome" placeholder="e.g. 123 Main St E" autocomplete="off"></label>
       <label class="f">Home city<input id="sHomeCity" placeholder="Milton"></label>
@@ -338,6 +393,7 @@ tr.go{cursor:pointer}
     <div class="wl" id="sShopDays" style="margin-top:4px"></div>
     <div class="grid3" style="margin-top:10px">
       <label class="f">Day starts<input type="time" id="sDay"></label>
+      <label class="f">Saturday starts<input type="time" id="sSat"></label>
       <label class="f">Min at shop<input type="number" id="sShopMin" inputmode="numeric"></label>
       <label class="f">Min / appt<input type="number" id="sMinA" inputmode="numeric"></label>
       <label class="f">Min / REPL_T<input type="number" id="sMinR" inputmode="numeric"></label>
@@ -355,9 +411,10 @@ tr.go{cursor:pointer}
     <div class="f" style="margin-top:10px;font-size:13px;color:var(--mute);font-weight:700">Class days (go straight from work)</div>
     <div class="wl" id="sSchoolDays" style="margin-top:4px"></div>
     <p class="note">On class days the plan ends at school instead of home and tells you when to leave your last stop. The drive to Toronto is counted 50% slower for 401 rush hour.</p>
-    <h3>Smarts</h3>
-    <div class="grid2"><label class="f">Set aside for tax %<input type="number" id="sTax" inputmode="decimal"></label></div>
-    <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sLearn" style="width:22px;min-height:22px"> Use my real job times (after 5 samples)</label>
+    <button id="clearFix" style="margin-top:12px">Clear map pin fixes</button>
+    </div>
+    <div data-pane="phone" hidden>
+    <label style="display:flex;gap:10px;align-items:center;margin-top:0;font-weight:700"><input type="checkbox" id="sLearn" style="width:22px;min-height:22px"> Use my real job times (after 5 samples)</label>
     <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sGps" style="width:22px;min-height:22px"> Use my location (GPS) for planning</label>
     <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sVoice" style="width:22px;min-height:22px"> Speak the next stop when I finish a job</label>
     <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sArrive" style="width:22px;min-height:22px"> Mark “arrived” by itself when I pull up (GPS)</label>
@@ -365,11 +422,20 @@ tr.go{cursor:pointer}
     <label class="f">Your name in texts<input id="sMe"></label>
     <label class="f" style="margin-top:8px">Message<textarea id="sTpl" style="min-height:110px"></textarea></label>
     <p class="note">{first} = customer's first name, {addr} = address, {min} = minutes away, {eta} = arrival time, {me} = your name. The text opens in Messages for you to send — nothing is sent by itself.</p>
-    <button id="clearFix" style="margin-top:12px">Clear map pin fixes</button>
-    <h3>Piece rates</h3>
-    <div class="rates" id="rateList"></div>
-    <p class="note">Day pay = hours × hourly + bonus. Bonus = piece total minus regular pay when piece is higher. Weeks run Sunday to Saturday. Amounts are before tax. Marking a stop done adds: REPL_MRT → REPL MRT install, REPL_T → TC outside, REPAIR → TP repair investigation.</p>
-    <h3>Cloud backup (GitHub)</h3>
+    </div>
+    <div data-pane="acct" hidden>
+    <div class="card" id="acctCard" hidden>
+      <div style="font-weight:800;font-size:18px">Your account</div>
+      <p class="note" id="acctStatus" style="margin:4px 0 10px"></p>
+      <div id="acctOut">
+        <label class="f">Email<input id="acEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="off"></label>
+        <button class="primary wide" id="acSend" style="margin-top:8px">Email me a sign-in code</button>
+        <div id="acCodeBox" hidden style="margin-top:10px"><label class="f">6-digit code from the email<input id="acCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label><button class="primary wide" id="acVerify" style="margin-top:8px">Sign in</button></div>
+      </div>
+      <div id="acctIn" hidden><div class="grid2"><button id="acSync">Sync now</button><button id="acOut">Sign out</button></div></div>
+      <p class="note" style="margin:10px 0 0">Your pay, hours, mileage, stock, expenses and settings are saved to your account. Customer names, phones, addresses and work orders stay on this phone only.</p>
+    </div>
+    <h3 style="margin-top:4px">Cloud backup (GitHub)</h3>
     <div class="card">
       <p class="note" style="margin-top:0" id="ghStatus">Not connected.</p>
       <div class="grid2"><label class="f">GitHub username<input id="ghOwner" autocomplete="off" autocapitalize="off"></label><label class="f">Private repo name<input id="ghRepo" autocomplete="off" autocapitalize="off" placeholder="pay-route-data"></label></div>
@@ -380,9 +446,12 @@ tr.go{cursor:pointer}
     <h3>Backup</h3>
     <p class="note" id="storeNote"></p>
     <div class="grid2"><button id="bkSave">Save backup file</button><button id="bkCopy">Copy backup</button></div>
+    <button class="wide" id="shareSetup" style="margin-top:8px">Share my setup with a coworker</button>
+    <p class="note">Sends your pay rates, shop and work settings — not your name, home, school, saved days or notes. They open it in their app under Restore from file.</p>
     <label class="btn wide" style="margin-top:8px">Restore from file<input type="file" id="bkFile" accept=".json,application/json,text/plain" hidden></label>
     <textarea id="bkText" placeholder="…or paste a backup here" style="margin-top:8px;min-height:80px"></textarea>
     <button id="bkPaste" class="wide" style="margin-top:6px">Restore from pasted text</button>
+    </div>
   </section>
 </main>
 
@@ -391,12 +460,14 @@ tr.go{cursor:pointer}
   <button data-go="route"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h6"/></svg>Route</button>
   <button data-go="log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Log</button>
   <button data-go="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Week</button>
+  <button data-go="chat"><span class="cbadge" id="chatBadge" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H9l-5 4z"/></svg>Chat</button>
   <button data-go="setup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Setup</button>
 </nav>
 <button id="mic" aria-label="Voice command" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="26" height="26"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
 <div class="toast" id="toast" role="status"></div>
 <div id="sheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetT"><div id="sheetT" style="font-weight:800;font-size:18px;margin-bottom:10px"></div><div id="sheetB" style="display:grid;gap:8px"></div><button id="sheetX" class="wide" style="margin-top:10px">Cancel</button></div></div>
 
+<script src="config.js"></script>
 <script src="router.js"></script>
 <script id="legacy" type="application/json">{}</script>
 <script>
@@ -438,7 +509,7 @@ const JOBS=[
 ['tp','TP REPL repair investigation',0],['pmin','Minor plumbing (1–3 fittings)',0],['pnor','Normal plumbing (4–6 fittings)',0],
 ['cmin','Minor carpentry',0],['cnor','Normal carpentry',0]];
 const TYPE_JOB={REPL_MRT:'mrt',REPL_T:'tc',REPAIR:'tp'};
-const DEF={hourly:0,target:1500,kmRate:0,rates:{},tag:'',homeAddr:'',homeCity:'',shopAddr:'',shopCity:'',shopDays:'12345',shopMin:15,endHome:true,schoolAddr:'',schoolCity:'',schoolDays:'',classAt:'17:30',classLatest:'17:45',schoolBuf:10,taxPct:20,learn:true,useGps:true,voice:true,autoArrive:true,myName:'',smsTpl:'Hi{first}, this is {me} about your water meter appointment at {addr}. I\'m on my way and should be there in about {min} minutes.',dayStart:'08:00',minAppt:30,minRT:10,fix:{}};
+const DEF={hourly:0,target:1500,kmRate:0,rates:{},tag:'',homeAddr:'',homeCity:'',satStart:'09:00',shopAddr:'',shopCity:'',shopDays:'12345',shopMin:15,endHome:true,schoolAddr:'',schoolCity:'',schoolDays:'',classAt:'17:30',classLatest:'17:45',schoolBuf:10,taxPct:20,learn:true,useGps:true,voice:true,autoArrive:true,myName:'',smsTpl:'Hi{first}, this is {me} about your water meter appointment at {addr}. I\'m on my way and should be there in about {min} minutes.',dayStart:'08:00',minAppt:30,minRT:10,fix:{}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -495,13 +566,22 @@ async function connect(){
 }
 
 /* ---------- tabs ---------- */
-const VIEWS=['today','route','log','week','setup'];
+const VIEWS=['today','route','log','week','chat','setup'];
 function show(v){if(!VIEWS.includes(v))v='today';{const m=$('mic');if(m)m.hidden=!(SR&&(v==='today'||v==='route'))}
   for(const x of VIEWS){$('v-'+x).classList.toggle('on',x===v)}
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.go===v));
   if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);
-  scrollTo(0,0);render(v);}
-document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){if(g.dataset.go==='log'&&g.dataset.d)logDate=g.dataset.d;if(g.dataset.go==='log'&&!g.dataset.d)logDate=TODAY;show(g.dataset.go)}});
+  scrollTo(0,0);render(v);
+  if(v==='route'&&typeof groupsOf==='function'&&!groupsOf(routeDate).length&&!S.days[routeDate]?.stops?.length)pane('route','add');else pane(v);}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){if(g.dataset.go==='log'&&g.dataset.d)logDate=g.dataset.d;if(g.dataset.go==='log'&&!g.dataset.d)logDate=TODAY;show(g.dataset.go);if(g.dataset.p)pane(g.dataset.go,g.dataset.p)}});
+/* sub-sections inside a tab, so nothing is buried at the bottom */
+const PANE_ON={};
+function pane(v,p){const sec=$('v-'+v);if(!sec)return;const bs=[...sec.querySelectorAll('.seg button')];if(!bs.length)return;
+  if(!p||!bs.some(b=>b.dataset.p===p))p=ls.get('pane-'+v)||bs[0].dataset.p;if(!bs.some(b=>b.dataset.p===p))p=bs[0].dataset.p;
+  const was=sec.dataset.pane;sec.dataset.pane=p;ls.set('pane-'+v,p);
+  sec.querySelectorAll('[data-pane]').forEach(el=>el.hidden=el.dataset.pane!==p);bs.forEach(b=>{b.classList.toggle('on',b.dataset.p===p);b.setAttribute('aria-selected',b.dataset.p===p)});
+  if(was!==p&&scrollY>0)scrollTo(0,0);const f=PANE_ON[v+':'+p];if(f)f();}
+document.addEventListener('click',e=>{const q=e.target.closest('[data-p2]');if(q){pane(q.closest('.view').id.slice(2),q.dataset.p2);return}const b=e.target.closest('.seg button');if(!b)return;const v=b.closest('.view').id.slice(2);if(v==='route')rMsg('');pane(v,b.dataset.p)});
 addEventListener('hashchange',()=>show(location.hash.slice(1)));
 let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600)}
 
@@ -553,14 +633,14 @@ function stopCard(g,n,date,isNext){
   let unitHtml='';
   if(ul){const so=[...g.items].sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9)||String(a.unit).localeCompare(String(b.unit)));
     const cur=so.find(s=>!s.st),dn=so.filter(s=>s.st==='done').length;
-    unitHtml=`<div class="units"><div class="uh"><span>Unit · WO (tap to copy)</span><span>${dn}/${so.length} done</span></div>${so.map(s=>`<div class="ur${s===cur?' cur':''}${s.st==='done'?' ok':s.st?' ok':''}"><div class="u">${esc(s.unit||'—')}</div><div><button class="wo" data-a="copy" data-wo="${esc(s.wo)}">${esc(s.wo||'no WO')}</button><div class="nm">${esc(s.name)}</div></div><button class="ck" data-a="one" data-wo="${esc(s.wo)}" aria-label="Unit ${esc(s.unit)} done">${s.st==='done'?'✓':s.st==='skip'?'✕':'✓'}</button></div>`).join('')}</div>`;}
+    unitHtml=`<div class="units"><div class="uh"><span>Unit · WO (tap to copy)</span><span>${dn}/${so.length} done${so.some(s=>s.st==='skip')?' · '+so.filter(s=>s.st==='skip').length+' not done':''}</span></div>${so.map(s=>`<div class="ur${s===cur?' cur':''}${s.st==='done'?' ok':s.st?' ok':''}"><div class="u">${esc(s.unit||'—')}</div><div><button class="wo" data-a="copy" data-wo="${esc(s.wo)}">${esc(s.wo||'no WO')}</button><div class="nm">${esc(s.name)}</div>${s.meter?`<div class="mt">Meter <button data-copy="${esc(s.meter)}">${esc(s.meter)}</button></div>`:''}${s.st==='skip'?`<div class="mt" style="color:#c62828;font-weight:700">Not done — ${esc(s.why||'skipped')}</div>`:''}</div><div class="ub">${s.st==='done'?'':`<button class="ck sk" data-a="skipone" data-wo="${esc(s.wo)}" aria-label="${s.st==='skip'?'Undo skip':'Can\'t do unit '+esc(s.unit)}">${s.st==='skip'?'↺':'✕'}</button>`}${s.st==='skip'?'':`<button class="ck" data-a="one" data-wo="${esc(s.wo)}" aria-label="Unit ${esc(s.unit)} done">✓</button>`}</div></div>`).join('')}</div>`;}
   return `<div class="stop ${g.state}${isNext?' next':''}" data-k="${esc(g.key)}" data-date="${date}">
   <div class="sh"><div class="num">${g.state==='done'?'✓':n}</div><div>
    <div class="addr">${esc(g.addr)}</div>
    <div class="sub">${esc(g.city||'')}${ul?' · '+g.items.length+' units':units.length?' · Unit '+esc(units.join(', ')):''} · ${g.any?'No appointment':esc(g.time)+' window'}</div>
    ${ul?'':`<div class="who">${esc(names.slice(0,3).join(' · '))}${names.length>3?' +'+(names.length-3):''}</div>`}
    <div class="who">${phones.map(p=>{const d=p.replace(/[^\d]/g,'').slice(0,11);return d.length>=10?`<a href="tel:${d}">${esc(p)}</a>`:esc(p)}).join(' · ')}</div>
-   <div class="chips">${call&&g.state!=='done'?'<span class="chip call">Text before arriving</span>':''}${callOnArrival(g)&&g.state!=='done'?'<span class="chip call">Call when you arrive</span>':''}${arr&&g.state!=='done'?`<span class="chip here">On site since ${tm(new Date(arr.arriveAt).toISOString())}</span>`:''}${legChips(date,g)}${g.any?'<span class="chip any">Anytime</span>':''}${Object.entries(types).map(([t,c])=>`<span class="chip">${c>1?c+' × ':''}${esc(t||'—')}</span>`).join('')}${!ul&&g.items.some(s=>s.wo)?`<span class="chip">WO ${esc(g.items.map(s=>s.wo).filter(Boolean).join(', '))}</span>`:''}</div>
+   <div class="chips">${call&&g.state!=='done'?'<span class="chip call">Text before arriving</span>':''}${callOnArrival(g)&&g.state!=='done'?'<span class="chip call">Call when you arrive</span>':''}${arr&&g.state!=='done'?`<span class="chip here">On site since ${tm(new Date(arr.arriveAt).toISOString())}</span>`:''}${legChips(date,g)}${g.any?'<span class="chip any">Anytime</span>':''}${Object.entries(types).map(([t,c])=>`<span class="chip">${c>1?c+' × ':''}${esc(t||'—')}</span>`).join('')}${!ul&&g.items.some(s=>s.wo)?`<span class="chip">WO ${esc(g.items.map(s=>s.wo).filter(Boolean).join(', '))}</span>`:''}${!ul?g.items.filter(s=>s.meter).map(s=>`<button class="chip" data-copy="${esc(s.meter)}" style="min-height:0;cursor:pointer">Meter ${esc(s.meter)}</button>`).join(''):''}</div>
    ${notes.map(t=>`<div class="nb${FLAG.test(t)?' flag':''}">${esc(t)}</div>`).join('')}${myNote(g)?`<div class="nb mine"><b>Your note:</b> ${esc(myNote(g))}</div>`:''}${attemptChip(g,date)}
   </div></div>${unitHtml}
   ${g.state==='done'?'':`<div class="acts2">${arr?'':`<button data-a="arrive">I'm here</button>`}<button data-a="note">${myNote(g)?'Edit note':'Add note'}</button>${smsLink(g,date)?`<a class="btn${call?' sms':''}" href="${smsLink(g,date)}" data-smsk="${esc(g.key)}">Text customer</a>`:''}</div>`}
@@ -570,7 +650,7 @@ function stopCard(g,n,date,isNext){
 function renderRoute(){
   $('rDate').value=routeDate;
   const gs=groupsOf(routeDate);$('planBar').hidden=!gs.length;if(!$('mapWrap').hidden)requestAnimationFrame(drawMap);
-  if(!gs.length){$('rBody').innerHTML=`<div class="card empty"><b>No stops for ${longD(routeDate)}</b><p class="note">In Mail, open the HALTON SCHEDULE or REPL_T email → Select All → Copy, then tap “Paste from clipboard”.</p></div>`;return}
+  if(!gs.length){$('rBody').innerHTML=`<div class="card empty"><b>No stops for ${longD(routeDate)}</b><p class="note">Open the schedule PDF or paste the email under “Load schedule”.</p><button class="primary" data-p2="add">Load schedule</button></div>`;return}
   const all=gs.flatMap(g=>g.items),done=all.filter(s=>s.st==='done').length;
   const next=gs.find(g=>!g.state);
   let html=`<div class="card"><div style="font-weight:800;font-size:18px">${longD(routeDate)}</div><div class="note">${gs.length} stops · ${all.length} work orders · ${done} done</div>${planLine(gs)}${planInfo(routeDate)}<div class="bar"><i style="width:${all.length?done/all.length*100:0}%"></i></div></div>`;
@@ -579,17 +659,18 @@ function renderRoute(){
   const wins=[...new Set(gs.map(g=>g.win))];let n=0;
   for(const w of wins){const wg=gs.filter(g=>g.win===w),pend=wg.filter(g=>!g.state);
     const parts=[];for(let i=0;i<pend.length;i+=4)parts.push(pend.slice(i,i+4));
-    const head=w<0?'REPL_T · before appointments':w>=5000?'REPL_T · after appointments':esc(wg[0].time)+' appointments';
+    const head=w<0?'REPL_T · before appointments':w>=5000?'REPL_T · after appointments':winLabel(w)+' appointments';
     html+=`<div class="win"><h3>${head}</h3><div class="wl">${parts.map((p,i)=>`<a class="btn" href="${routeUrl(p)}" target="_blank" rel="noopener">Route${parts.length>1?' '+(i+1):''} in Maps</a>`).join('')}</div></div>`;
     for(const g of wg){n++;html+=stopCard(g,n,routeDate,g===next)}}
   html+=`<button id="clearRoute" style="margin-top:8px">Remove this route</button><p class="note">Maps opens each window's stops in order, up to 4 at a time. Stops at the same address are grouped.</p>`;
   $('rBody').innerHTML=html;
 }
-function stopAction(date,key,a,wo){
+function stopAction(date,key,a,wo){if(['done','one','skip','del'].includes(a))setTimeout(()=>refreshBiz(date),400);
   const d=day(date),gs=groupsOf(date),g=gs.find(x=>x.key===key);if(!g)return;
   if(a==='note'){editNote(g,date);return}
   if(a==='arrive'){arriveAt(g,date,false);toast('Arrived — timing this job');return}
   if(a==='copy'){if(!wo)return;navigator.clipboard.writeText(wo).then(()=>toast('WO '+wo+' copied — paste it in Clevest'),()=>toast('WO '+wo));return}
+  if(a==='skipone'){const s=g.items.find(x=>x.wo===wo);if(!s)return;if(s.st==='skip'){s.st='';delete s.why;delete s.skipAt;touch(date);renderAll();toast('Unit '+s.unit+' back on the list');return}askWhy(g,date,s);return}
   if(a==='one'){const s=g.items.find(x=>x.wo===wo);if(!s)return;const j=TYPE_JOB[s.type];
     if(s.st==='done'){s.st='';useStock(s,-1);if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}
     else{s.st='done';useStock(s,1);s.doneAt=Date.now();if(j)d.c[j]=(+d.c[j]||0)+1;const left=g.items.filter(x=>!x.st).sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9))[0];toast('Unit '+s.unit+' done'+(left?' · next: unit '+left.unit+', WO '+left.wo:' · building finished'))}
@@ -605,16 +686,16 @@ function stopAction(date,key,a,wo){
   if(['up','slot','del','skip','done'].includes(a)&&d.plan){if(MAP)planRoute(date,false);else{delete d.plan;touch(date)}}
 }
 document.addEventListener('click',e=>{const ic=e.target.closest('[data-ics]');if(ic){saveIcs(ic.dataset.ics);return}const rp=e.target.closest('[data-rep]');if(rp){shareReport(rp.dataset.rep);return}
-  const tm2=e.target.closest('[data-tmr]');if(tm2){routeDate=tm2.dataset.tmr;if(tm2.dataset.act==='clip'){(async()=>{let t='';try{t=await navigator.clipboard.readText()}catch(err){show('route');$('pasteBox').hidden=false;rMsg('Paste the email for '+longD(routeDate)+' below.',true);return}await smartImport(t,routeDate)})()}else if(tm2.dataset.act==='plan'){show('route');planRoute(routeDate,true)}else show('route');return}
+  const tm2=e.target.closest('[data-tmr]');if(tm2){routeDate=tm2.dataset.tmr;if(tm2.dataset.act==='clip'){(async()=>{let t='';try{t=await navigator.clipboard.readText()}catch(err){show('route');pane('route','add');$('pasteBox').hidden=false;rMsg('Paste the email for '+longD(routeDate)+' below.',true);return}await smartImport(t,routeDate)})()}else if(tm2.dataset.act==='plan'){show('route');planRoute(routeDate,true)}else show('route');return}
   const b=e.target.closest('[data-a]');if(!b)return;const c=b.closest('.stop');if(c)stopAction(c.dataset.date,c.dataset.k,b.dataset.a,b.dataset.wo)});
 $('rBody').addEventListener('click',e=>{if(e.target.id==='clearRoute'){const b=e.target;if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Tap again to remove';setTimeout(()=>{b.dataset.arm='';b.textContent='Remove this route'},3000);return}delete day(routeDate).stops;touch(routeDate);renderAll()}});
 $('rDate').onchange=e=>{if(e.target.value){routeDate=e.target.value;renderRoute()}};
-function loadStops(text,date,source){
-  const r=parseSchedule(text,S.settings.tag);
+function loadStops(text,date,source,pre){
+  const r=pre||parseSchedule(text,S.settings.tag);
   if(!r.stops.length){rMsg(r.found?'Found your name but no work orders under it.':'No work orders found for '+S.settings.tag+'. Check your name in Setup.',true);return false}
   const d=day(date),old=new Map((d.stops||[]).map(s=>[s.wo,s]));
   const keep=(d.stops||[]).filter(s=>s.manual&&!r.stops.some(x=>x.wo&&x.wo===s.wo));
-  d.stops=r.stops.map((s,i)=>{const o=old.get(s.wo);s.o=effWin(s)*100+i;if(o){s.st=o.st;s.o=o.o;if(o.slot)s.slot=o.slot}return s}).concat(keep);
+  d.stops=r.stops.map((s,i)=>{const o=old.get(s.wo);s.o=effWin(s)*100+i;if(o){s.st=o.st;s.o=o.o;if(o.slot)s.slot=o.slot;for(const f of ['unit','ward','city','ph','ph2','size','meter','notes','problem','program','type','why','arriveAt','doneAt','resolved'])if(!s[f]&&o[f])s[f]=o[f];if(s.guess&&o.type)delete s.guess}return s}).concat(keep);
   routeDate=date;touch(date);renderAll();
   rMsg('Loaded '+r.stops.length+' work orders for '+longD(date)+(source?' from '+source:'')+(r.found?'':' (whole email — your name wasn\'t found)'));
   $('mails').innerHTML='';$('pasteBox').hidden=true;return true;
@@ -624,17 +705,19 @@ function parseTable(text,date){
   const h=c.findIndex(x=>/^(host order|wo)\s*#?/i.test(x));if(h<0)return [];
   let n=0;while(h+n<c.length&&!isWO(c[h+n])&&n<20)n++;
   const hd=c.slice(h,h+n).map(x=>x.toLowerCase()),col=re=>hd.findIndex(x=>re.test(x));
-  const iName=col(/name/),iAddr=col(/^address/),iStreet=col(/street/),iUnit=col(/unit/),iTime=col(/^time/),iType=col(/maint|type/),iPh=col(/phone/),iNote=col(/note/);
+  const iName=col(/name/),iAddr=col(/^address/),iStreet=col(/street/),iUnit=col(/unit/),iTime=col(/^time/),iType=col(/maint|type/),iPh=col(/phone/),iNote=col(/note/),iMeter=col(/mtr|meter|serial/);
   const known=((S.days[date]&&S.days[date].stops)||[]).map(s=>s.city).filter(Boolean);
   const defCity=known.sort((a,b)=>known.filter(x=>x===b).length-known.filter(x=>x===a).length)[0]||'Milton';
   const out=[];
   for(let i=h+n;isWO(c[i]);i+=n){const r=c.slice(i,i+n),g=k=>k>=0?(r[k]||''):'';
     const t=g(iTime),addr=g(iAddr)||g(iStreet);if(!addr)continue;
-    out.push({wo:r[0],time:t,win:t?winMin(t):9999,slot:'am',name:g(iName),addr:addr.toUpperCase(),unit:g(iUnit)==='0'?'':g(iUnit),ward:'',city:defCity,ph:g(iPh)==='0'?'':g(iPh),ph2:'',size:'',meter:'',notes:g(iNote),problem:'',program:'',type:(g(iType)||'REPL_T').toUpperCase(),st:'',manual:true});}
+    out.push({wo:r[0],time:t,win:t?winMin(t):9999,slot:'am',name:g(iName),addr:addr.toUpperCase(),unit:g(iUnit)==='0'?'':g(iUnit),ward:'',city:defCity,ph:g(iPh)==='0'?'':g(iPh),ph2:'',size:'',meter:g(iMeter)==='0'?'':g(iMeter),notes:g(iNote),problem:'',program:'',type:(g(iType)||'REPL_T').toUpperCase(),st:'',manual:true});}
   return out;
 }
 function addManual(list,date,source){
   const d=day(date);
+  {const appt=(d.stops||[]).filter(s=>!isAny(s)).map(s=>s.win);if(appt.length){const[h0,m0]=startOf(date).split(':').map(Number),first=Math.min(...appt);
+    if(source==='paste'&&first-(h0*60+m0)<90)list.forEach(s=>{if(isAny(s)&&s.slot!=='pm'&&!s._kept)s.slot='pm'})}}
   {const addrs=new Set(list.filter(s=>s.wo||s.unit).map(s=>s.addr.toUpperCase()));if(addrs.size&&d.stops){const before=d.stops.length;d.stops=d.stops.filter(s=>!(s.manual&&!s.wo&&!s.unit&&s.st!=='done'&&addrs.has(s.addr.toUpperCase())));if(d.stops.length<before)toast('Replaced '+(before-d.stops.length)+' stops that had no unit numbers')}}
   const have=new Set((d.stops||[]).map(s=>s.wo).filter(Boolean));
   const add=list.filter(s=>!s.wo||!have.has(s.wo)),base=(d.stops||[]).length;
@@ -653,11 +736,11 @@ async function smartImport(text,fallback){
   else{const tb=parseTable(text,date);if(tb.length){addManual(tb,date,'paste');ok=true}
     else if(sc.stops.length){rMsg('That schedule doesn\'t list '+S.settings.tag+'. Check your name in Setup.',true)}
     else rMsg('Couldn\'t find work orders in that text.',true)}
-  if(ok){routeDate=date;if(location.hash!=='#route')show('route');await planRoute(date,true);toast('Loaded and planned '+longD(date))}
+  if(ok){routeDate=date;if(location.hash!=='#route')show('route');pane('route','stops');await planRoute(date,true);toast('Loaded and planned '+longD(date))}
   return ok;
 }
 $('pasteGo').onclick=async()=>{if(await smartImport($('pasteText').value,routeDate))$('pasteText').value=''};
-$('clipBtn').onclick=async()=>{let t='';try{t=await navigator.clipboard.readText()}catch(e){$('pasteBox').hidden=false;rMsg('Your phone blocked clipboard reading — paste into the box below instead.',true);$('pasteText').focus();return}
+$('clipBtn').onclick=async()=>{let t='';try{t=await navigator.clipboard.readText()}catch(e){pane('route','add');$('pasteBox').hidden=false;rMsg('Your phone blocked clipboard reading — paste into the box below instead.',true);$('pasteText').focus();return}
   await smartImport(t,routeDate)};
 function planLine(gs){
   const appt=gs.filter(g=>!g.any),any=gs.filter(g=>g.any);if(!appt.length||!any.length)return '';
@@ -693,7 +776,7 @@ function dateFromSubject(s){
   let best=null;for(let i=-4;i<=10;i++){const c=addDays(TODAY,i),dd=parseD(c);
     if(wd>=0&&dd.getDay()!==wd)continue;if(mo>=0&&dd.getMonth()!==mo)continue;
     const num=new RegExp('\\b'+dd.getDate()+'\\b').test(s.replace(MONTHS[mo]||'#',' '));
-    const score=(num?10:0)-Math.abs(i-1);if(!best||score>best.score)best={c,score}}
+    const score=(num?10:0)-Math.abs(i-1)+(S.days[c]&&S.days[c].stops&&S.days[c].stops.some(x=>!x.manual)?8:0);if(!best||score>best.score)best={c,score}}
   return best?best.c:TODAY;
 }
 
@@ -703,11 +786,11 @@ function dateFromSubject(s){
 
 /* ---------- skip reasons + day report ---------- */
 const WHY=['No access','No answer / not home','Customer cancelled','Meter issue — needs follow-up','Other'];
-function askWhy(g,date){
-  $('sheetT').textContent='Why couldn\'t you do '+g.addr+'?';
+function askWhy(g,date,only){
+  $('sheetT').textContent='Why couldn\'t you do '+g.addr+(only&&only.unit?' unit '+only.unit:'')+'?';
   $('sheetB').innerHTML=WHY.map(w=>`<button data-why="${esc(w)}">${esc(w)}</button>`).join('');
   $('sheet').hidden=false;
-  $('sheetB').onclick=e=>{const b=e.target.closest('[data-why]');if(!b)return;g.items.forEach(s=>{if(!s.st){s.st='skip';s.why=b.dataset.why}});$('sheet').hidden=true;touch(date);renderAll();
+  $('sheetB').onclick=e=>{const b=e.target.closest('[data-why]');if(!b)return;(only?[only]:g.items).forEach(s=>{if(!s.st){s.st='skip';s.why=b.dataset.why;s.skipAt=Date.now()}});$('sheet').hidden=true;if(only){const left=g.items.filter(x=>!x.st).sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9))[0];toast('Unit '+only.unit+' marked not done'+(left?' · next: unit '+left.unit:''))}touch(date);renderAll();
     const d=day(date);if(d.plan&&MAP)planRoute(date,false)};
 }
 $('sheetX').onclick=()=>{$('sheet').hidden=true};
@@ -730,6 +813,11 @@ function restore(txt){try{const o=JSON.parse(txt);const d=o.data||o;
 $('bkSave').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([backupText()],{type:'application/json'}));a.download='pay-route-backup-'+TODAY+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)};
 $('bkCopy').onclick=async()=>{try{await navigator.clipboard.writeText(backupText());toast('Backup copied — keep it in Notes')}catch(e){toast('Copy blocked')}};
 $('bkPaste').onclick=()=>restore($('bkText').value);
+$('shareSetup').onclick=async()=>{const st=S.settings,keep=['hourly','target','kmRate','rates','shopAddr','shopCity','shopDays','shopMin','dayStart','satStart','minAppt','minRT','taxPct','smsTpl'];
+  const out={};keep.forEach(k=>{if(st[k]!=null)out[k]=st[k]});if(out.smsTpl&&st.myName)out.smsTpl=out.smsTpl.split(st.myName).join('{me}');
+  const txt=JSON.stringify({app:'pay-route',merge:true,shared:true,data:{settings:out}},null,1),f=new File([txt],'pay-route-setup.json',{type:'application/json'});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Pay & Route setup',text:'Open https://'+location.host+location.pathname+' → Add to home screen → Setup → Backup → Restore from file, and pick this file.'});return}}catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)};
 
 /* ---------- GPS ---------- */
 let GPS=null,gpsWatch=null;
@@ -824,10 +912,116 @@ function followHtml(){const f=followUps();if(!f.length)return '';
   ${f.map(({date,s})=>`<div class="fu"><div><b>${esc(s.addr)}</b>${s.unit?' unit '+esc(s.unit):''}<div class="note">${fmtD(date)} · WO ${esc(s.wo||'—')} · ${esc(s.why||'not done')}${s.ph?' · '+esc(s.ph):''}</div></div><button data-fudone="${date}|${esc(s.wo||s.addr)}">Clear</button></div>`).join('')}
   <p class="note" style="margin:8px 0 0">Stops you marked ✕ that haven't been done since. They clear by themselves when the WO is done on a later day.</p></details>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-fudone]');if(!b)return;const[d,k]=b.dataset.fudone.split('|');const st=(S.days[d]&&S.days[d].stops)||[];st.forEach(s=>{if((s.wo||s.addr)===k&&s.st==='skip')s.resolved=true});touch(d);renderAll();toast('Cleared from follow-ups')});
-/* ---------- Android share target ---------- */
-async function takeShared(){try{if(!('caches' in window))return;const c=await caches.open('pr-share'),r=await c.match('./shared.txt');if(!r)return;const t=await r.text();await c.delete('./shared.txt');
-  const fb=new Date().getHours()>=12?nextWorkday():TODAY;routeDate=fb;show('route');await smartImport(t,fb)}catch(e){}}
+/* ---------- printed schedule (PDF) ---------- */
+let PDFJS=null;
+async function pdfLib(){if(PDFJS)return PDFJS;const m=await import('./pdf.min.js');m.GlobalWorkerOptions.workerSrc=new URL('pdf.worker.min.js',location.href).href;return PDFJS=m}
+async function pdfRows(buf){
+  const lib=await pdfLib(),doc=await lib.getDocument({data:new Uint8Array(buf),isEvalSupported:false}).promise;
+  let title='';try{const md=await doc.getMetadata();title=(md.info&&md.info.Title)||''}catch(e){}
+  const rows=[];
+  for(let p=1;p<=doc.numPages;p++){const pg=await doc.getPage(p),tc=await pg.getTextContent();
+    const its=tc.items.filter(i=>i.str&&i.str.trim()).map(i=>({s:decodeEnt(i.str).replace(/\s+/g,' ').trim(),x:i.transform[4],y:i.transform[5],w:i.width||0,h:Math.abs(i.transform[3])||8}));
+    its.sort((a,b)=>b.y-a.y||a.x-b.x);let cur=null;
+    for(const it of its){if(cur&&Math.abs(cur.y-it.y)<=Math.max(2,it.h*0.45))cur.items.push(it);else rows.push(cur={y:it.y,h:it.h,page:p,items:[it]})}}
+  rows.forEach(r=>r.items.sort((a,b)=>a.x-b.x));
+  return{rows,title};
+}
+const PDF_COL=[[/^wo\b/,'wo'],[/^time/,'time'],[/name/,'name'],[/^address/,'addr'],[/^unit/,'unit'],[/^ward/,'ward'],[/^cycle/,'cycle'],[/^phone\s*2/,'ph2'],[/^phone/,'ph'],[/^size/,'size'],[/mtr|meter|serial/,'meter'],[/^notes?/,'notes'],[/^problem/,'problem'],[/^program/,'program'],[/maint|^type/,'type']];
+function pdfHeaderCols(r){
+  const cells=[];for(const it of r.items){const l=cells[cells.length-1];if(l&&it.x-(l.x+l.w)<it.h*0.9){l.s+=' '+it.s;l.w=it.x+it.w-l.x}else cells.push({s:it.s,x:it.x,w:it.w})}
+  const wo=cells.findIndex(c=>/^wo\b/i.test(c.s));if(wo<0)return null;
+  const cols=cells.slice(wo).map(c=>{const k=PDF_COL.find(([re])=>re.test(c.s.toLowerCase()));return{f:k?k[1]:'',x:c.x}});
+  return{tech:cells.slice(0,wo).map(c=>c.s).join(' ').trim(),cols};
+}
+function pdfSchedule(rows,tag){
+  const want=String(tag||'').toLowerCase().replace(/^_?/,'_'),blocks=[];let blk=null,last=null;
+  for(const r of rows){
+    const txt=r.items.map(i=>i.s).join(' ');
+    if(/\bWO\s*#/i.test(txt)&&/\bTIME\b/i.test(txt)){const h=pdfHeaderCols(r);if(h){blocks.push(blk={tech:h.tech,cols:h.cols,stops:[]});last=null;continue}}
+    if(!blk)continue;
+    const cols=blk.cols,x0=cols[0].x,colOf=x=>{let c=null;for(const k of cols)if(k.x<=x+4)c=k;return c};
+    const rec={},label=[];
+    for(const it of r.items){if(it.x<x0-4){label.push(it.s);continue}const c=colOf(it.x);if(!c||!c.f)continue;rec[c.f]=(rec[c.f]?rec[c.f]+' ':'')+it.s}
+    if(/^\d{6,8}$/.test(rec.wo||'')){
+      const t=String(rec.time||'').replace(/\s+/g,' ').trim(),ph=v=>(v&&v!=='0')?v:'',ward=rec.ward||'';
+      const notes=[label.join(' '),rec.notes||''].filter(Boolean).join(' — ');
+      const s={wo:rec.wo,time:t.replace(/:00(\s*[AP]M)$/i,'$1'),win:winMin(t),name:rec.name||'',addr:String(rec.addr||'').toUpperCase(),unit:ph(rec.unit),ward,city:cityOf(ward),ph:ph(rec.ph),ph2:ph(rec.ph2),size:rec.size||'',meter:ph(rec.meter),notes,problem:rec.problem||'',program:rec.program||'',type:(rec.type||'').toUpperCase(),st:''};
+      if(!s.type){s.type='REPL_MRT';s.guess=1}
+      if(s.addr){blk.stops.push(s);last={s,r}}continue}
+    // a wrapped line under the row above (long name, address or note)
+    if(last&&r.page===last.r.page&&last.r.y-r.y<last.r.h*2.6&&!label.length){for(const f of ['name','addr','notes'])if(rec[f])last.s[f]=(last.s[f]+' '+(f==='addr'?rec[f].toUpperCase():rec[f])).trim();last.r=r}
+    else last=null;
+  }
+  const mine=blocks.filter(b=>b.tech&&b.tech.toLowerCase().replace(/\s*\(.*\)$/,'').endsWith(want));
+  if(tag&&mine.length)return{stops:mine.flatMap(b=>b.stops),found:true,techs:blocks.map(b=>b.tech)};
+  const withWork=blocks.filter(b=>b.stops.length);
+  if(withWork.length===1&&!withWork[0].tech)return{stops:withWork[0].stops,found:true,techs:[]};
+  return{stops:[],found:false,techs:blocks.map(b=>b.tech).filter(Boolean)};
+}
+const HALTON=['Milton','Burlington','Oakville','Halton Hills','Georgetown','Acton'];
+async function inferCities(list,date){
+  const need=list.filter(s=>!s.city);if(!need.length)return 0;
+  try{await loadMap()}catch(e){}
+  const fallback=()=>{const known=((S.days[date]&&S.days[date].stops)||[]).concat(list).map(s=>s.city).filter(Boolean);return known.sort((a,b)=>known.filter(x=>x===b).length-known.filter(x=>x===a).length)[0]||S.settings.homeCity||'Milton'};
+  if(!MAP||!HaltonRouter.citiesAt){const c=fallback();need.forEach(s=>{s.city=c;s.cityGuess=1});return need.length}
+  const cand=new Map(need.map(s=>[s,HaltonRouter.citiesAt(MAP,s.addr).filter(h=>HALTON.includes(h.c))]));
+  const sure=[];for(const[s,h]of cand)if(h.length===1||(h.length&&h[0].exact&&!h.slice(1).some(x=>x.exact))){s.city=h[0].c;const g=HaltonRouter.geocode(MAP,s.addr,s.city);if(g)sure.push(g)}
+  list.filter(s=>s.city&&!need.includes(s)).forEach(s=>{const g=HaltonRouter.geocode(MAP,s.addr,s.city);if(g)sure.push(g)});
+  const cx=sure.length?sure.reduce((a,g)=>a+g.x,0)/sure.length:null,cy=sure.length?sure.reduce((a,g)=>a+g.y,0)/sure.length:null;
+  let guessed=0;
+  for(const[s,h]of cand){if(s.city)continue;
+    if(h.length&&cx!=null){let best=null,bd=1e18;for(const{c}of h){const g=HaltonRouter.geocode(MAP,s.addr,c);if(!g)continue;const d=Math.hypot((g.x-cx)*HaltonRouter.MX,(g.y-cy)*HaltonRouter.MY);if(d<bd){bd=d;best=c}}s.city=best||h[0].c}
+    else if(h.length)s.city=h[0].c;
+    else{s.city=fallback();s.cityGuess=1;guessed++}}
+  return guessed;
+}
+async function importPdf(blob,fallbackDate){
+  rMsg('Reading the PDF…');
+  let res;try{res=await pdfRows(await blob.arrayBuffer())}catch(e){rMsg('Couldn\'t read that PDF ('+(e.message||e)+').',true);return false}
+  const text=res.rows.map(r=>r.items.map(i=>i.s).join('\t')).join('\n');
+  const date=dateInText('Subject: '+res.title+'\n'+text,null)||dateInText(text,fallbackDate);
+  const sc=pdfSchedule(res.rows,S.settings.tag);
+  if(!sc.stops.length){
+    if(text.trim().length<20){rMsg('That PDF has no text in it (it may be a photo or scan).',true);return false}
+    if(sc.techs.length&&!sc.found){rMsg('Your name ('+(S.settings.tag||'not set')+') isn\'t in this PDF. Names found: '+sc.techs.slice(0,6).join(', ')+(sc.techs.length>6?'…':'')+'. Check “Your name on schedule” in Setup.',true);return false}
+    return smartImport(text,date||fallbackDate);
+  }
+  const guessed=await inferCities(sc.stops,date);
+  loadStops('',date,'PDF',sc);
+  const thin=!sc.stops.some(s=>s.ph||s.ph2||s.size||s.meter);
+  routeDate=date;pane('route','stops');await planRoute(date,true);
+  rMsg('Loaded '+sc.stops.length+' work orders for '+longD(date)+' from the PDF.'+(thin?' The printout cut off the columns after Address, so phones, meter size, serials, notes and job type are missing — they\'ll fill in if you also paste the email.':'')+(guessed?' '+guessed+' cit'+(guessed>1?'ies were':'y was')+' guessed — check the pins.':''),thin);
+  toast('Loaded and planned '+longD(date));return true;
+}
+document.addEventListener('change',async e=>{if(e.target.id!=='pdfFile')return;const f=e.target.files[0];e.target.value='';if(!f)return;
+  if(/pdf/i.test(f.type)||/\.pdf$/i.test(f.name))await importPdf(f,routeDate);else await smartImport(await f.text(),routeDate)});
 
+/* ---------- Android share target ---------- */
+async function takeShared(){try{if(!('caches' in window))return;const c=await caches.open('pr-share'),fb=new Date().getHours()>=12?nextWorkday():TODAY;
+  const pr=await c.match('./shared.pdf');if(pr){const b=await pr.blob();await c.delete('./shared.pdf');routeDate=fb;show('route');await importPdf(b,fb);return}
+  const r=await c.match('./shared.txt');if(!r)return;const t=await r.text();await c.delete('./shared.txt');routeDate=fb;show('route');await smartImport(t,fb)}catch(e){}}
+
+
+document.addEventListener('click',e=>{const b=e.target.closest('[data-copy]');if(!b)return;e.preventDefault();e.stopPropagation();const v=b.dataset.copy;navigator.clipboard.writeText(v).then(()=>toast('Meter '+v+' copied'),()=>toast('Meter '+v))},true);
+function startOf(date){return parseD(date).getDay()===6?(S.settings.satStart||'09:00'):(S.settings.dayStart||'08:00')}
+const winLabel=w=>hm(w)+'–'+hm(w+240);
+
+/* ---------- automatic business mileage (like MileIQ, from the road map) ---------- */
+// Business = shop (on shop days) → every stop you finished or attempted, in the order you did them → last stop.
+// Not counted: home → shop, last stop → home/class.
+function bizTrail(date){const d=S.days[date];if(!d||!d.stops)return null;
+  const gs=groupsOf(date).map(g=>({g,t:Math.min(...g.items.map(s=>s.doneAt||s.skipAt||s.arriveAt||Infinity))})).filter(x=>isFinite(x.t)).sort((a,b)=>a.t-b.t);
+  if(!gs.length)return null;const pts=[],names=[];
+  if(shopDay(date)&&S.settings.shopAddr){const sh=locate(S.settings.shopAddr,S.settings.shopCity);if(sh){pts.push(sh);names.push('shop')}}
+  for(const x of gs){const l=locate(x.g.addr,x.g.city);if(l){pts.push(l);names.push(x.g.addr)}}
+  return{pts,names,first:gs[0].t,last:gs[gs.length-1].t}}
+function legMeters(a,b){if(a.v===b.v)return 0;const R=HaltonRouter;const{prev}=R.dijkstra(MAP,a.v,[b.v],true);const p=R.pathGeom(MAP,prev,a.v,b.v);let m=0;for(let i=2;i<p.length;i+=2)m+=Math.hypot((p[i]-p[i-2])*MAP.MX,(p[i+1]-p[i-1])*MAP.MY);return m}
+function computeBizKm(date){if(!MAP)return null;const tr=bizTrail(date);const d=S.days[date];if(!d)return null;
+  if(!tr||tr.pts.length<2){if(d.bizKm){delete d.bizKm;delete d.bizLegs}return 0}
+  let m=0;const legs=[];for(let i=1;i<tr.pts.length;i++){const x=legMeters(tr.pts[i-1],tr.pts[i]);m+=x;legs.push(Math.round(x/100)/10)}
+  const km=Math.round(m/100)/10;if(d.bizKm!==km){d.bizKm=km;d.bizLegs={from:tr.names[0]==='shop'?'shop':'first stop',n:tr.pts.length-1,first:tr.first,last:tr.last};touch(date)}return km}
+async function refreshBiz(date){try{await loadMap()}catch(e){return}computeBizKm(date);if(date===TODAY)renderToday()}
+async function backfillBiz(){try{await loadMap()}catch(e){return}let n=0;for(const d in S.days){const x=S.days[d];if(x.stops&&x.stops.some(s=>s.doneAt||s.skipAt)&&x.bizKm==null){computeBizKm(d);n++}}if(n)renderAll()}
 
 /* ---------- truck stock ---------- */
 function stockKeys(){const ks=new Set(['radio','m15','m20','m25']);for(const k in (S.stock||{}))ks.add(k);return [...ks].sort((a,b)=>a==='radio'?-1:b==='radio'?1:(+a.slice(1)||999)-(+b.slice(1)||999))}
@@ -890,7 +1084,7 @@ function csv(rows){return rows.map(r=>r.map(v=>{v=String(v==null?'':v);return /[
 async function exportTax(y){
   const days=Object.keys(S.days).filter(d=>d.startsWith(y)).sort();
   const earn=[['date','hours','regular','piece','bonus','pay','km',...JOBS.map(j=>j[1])]].concat(days.map(d=>{const x=S.days[d],c=calc(x);return[d,c.h,c.reg.toFixed(2),c.piece.toFixed(2),c.bonus.toFixed(2),c.total.toFixed(2),c.km,...JOBS.map(j=>(x.c||{})[j[0]]||0)]}));
-  const mil=[['date','start time','end time','odometer start','odometer end','km','mileage rate','mileage pay']].concat(days.filter(d=>+S.days[d].km).map(d=>{const x=S.days[d];return[d,x.in?tm(x.in):'',x.out?tm(x.out):'',x.odoIn??'',x.odoOut??'',x.km,S.settings.kmRate,(x.km*S.settings.kmRate).toFixed(2)]}));
+  const mil=[['date','from','business km (auto)','stops','first stop time','last stop time','odometer start','odometer end','odometer km','mileage rate','mileage pay']].concat(days.filter(d=>+S.days[d].bizKm||+S.days[d].km).map(d=>{const x=S.days[d],L=x.bizLegs||{},bk=+x.bizKm||0;return[d,L.from||'',bk,L.n||'',L.first?tm(new Date(L.first).toISOString()):'',L.last?tm(new Date(L.last).toISOString()):'',x.odoIn??'',x.odoOut??'',x.km||'',S.settings.kmRate,(bk*S.settings.kmRate).toFixed(2)]}));
   const exr=[['date','item','category','amount','note']].concat((S.expenses||[]).filter(x=>x.date.startsWith(y)).sort((a,b)=>a.date<b.date?-1:1).map(x=>[x.date,x.item,x.cat,(+x.amt).toFixed(2),x.note||'']));
   const files=[['earnings-'+y+'.csv',earn],['mileage-'+y+'.csv',mil],['expenses-'+y+'.csv',exr]].map(([n,r])=>new File([csv(r)],n,{type:'text/csv'}));
   try{if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files,title:'Tax pack '+y});return}}catch(e){if(e&&e.name==='AbortError')return}
@@ -933,6 +1127,74 @@ $('ghConnect').onclick=async()=>{const o=$('ghOwner').value.trim(),r=($('ghRepo'
 $('ghPull').onclick=()=>ghPull(true);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&GH.dirty)ghPush(false);if(document.visibilityState==='visible')ghPull(false)});
 
+
+/* ---------- accounts (Supabase): sync everything except customer data ---------- */
+const CFG=window.PR_CONFIG||{},SB_ON=!!(CFG.supabaseUrl&&CFG.supabaseKey);let SB=null,SBU=null,sbTimer=null,sbBusy=false;
+let SBS={};try{SBS=JSON.parse(ls.get('sbsync')||'{}')}catch(e){}const sbSave=()=>ls.set('sbsync',JSON.stringify(SBS));
+function loadSB(){if(SB)return Promise.resolve(SB);return new Promise((ok,no)=>{const go=()=>{SB=supabase.createClient(CFG.supabaseUrl,CFG.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'pr-auth'}});ok(SB)};
+  if(window.supabase&&window.supabase.createClient)return go();const sc=document.createElement('script');sc.src='supabase.js';sc.onload=go;sc.onerror=no;document.head.appendChild(sc)})}
+// what goes to the cloud: no stops, plans, address notes or pin fixes (those hold customer info)
+function cloudCopy(){const days={};for(const k in S.days){const d=S.days[k],o={};for(const f of ['h','km','bizKm','c','in','out','odoIn','odoOut','pick'])if(d[f]!=null)o[f]=d[f];if(Object.keys(o).length)days[k]=o}
+  const st=Object.assign({},S.settings);delete st.fix;return{settings:st,days,stock:S.stock||{},expenses:S.expenses||[]}}
+function mergeCloud(r){const days=Object.assign({},S.days);for(const k in r.days){const local=days[k]||{};days[k]=Object.assign({},local,r.days[k],{stops:local.stops,plan:local.plan})}
+  S.days=days;S.settings=Object.assign({},DEF,r.settings,{fix:S.settings.fix||{}});S.stock=r.stock||{};S.expenses=r.expenses||[];ls.set('pt2',JSON.stringify(S));GEO.clear()}
+function acctUI(){const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;
+  $('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in to save your data to your account and use it on any phone.'}
+async function sbPush(manual){if(!SBU||sbBusy)return;if(!navigator.onLine){return}sbBusy=true;
+  try{const at=new Date().toISOString();const{error}=await SB.from('user_data').upsert({user_id:SBU.id,data:cloudCopy(),updated_at:at});if(error)throw error;SBS.last=Date.now();SBS.dirty=0;SBS.remoteAt=at;sbSave();acctUI();if(manual)toast('Synced')}
+  catch(e){if(manual)toast('Sync failed: '+(e.message||e))}finally{sbBusy=false}}
+async function sbPull(force){if(!SBU)return;try{const{data,error}=await SB.from('user_data').select('data,updated_at').eq('user_id',SBU.id).maybeSingle();if(error)throw error;
+    if(!data){await sbPush(false);return}
+    if(force||(data.updated_at!==SBS.remoteAt&&!SBS.dirty)){mergeCloud(data.data);SBS.remoteAt=data.updated_at;SBS.last=Date.now();sbSave();renderAll();acctUI();if(force)toast('Loaded from your account')}
+    else if(SBS.dirty)sbPush(false)}
+  catch(e){if(force)toast('Couldn\'t load: '+(e.message||e))}}
+const ghSched=scheduleSync;
+scheduleSync=()=>{ghSched();if(!SBU)return;SBS.dirty=Date.now();sbSave();clearTimeout(sbTimer);sbTimer=setTimeout(()=>sbPush(false),20000)};
+async function acctStart(){if(!SB_ON){acctUI();return}try{await loadSB()}catch(e){return}
+  const{data}=await SB.auth.getSession();SBU=data.session?data.session.user:null;acctUI();if(SBU){sbPull(false);chatInit().catch(()=>{})}
+  SB.auth.onAuthStateChange((ev,sess)=>{SBU=sess?sess.user:null;acctUI()});
+  document.addEventListener('visibilitychange',()=>{if(!SBU)return;if(document.visibilityState==='hidden'&&SBS.dirty)sbPush(false);if(document.visibilityState==='visible')sbPull(false)})}
+$('acSend').onclick=async()=>{const em=$('acEmail').value.trim();if(!/^\S+@\S+\.\S+$/.test(em)){toast('Enter your email');return}
+  try{await loadSB();const{error}=await SB.auth.signInWithOtp({email:em,options:{shouldCreateUser:false}});if(error)throw error;$('acCodeBox').hidden=false;$('acCode').focus();toast('Code sent — check your email')}
+  catch(e){toast(/signups? not allowed|not found|Signups/i.test(e.message||'')?'That email isn\'t invited yet — ask the app owner':'Couldn\'t send code: '+(e.message||e))}};
+$('acVerify').onclick=async()=>{const em=$('acEmail').value.trim(),code=$('acCode').value.replace(/\D/g,'');if(code.length<6){toast('Enter the code from the email');return}
+  try{const{data,error}=await SB.auth.verifyOtp({email:em,token:code,type:'email'});if(error)throw error;SBU=data.user;acctUI();toast('Signed in');await sbPull(false);chatInit().catch(()=>{});renderAll()}
+  catch(e){toast('Code didn\'t work: '+(e.message||e))}};
+$('acSync').onclick=async()=>{await sbPull(false);await sbPush(true)};
+$('acOut').onclick=async()=>{if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();toast('Signed out — your data stays on this phone')};
+
+
+/* ---------- team chat (Supabase, invited coworkers only) ---------- */
+let ROOM='team',MSGS=[],PEOPLE=[],chatSub=null,chatSeen=+(ls.get('chatSeen')||0);
+const meName=()=>(S.settings.myName||'').trim()||(SBU?SBU.email.split('@')[0]:'Me');
+async function chatInit(){if(!SBU||chatSub)return;
+  await SB.from('profiles').upsert({user_id:SBU.id,name:meName(),updated_at:new Date().toISOString()});
+  const{data:pp}=await SB.from('profiles').select('user_id,name').order('name');PEOPLE=(pp||[]).filter(x=>x.user_id!==SBU.id);
+  await chatLoad();
+  chatSub=SB.channel('msgs').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},pl=>{const m=pl.new;if(!m)return;
+      if(m.to_user&&m.to_user!==SBU.id&&m.sender!==SBU.id)return;if(MSGS.some(x=>x.id===m.id))return;MSGS.push(m);
+      const visible=location.hash==='#chat'&&document.visibilityState==='visible';if(m.sender!==SBU.id&&!visible){toast(m.sender_name+': '+m.body.slice(0,80));speakChat(m)}
+      chatBadge();if(location.hash==='#chat')renderChat()}).subscribe();}
+function speakChat(m){if(S.settings.voice)speak('Message from '+m.sender_name+'. '+m.body.slice(0,140))}
+async function chatLoad(){const{data,error}=await SB.from('messages').select('*').order('created_at',{ascending:false}).limit(200);if(!error){MSGS=(data||[]).reverse()}chatBadge()}
+function roomMsgs(){return MSGS.filter(m=>ROOM==='team'?!m.to_user:((m.sender===SBU.id&&m.to_user===ROOM)||(m.sender===ROOM&&m.to_user===SBU.id)))}
+function chatBadge(){const n=SBU?MSGS.filter(m=>m.sender!==SBU.id&&new Date(m.created_at).getTime()>chatSeen).length:0;const b=$('chatBadge');if(b){b.hidden=!n;b.textContent=n>9?'9+':n}}
+function renderChat(){const gate=$('chatGate'),main=$('chatMain');
+  if(!SB_ON){gate.hidden=false;main.hidden=true;gate.innerHTML='<b>Chat needs accounts turned on.</b><p class="note">Finish the Supabase setup and sign in, then you can message invited coworkers here.</p>';return}
+  if(!SBU){gate.hidden=false;main.hidden=true;gate.innerHTML='<b>Sign in to chat</b><p class="note">Only coworkers you invite can see this chat.</p><button class="primary" data-go="setup" data-p="acct">Go to sign in</button>';return}
+  gate.hidden=true;main.hidden=false;if(!chatSub){chatInit().then(renderChat);}
+  $('rooms').innerHTML=`<button class="${ROOM==='team'?'primary':''}" data-room="team">Team</button>`+PEOPLE.map(p=>`<button class="${ROOM===p.user_id?'primary':''}" data-room="${p.user_id}">${esc(p.name||'Coworker')}</button>`).join('');
+  const list=roomMsgs();
+  $('msgs').innerHTML=list.length?list.map(m=>{const me=m.sender===SBU.id;const t=new Date(m.created_at);return `<div class="mg${me?' me':''}">${me||ROOM!=='team'?'':`<div class="who2">${esc(m.sender_name)}</div>`}${esc(m.body)}<div class="t2">${t.toLocaleDateString('en-CA')===new Date().toLocaleDateString('en-CA')?'':t.toLocaleDateString('en-CA',{month:'short',day:'numeric'})+' '}${t.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'})}</div></div>`}).join(''):'<p class="note">No messages yet. Say hi.</p>';
+  chatSeen=Date.now();ls.set('chatSeen',chatSeen);chatBadge();setTimeout(()=>{const c=$('composer');if(c)c.scrollIntoView({block:'end'})},30)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-room]');if(!b)return;ROOM=b.dataset.room;renderChat()});
+$('composer').addEventListener('submit',async e=>{e.preventDefault();const body=$('chatIn').value.trim();if(!body||!SBU)return;
+  if(/\b\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/.test(body)&&!confirm2()){return}
+  $('chatIn').value='';const row={sender:SBU.id,sender_name:meName(),body:body.slice(0,2000),to_user:ROOM==='team'?null:ROOM};
+  const{data,error}=await SB.from('messages').insert(row).select().single();if(error){toast('Not sent: '+error.message);$('chatIn').value=body;return}
+  if(data&&!MSGS.some(x=>x.id===data.id))MSGS.push(data);renderChat()});
+function confirm2(){toast('That looks like a phone number — remove customer details before sending');return false}
+
 /* ---------- voice commands ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 function nextGroup(){const gs=groupsOf(TODAY);return gs.find(g=>!g.state)}
@@ -947,7 +1209,7 @@ function voiceDo(raw){const t=raw.toLowerCase();const g=nextGroup();toast('Heard
   const ul=g.items.length>=2&&g.items.filter(s=>s.unit).length>=2;
   if(/\b(done|finished|complete|completed)\b/.test(t)){if(ul){const u=curUnit(g);if(u){stopAction(TODAY,g.key,'one',u.wo);return}}stopAction(TODAY,g.key,'done');return}
   if(/no access|no answer|nobody|not home|skip|cancel/.test(t)){const why=/no access/.test(t)?'No access':/cancel/.test(t)?'Customer cancelled':/no answer|nobody|not home/.test(t)?'No answer / not home':null;
-    if(why){g.items.forEach(s=>{if(!s.st){s.st='skip';s.why=why}});touch(TODAY);renderAll();say('Marked '+why.toLowerCase()+'.');setTimeout(()=>afterDone(TODAY),1500)}else askWhy(g,TODAY);return}
+    if(why){g.items.forEach(s=>{if(!s.st){s.st='skip';s.why=why;s.skipAt=Date.now()}});touch(TODAY);renderAll();say('Marked '+why.toLowerCase()+'.');setTimeout(()=>afterDone(TODAY),1500)}else askWhy(g,TODAY);return}
   if(/\b(here|arrived)\b/.test(t)){arriveAt(g,TODAY,false);say('Arrived at '+sayAddr(g.addr)+'.');return}
   if(/\btext|message\b/.test(t)){const u=smsLink(g,TODAY);if(u){g.items.forEach(s=>s.texted=Date.now());touch(TODAY);location.href=u}else say('No phone number for this stop.');return}
   if(/\bcall\b/.test(t)){const ph=custPhone(g);if(ph)location.href='tel:+1'+ph;else say('No phone number for this stop.');return}
@@ -1149,7 +1411,7 @@ async function planRoute(date,optimize){
     });
     gs=groupsOf(date);
   }
-  const [hh,mi]=(st.dayStart||'08:00').split(':').map(Number),now=new Date();
+  const [hh,mi]=startOf(date).split(':').map(Number),now=new Date();
   let t=(date===TODAY&&midDay)?now.getHours()*60+now.getMinutes():hh*60+mi,drive=0;const legs={},out={leave:hm(t),leaveM:t};
   let prev=iStart;
   const WF=wxDriveFactor(date);out.wxf=WF;
@@ -1189,6 +1451,9 @@ function planInfo(date){const P=S.days[date]&&S.days[date].plan;if(!P)return '<d
     cls=`<div class="card" style="margin:10px 0 0;padding:12px;background:${P.school.late?'#c62828':P.school.tight?'var(--y)':'var(--bg)'};color:${P.school.late?'#fff':'inherit'}"><b>Leave your last stop by ${P.school.leaveBy}</b> for class (${dur(P.school.d)} drive + parking).${cut?` ${cut} stop${cut>1?'s':''} would run past that — move ${cut>1?'them':'it'} to another day or before appointments.`:P.school.late?' You\'ll be late at this pace.':''}</div>`}
   return `<div class="note" style="margin-top:6px;color:var(--ink)">${parts.join(' → ')}<br><b>${dur(P.drive)} driving</b> (rush-hour${P.wxf>1?' + weather +'+Math.round((P.wxf-1)*100)+'%':''} adjusted)${late?` · <b style="color:#c62828">${late} stop${late>1?'s':''} may miss the window</b>`:''}</div>${cls}<div class="grid2" style="margin-top:10px"><button data-ics="${date}">Add alarms to calendar</button><button data-rep="${date}">Share day report</button></div>`}
 $('optBtn').onclick=async()=>{startGPS();const b=$('optBtn');b.disabled=true;b.textContent='Working…';try{await planRoute(routeDate,true);toast('Stops ordered by drive time')}finally{b.disabled=false;b.textContent='Best order'}};
+PANE_ON['route:map']=()=>{if($('mapWrap').hidden)$('mapBtn').click();else{try{if(GL)GL.resize()}catch(e){}requestAnimationFrame(drawMap)}};
+$('rPrev').onclick=()=>{routeDate=addDays(routeDate,-1);renderRoute();if(!groupsOf(routeDate).length)pane('route','add')};
+$('rNext').onclick=()=>{routeDate=addDays(routeDate,1);renderRoute();if(!groupsOf(routeDate).length)pane('route','add')};
 $('mapBtn').onclick=async()=>{const w=$('mapWrap');if(!w.hidden){w.hidden=true;$('mapBtn').textContent='Show map';return}
   try{await loadMap()}catch(e){return}w.hidden=false;$('mapBtn').textContent='Hide map';
   if(!ROUTE||ROUTE.date!==routeDate){await planRoute(routeDate,false)}initGL();fitMap();};
@@ -1250,7 +1515,7 @@ function askMove(g,ll,undo){
   $('sheetX').onclick=()=>{$('sheet').hidden=true;if(!done)undo()};
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-pa]');if(!b)return;const g=groupsOf(routeDate).find(x=>x.key===b.dataset.k);if(!g)return;
-  if(g.items.length>4){const c=[...document.querySelectorAll('#rBody .stop')].find(el=>el.dataset.k===g.key);if($('mapbox').classList.contains('full'))$('zFull').click();if(c)c.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(g.items.length>4){if($('mapbox').classList.contains('full'))$('zFull').click();pane('route','stops');const c=[...document.querySelectorAll('#rBody .stop')].find(el=>el.dataset.k===g.key);if(c)c.scrollIntoView({behavior:'smooth',block:'start'});return}
   stopAction(routeDate,g.key,'done')});
 $('zFull').onclick=()=>{const m=$('mapbox');m.classList.toggle('full');if(m.classList.contains('full')){const gs=mcList(),ni=gs.findIndex(g=>!g.state);MC=ni>=0?ni:0;renderMapCard(true)}$('zFull').textContent=m.classList.contains('full')?'✕':'⤢';setTimeout(()=>{if(GL)GL.resize();else drawMap()},60)};
 
@@ -1360,20 +1625,20 @@ function renderTomorrow(){
 }
 function renderToday(){
   {const n=followUps().length;$('tFollow').innerHTML=n?`<button class="linkcard" data-go="route" style="padding:12px 16px"><b>${n} follow-up${n>1?'s':''} open</b> <span class="note">— stops not done yet from earlier days</span></button>`:''}
-  {const st=S.settings,miss=[!st.tag&&'your schedule name',!Object.values(st.rates||{}).some(v=>+v)&&'pay rates',!st.hourly&&'hourly rate',!st.homeAddr&&'home address'].filter(Boolean);$('tSetup').innerHTML=miss.length?`<button class="linkcard" data-go="setup" style="border:2px solid var(--ink)"><div style="font-weight:800">Finish setup</div><div class="note">Missing: ${miss.join(', ')}. Open your settings file in Setup → Backup → Restore, or fill them in.</div></button>`:''}
+  {const st=S.settings,miss=[!st.tag&&'your schedule name',!Object.values(st.rates||{}).some(v=>+v)&&'pay rates',!st.hourly&&'hourly rate',!st.homeAddr&&'home address'].filter(Boolean);$('tSetup').innerHTML=miss.length?`<button class="linkcard" data-go="setup" style="border:2px solid var(--ink)"><div style="font-weight:800">Finish setup</div><div class="note">Missing: ${miss.join(', ')}. New here? Ask a coworker to share their setup, open it in Setup → Backup → Restore from file, then add your own name as it appears on the schedule (like _yonas) and your home address.</div></button>`:(SB_ON&&!SBU?'<button class="linkcard" data-go="setup" style="padding:12px 16px"><b>Sign in</b> <span class="note">— save your pay and settings to your account</span></button>':'')}
   renderWx();if(!WX||Date.now()-WX.at>25*60000)wxRefresh(false);
   {const it=shopDay(TODAY)?pickItems(TODAY):[];$('tShop').innerHTML=it.length&&it.some(i=>!i.got)&&!groupsOf(TODAY).some(g=>g.state)?pickHtml(TODAY):''}
   $('dateLine').textContent=longD(TODAY);startGPS();renderTomorrow();if(!MAP&&S.days[TODAY]&&S.days[TODAY].stops)loadMap().catch(()=>{});
   renderClock();
   const c=calc(S.days[TODAY]);$('tPay').textContent=money(c.total);
-  $('tSplit').innerHTML=`<span>${c.h.toFixed(2)} h</span><span>Reg ${money(c.reg)}</span><span>Piece ${money(c.piece)}</span><span>Bonus ${money(c.bonus)}</span>${c.km?`<span>${c.km} km</span>`:''}`;
+  $('tSplit').innerHTML=`<span>${c.h.toFixed(2)} h</span><span>Reg ${money(c.reg)}</span><span>Piece ${money(c.piece)}</span><span>Bonus ${money(c.bonus)}</span>${(S.days[TODAY]&&S.days[TODAY].bizKm)?`<span>${S.days[TODAY].bizKm} business km</span>`:c.km?`<span>${c.km} km</span>`:''}`;
   {const P=S.days[TODAY]&&S.days[TODAY].plan;$('tClass').innerHTML=isSchoolDay(TODAY)?`<button class="linkcard" data-go="route" style="background:${P&&P.school&&P.school.late?'#c62828':'var(--y)'};color:${P&&P.school&&P.school.late?'#fff':'#111'}"><div style="font-weight:800;font-size:18px">Class at ${hm(+S.settings.classAt.slice(0,2)*60+ +S.settings.classAt.slice(3))}${P&&P.school?' · leave by '+P.school.leaveBy:''}</div><div style="font-size:14px">${P&&P.school?'Last stop to class: '+dur(P.school.d)+' with traffic':'Tap here, then Best order, to get your leave-by time'}</div></button>`:''}
   const gs=groupsOf(TODAY),next=gs.find(g=>!g.state);
-  if(!gs.length)$('tNext').innerHTML=`<button class="linkcard" data-go="route"><div style="font-weight:800">No route loaded for today</div><div class="note">Copy the schedule email, then tap here →</div></button>`;
+  if(!gs.length)$('tNext').innerHTML=`<button class="linkcard" data-go="route" data-p="add"><div style="font-weight:800">No route loaded for today</div><div class="note">Tap to load the schedule →</div></button>`;
   else if(!next)$('tNext').innerHTML=`<div class="card"><b>All stops finished.</b> <span class="note">Don't forget to check out.</span></div>`;
   else{const i=gs.indexOf(next);$('tNext').innerHTML=`<div class="note" style="margin:4px 2px 6px;font-weight:700">Next stop · ${i+1} of ${gs.length}</div>`+stopCard(next,i+1,TODAY,true)+`<button class="wide" data-go="route" style="margin-bottom:12px">See full route</button>`}
   const ws=weekStart(TODAY),t=weekSum(ws),tg=+S.settings.target||0;
-  $('tWeek').textContent=money(t.total)+' of '+money(tg);$('tWeekBar').style.width=Math.min(100,tg?t.total/tg*100:0)+'%';$('tWeekMsg').textContent=weekMsg(ws,t);
+  $('tWeek').textContent=money(t.total);$('tWeekBar').style.width=Math.min(100,tg?t.total/tg*100:0)+'%';$('tWeekMsg').textContent='of '+money(tg)+' · '+weekMsg(ws,t);
 }
 function weekMsg(ws,t){const left=(+S.settings.target||0)-t.total;if(left<=0)return 'Target hit — '+money(-left)+' over.';
   let n=0;for(let i=0;i<7;i++){const d=addDays(ws,i);if(parseD(d).getDay()!==0&&d>=TODAY&&!(S.days[d]&&+S.days[d].h))n++}
@@ -1412,9 +1677,9 @@ function renderWeek(){renderInsights();renderTax();
   $('wSplit').innerHTML=`<span>${t.h.toFixed(2)} h</span><span>Reg ${money(t.reg)}</span><span>Piece ${money(t.piece)}</span><span>Bonus ${money(t.bonus)}</span>`;
   const wks=[...new Set(Object.keys(S.days).filter(d=>calc(S.days[d]).total||S.days[d].h).map(weekStart))].sort().reverse();
   $('wHist').innerHTML=wks.length?wks.map(w=>{const x=weekSum(w);return `<tr class="go" data-w="${w}"><td>${fmtD(w)}</td><td>${x.h.toFixed(2)}</td><td>${money(x.reg)}</td><td>${money(x.piece)}</td><td>${money(x.bonus)}</td><td><b>${money(x.total)}</b></td></tr>`}).join(''):'<tr><td colspan="6" class="note">No days yet.</td></tr>';
-  const mo={};for(const d in S.days){const k=+S.days[d].km||0;if(!k)continue;const m=d.slice(0,7);(mo[m]=mo[m]||{n:0,km:0});mo[m].n++;mo[m].km+=k}
+  const mo={};for(const d in S.days){const b=+S.days[d].bizKm||0,o=+S.days[d].km||0;if(!b&&!o)continue;const m=d.slice(0,7);(mo[m]=mo[m]||{n:0,km:0,odo:0});mo[m].n++;mo[m].km+=b;mo[m].odo+=o}
   const ms=Object.keys(mo).sort().reverse();
-  $('kmHist').innerHTML=ms.length?ms.map(m=>{const[y,mm]=m.split('-').map(Number);return `<tr><td>${new Date(y,mm-1,1).toLocaleDateString('en-CA',{month:'long',year:'numeric'})}</td><td>${mo[m].n}</td><td><b>${(Math.round(mo[m].km*10)/10).toLocaleString('en-CA')}</b></td><td>${money(mo[m].km*S.settings.kmRate)}</td></tr>`}).join(''):'<tr><td colspan="4" class="note">No KM yet — use the odometer box when you check in and out.</td></tr>';
+  $('kmHist').innerHTML=ms.length?ms.map(m=>{const[y,mm]=m.split('-').map(Number);return `<tr><td>${new Date(y,mm-1,1).toLocaleDateString('en-CA',{month:'long',year:'numeric'})}</td><td>${mo[m].n}</td><td><b>${(Math.round(mo[m].km*10)/10).toLocaleString('en-CA')}</b></td><td>${mo[m].odo?(Math.round(mo[m].odo*10)/10).toLocaleString('en-CA'):'—'}</td><td>${money(mo[m].km*S.settings.kmRate)}</td></tr>`}).join(''):'<tr><td colspan="5" class="note">No KM yet — it fills in by itself as you finish stops.</td></tr>';
 }
 $('wHist').addEventListener('click',e=>{const r=e.target.closest('[data-w]');if(r){weekRef=r.dataset.w;renderWeek();scrollTo({top:0,behavior:'smooth'})}});
 $('wPrev').onclick=()=>{weekRef=addDays(weekStart(weekRef),-7);renderWeek()};
@@ -1427,9 +1692,9 @@ $('copy').onclick=async()=>{
 };
 
 /* ---------- setup ---------- */
-function renderSetup(){renderGH();
+function renderSetup(){renderGH();acctUI();
   if(document.activeElement&&document.activeElement.closest('#v-setup'))return;
-  $('sTag').value=S.settings.tag||'';$('sHome').value=S.settings.homeAddr||'';$('sHomeCity').value=S.settings.homeCity||'';$('sShop').value=S.settings.shopAddr||'';$('sShopCity').value=S.settings.shopCity||'';$('sShopMin').value=S.settings.shopMin;$('sEndHome').checked=!!S.settings.endHome;$('sTax').value=S.settings.taxPct;$('sLearn').checked=!!S.settings.learn;$('sGps').checked=!!S.settings.useGps;$('sVoice').checked=!!S.settings.voice;$('sArrive').checked=!!S.settings.autoArrive;$('sMe').value=S.settings.myName||'';$('sTpl').value=S.settings.smsTpl||'';$('sSchool').value=S.settings.schoolAddr||'';$('sSchoolCity').value=S.settings.schoolCity||'';$('sClass').value=S.settings.classAt||'17:30';$('sClassLate').value=S.settings.classLatest||'17:45';$('sSchoolBuf').value=S.settings.schoolBuf;$('sSchoolDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-cd="${i+1}" class="${String(S.settings.schoolDays).includes(i+1)?'primary':''}">${n}</button>`).join('');$('sShopDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-sd="${i+1}" class="${String(S.settings.shopDays).includes(i+1)?'primary':''}">${n}</button>`).join('');const nf=Object.keys(S.settings.fix||{}).length;$('clearFix').textContent=nf?'Clear '+nf+' map pin fix'+(nf>1?'es':''):'No map pin fixes';$('clearFix').disabled=!nf;$('sDay').value=S.settings.dayStart||'08:00';$('sMinA').value=S.settings.minAppt;$('sMinR').value=S.settings.minRT;$('sTarget').value=S.settings.target;$('sHourly').value=S.settings.hourly;$('sKm').value=S.settings.kmRate;
+  $('sTag').value=S.settings.tag||'';$('sHome').value=S.settings.homeAddr||'';$('sHomeCity').value=S.settings.homeCity||'';$('sShop').value=S.settings.shopAddr||'';$('sShopCity').value=S.settings.shopCity||'';$('sShopMin').value=S.settings.shopMin;$('sEndHome').checked=!!S.settings.endHome;$('sTax').value=S.settings.taxPct;$('sLearn').checked=!!S.settings.learn;$('sGps').checked=!!S.settings.useGps;$('sVoice').checked=!!S.settings.voice;$('sArrive').checked=!!S.settings.autoArrive;$('sMe').value=S.settings.myName||'';$('sTpl').value=S.settings.smsTpl||'';$('sSchool').value=S.settings.schoolAddr||'';$('sSchoolCity').value=S.settings.schoolCity||'';$('sClass').value=S.settings.classAt||'17:30';$('sClassLate').value=S.settings.classLatest||'17:45';$('sSchoolBuf').value=S.settings.schoolBuf;$('sSchoolDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-cd="${i+1}" class="${String(S.settings.schoolDays).includes(i+1)?'primary':''}">${n}</button>`).join('');$('sShopDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-sd="${i+1}" class="${String(S.settings.shopDays).includes(i+1)?'primary':''}">${n}</button>`).join('');const nf=Object.keys(S.settings.fix||{}).length;$('clearFix').textContent=nf?'Clear '+nf+' map pin fix'+(nf>1?'es':''):'No map pin fixes';$('clearFix').disabled=!nf;$('sDay').value=S.settings.dayStart||'08:00';$('sSat').value=S.settings.satStart||'09:00';$('sMinA').value=S.settings.minAppt;$('sMinR').value=S.settings.minRT;$('sTarget').value=S.settings.target;$('sHourly').value=S.settings.hourly;$('sKm').value=S.settings.kmRate;
   $('rateList').innerHTML=JOBS.map(([id,n])=>`<label class="f">${n}<input type="number" inputmode="decimal" step="0.01" data-r="${id}" value="${rate(id)}"></label>`).join('');
 }
 $('v-setup').addEventListener('click',e=>{const c=e.target.closest('[data-cd]');if(c){const d=c.dataset.cd;let v=String(S.settings.schoolDays||'');v=v.includes(d)?v.replace(d,''):(v+d).split('').sort().join('');S.settings.schoolDays=v;c.classList.toggle('primary',v.includes(d));touch('settings');return}
@@ -1440,11 +1705,11 @@ $('v-setup').addEventListener('change',e=>{const id=e.target.id;
   if(id==='bkFile'&&e.target.files[0]){e.target.files[0].text().then(restore);e.target.value=''}});
 $('v-setup').addEventListener('input',e=>{const t=e.target;
   if(t.id==='sMe')S.settings.myName=t.value.trim();else if(t.id==='sTpl')S.settings.smsTpl=t.value;else if(t.id==='sTax')S.settings.taxPct=Math.max(0,Math.min(60,+t.value||0));else if(t.id==='sSchool')S.settings.schoolAddr=t.value.trim();else if(t.id==='sSchoolCity')S.settings.schoolCity=t.value.trim();else if(t.id==='sClass')S.settings.classAt=t.value||'17:30';else if(t.id==='sClassLate')S.settings.classLatest=t.value||'17:45';else if(t.id==='sSchoolBuf')S.settings.schoolBuf=Math.max(0,+t.value||0);
-  else if(t.id==='sHome')S.settings.homeAddr=t.value.trim();else if(t.id==='sHomeCity')S.settings.homeCity=t.value.trim();else if(t.id==='sShop')S.settings.shopAddr=t.value.trim();else if(t.id==='sShopCity')S.settings.shopCity=t.value.trim();else if(t.id==='sShopMin')S.settings.shopMin=Math.max(0,+t.value||0);else if(t.id==='sEndHome')S.settings.endHome=t.checked;else if(t.id==='sDay')S.settings.dayStart=t.value||'08:00';else if(t.id==='sMinA')S.settings.minAppt=Math.max(0,+t.value||0);else if(t.id==='sMinR')S.settings.minRT=Math.max(0,+t.value||0);
+  else if(t.id==='sHome')S.settings.homeAddr=t.value.trim();else if(t.id==='sHomeCity')S.settings.homeCity=t.value.trim();else if(t.id==='sShop')S.settings.shopAddr=t.value.trim();else if(t.id==='sShopCity')S.settings.shopCity=t.value.trim();else if(t.id==='sShopMin')S.settings.shopMin=Math.max(0,+t.value||0);else if(t.id==='sEndHome')S.settings.endHome=t.checked;else if(t.id==='sDay')S.settings.dayStart=t.value||'08:00';else if(t.id==='sSat')S.settings.satStart=t.value||'09:00';else if(t.id==='sMinA')S.settings.minAppt=Math.max(0,+t.value||0);else if(t.id==='sMinR')S.settings.minRT=Math.max(0,+t.value||0);
   else if(t.id==='sTag')S.settings.tag=t.value.trim();else if(t.id==='sTarget')S.settings.target=+t.value||0;else if(t.id==='sHourly')S.settings.hourly=+t.value||0;else if(t.id==='sKm')S.settings.kmRate=+t.value||0;else if(t.dataset.r)S.settings.rates[t.dataset.r]=+t.value||0;else return;
   touch('settings');});
 
-function render(v){({today:renderToday,route:renderRoute,log:renderLog,week:renderWeek,setup:renderSetup})[v]()}
+function render(v){({today:renderToday,route:renderRoute,log:renderLog,week:renderWeek,chat:renderChat,setup:renderSetup})[v]()}
 function renderAll(fromSnap){const cur=VIEWS.find(x=>$('v-'+x).classList.contains('on'))||'today';
   if(fromSnap&&cur==='log'&&document.activeElement&&document.activeElement.closest('#v-log'))return;
   render(cur);if(cur!=='today')renderClock();}
@@ -1452,6 +1717,8 @@ show(location.hash.slice(1)||'today');
 takeShared();
 $('mic').onclick=micStart;{const m=$('mic');m.hidden=!(SR&&['today','route'].includes((location.hash.slice(1)||'today')))}
 if(GH.token)ghPull(false);
+acctStart();
+setTimeout(()=>{if(Object.values(S.days).some(x=>x.stops&&x.stops.some(s=>s.doneAt)&&x.bizKm==null))backfillBiz()},3000);
 connect();
 }
 </script>

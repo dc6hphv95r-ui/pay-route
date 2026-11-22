@@ -34,7 +34,9 @@
             ".txt",
             ".csv",
             ".eml",
-            "message/rfc822"
+            "message/rfc822",
+            "application/pdf",
+            ".pdf"
           ]
         }
       ]
