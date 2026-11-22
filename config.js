@@ -1,6 +1,2 @@
-// Pay & Route account settings. Fill in from Supabase → Project Settings → API.
-// The "anon / publishable" key is meant to be public; never put the service_role / secret key here.
-window.PR_CONFIG = {
-  supabaseUrl: '',
-  supabaseKey: ''
-};
+// Pay & Route account settings. The publishable key is safe to be public — Row Level Security protects the data.
+window.PR_CONFIG = { supabaseUrl: 'https://liijkbassuqwhfaswrap.supabase.co', supabaseKey: 'sb_publishable_wPYVfS9XloNGw07f22wDFg_vsGSioZB' };

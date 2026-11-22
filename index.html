@@ -429,10 +429,10 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
       <p class="note" id="acctStatus" style="margin:4px 0 10px"></p>
       <div id="acctOut">
         <label class="f">Email<input id="acEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="off"></label>
-        <button class="primary wide" id="acSend" style="margin-top:8px">Email me a sign-in code</button>
-        <div id="acCodeBox" hidden style="margin-top:10px"><label class="f">6-digit code from the email<input id="acCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label><button class="primary wide" id="acVerify" style="margin-top:8px">Sign in</button></div>
+        <label class="f" style="margin-top:8px">Password<input id="acPass" type="password" autocomplete="current-password"></label>
+        <button class="primary wide" id="acSend" style="margin-top:8px">Sign in</button>
       </div>
-      <div id="acctIn" hidden><div class="grid2"><button id="acSync">Sync now</button><button id="acOut">Sign out</button></div></div>
+      <div id="acctIn" hidden><div class="grid2"><button id="acSync">Sync now</button><button id="acOut">Sign out</button></div><button class="wide" id="acPw" style="margin-top:8px">Change my password</button></div>
       <p class="note" style="margin:10px 0 0">Your pay, hours, mileage, stock, expenses and settings are saved to your account. Customer names, phones, addresses and work orders stay on this phone only.</p>
     </div>
     <h3 style="margin-top:4px">Cloud backup (GitHub)</h3>
@@ -1139,7 +1139,7 @@ function cloudCopy(){const days={};for(const k in S.days){const d=S.days[k],o={}
 function mergeCloud(r){const days=Object.assign({},S.days);for(const k in r.days){const local=days[k]||{};days[k]=Object.assign({},local,r.days[k],{stops:local.stops,plan:local.plan})}
   S.days=days;S.settings=Object.assign({},DEF,r.settings,{fix:S.settings.fix||{}});S.stock=r.stock||{};S.expenses=r.expenses||[];ls.set('pt2',JSON.stringify(S));GEO.clear()}
 function acctUI(){const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;
-  $('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in to save your data to your account and use it on any phone.'}
+  $('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in with the email and password you were given to save your data and use Chat.'}
 async function sbPush(manual){if(!SBU||sbBusy)return;if(!navigator.onLine){return}sbBusy=true;
   try{const at=new Date().toISOString();const{error}=await SB.from('user_data').upsert({user_id:SBU.id,data:cloudCopy(),updated_at:at});if(error)throw error;SBS.last=Date.now();SBS.dirty=0;SBS.remoteAt=at;sbSave();acctUI();if(manual)toast('Synced')}
   catch(e){if(manual)toast('Sync failed: '+(e.message||e))}finally{sbBusy=false}}
@@ -1154,12 +1154,14 @@ async function acctStart(){if(!SB_ON){acctUI();return}try{await loadSB()}catch(e
   const{data}=await SB.auth.getSession();SBU=data.session?data.session.user:null;acctUI();if(SBU){sbPull(false);chatInit().catch(()=>{})}
   SB.auth.onAuthStateChange((ev,sess)=>{SBU=sess?sess.user:null;acctUI()});
   document.addEventListener('visibilitychange',()=>{if(!SBU)return;if(document.visibilityState==='hidden'&&SBS.dirty)sbPush(false);if(document.visibilityState==='visible')sbPull(false)})}
-$('acSend').onclick=async()=>{const em=$('acEmail').value.trim();if(!/^\S+@\S+\.\S+$/.test(em)){toast('Enter your email');return}
-  try{await loadSB();const{error}=await SB.auth.signInWithOtp({email:em,options:{shouldCreateUser:false}});if(error)throw error;$('acCodeBox').hidden=false;$('acCode').focus();toast('Code sent — check your email')}
-  catch(e){toast(/signups? not allowed|not found|Signups/i.test(e.message||'')?'That email isn\'t invited yet — ask the app owner':'Couldn\'t send code: '+(e.message||e))}};
-$('acVerify').onclick=async()=>{const em=$('acEmail').value.trim(),code=$('acCode').value.replace(/\D/g,'');if(code.length<6){toast('Enter the code from the email');return}
-  try{const{data,error}=await SB.auth.verifyOtp({email:em,token:code,type:'email'});if(error)throw error;SBU=data.user;acctUI();toast('Signed in');await sbPull(false);chatInit().catch(()=>{});renderAll()}
-  catch(e){toast('Code didn\'t work: '+(e.message||e))}};
+$('acSend').onclick=async()=>{const em=$('acEmail').value.trim(),pw=$('acPass').value;if(!/^\S+@\S+\.\S+$/.test(em)){toast('Enter your email');return}if(!pw){toast('Enter your password');return}
+  const b=$('acSend');b.disabled=true;b.textContent='Signing in…';
+  try{await loadSB();const{data,error}=await SB.auth.signInWithPassword({email:em,password:pw});if(error)throw error;$('acPass').value='';SBU=data.user;acctUI();toast('Signed in');await sbPull(false);chatInit().catch(()=>{});renderAll()}
+  catch(e){toast(/invalid/i.test(e.message||'')?'Wrong email or password — ask whoever added you to reset it':'Couldn\'t sign in: '+(e.message||e))}
+  finally{b.disabled=false;b.textContent='Sign in'}};
+$('acPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('acSend').click()});
+$('acPw').onclick=()=>{$('sheetT').textContent='Change your password';$('sheetB').innerHTML='<label class="f">New password (8+ characters)<input id="pwNew" type="password" autocomplete="new-password"></label><button class="primary" id="pwOk">Save new password</button>';$('sheet').hidden=false;$('sheetB').onclick=null;
+  $('pwOk').onclick=async()=>{const v=$('pwNew').value;if(v.length<8){toast('Use at least 8 characters');return}try{const{error}=await SB.auth.updateUser({password:v});if(error)throw error;$('sheet').hidden=true;toast('Password changed')}catch(e){toast('Couldn\'t change it: '+(e.message||e))}}};
 $('acSync').onclick=async()=>{await sbPull(false);await sbPush(true)};
 $('acOut').onclick=async()=>{if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();toast('Signed out — your data stays on this phone')};
 
