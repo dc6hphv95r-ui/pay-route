@@ -188,7 +188,7 @@ tr.go{cursor:pointer}
 .rtm{color:var(--mute)}
 /* sub-sections */
 .vh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.vh h2{margin:0}
-.dnav{display:flex;gap:4px;align-items:center}.dnav input{width:auto;min-width:0;max-width:11.5em;padding:0 8px}.dnav button{width:40px;padding:0;font-size:22px}
+.dnav{display:flex;gap:6px;align-items:stretch}.dnav input{-webkit-appearance:none;appearance:none;width:auto;min-width:0;max-width:11.5em;height:44px;min-height:44px;margin:0;padding:0 10px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:44px}.dnav input::-webkit-date-and-time-value{text-align:center}.dnav button{width:40px;padding:0;font-size:22px}
 .seg{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;display:flex;gap:4px;background:var(--plane);border-radius:14px;padding:4px;margin:0 0 12px;box-shadow:0 6px 10px -8px rgba(0,0,0,.3)}
 .seg button{flex:1 1 0;min-height:40px;border:0;border-radius:10px;background:none;font-size:14px;padding:0 6px;color:var(--mute);white-space:nowrap}
 .seg button.on{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.18)}
@@ -196,7 +196,7 @@ tr.go{cursor:pointer}
 #v-route .msg:empty{display:none}
 #planBar{margin-bottom:10px}
 .paywk{padding:12px 14px}.pw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.pwc{display:flex;flex-direction:column;align-items:flex-start;gap:0;min-height:0;padding:10px 12px;border:0;border-radius:12px;background:var(--bg);text-align:left;font-weight:500}
+.pwc{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:0;min-height:0;padding:10px 12px;border:0;border-radius:12px;background:var(--bg);text-align:left;font-weight:500}
 .mid{font-size:clamp(24px,7vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.01em}
 details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;font-weight:700;opacity:.75}details.odo label{margin-top:6px}
 /* sign-in screen */
@@ -215,7 +215,8 @@ details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;fo
 .crow .ct2{font-size:12px;color:var(--mute);text-align:right;display:grid;gap:6px;justify-items:end}
 .crow .ct2.un{color:var(--wa);font-weight:700}
 .ub2{min-width:22px;height:22px;border-radius:11px;background:var(--wa);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;padding:0 6px}
-#thread{position:fixed;inset:0;z-index:25;display:flex;flex-direction:column;background:var(--wabg);height:100dvh}
+#thread{position:fixed;left:0;right:0;top:0;z-index:25;display:flex;flex-direction:column;background:var(--wabg);height:100dvh}
+body.thr{overflow:hidden}
 .th{display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px 4px;background:light-dark(#f0f2f5,#202c33);color:var(--wtx)}
 .th .back{border:0;background:none;width:40px;min-height:44px;padding:0;font-size:30px;line-height:1;color:inherit}
 .th .av{width:40px;height:40px;font-size:15px}
@@ -1264,7 +1265,7 @@ function renderChat(){const gate=$('chatGate'),main=$('chatMain');
     +(PEOPLE.length?'':'<p class="note" style="padding:10px 4px">Coworkers show up here after they sign in for the first time.</p>');
   if(THREAD)renderThread();chatBadge()}
 function renderThread(keepScroll){if(!THREAD||!SBU)return;const box=$('msgs'),atBottom=box.scrollHeight-box.scrollTop-box.clientHeight<80;
-  $('thAv').innerHTML=avHtml(THREAD,roomName(THREAD));$('thName').textContent=roomName(THREAD);$('thSub').textContent=THREAD==='team'?(PEOPLE.length+1)+' people':'Coworker';
+  $('thAv').innerHTML=avHtml(THREAD,roomName(THREAD));$('thName').textContent=roomName(THREAD);$('thSub').textContent=THREAD==='team'?(PEOPLE.length?(PEOPLE.length+1)+' people':'Just you so far'):'Coworker';
   const list=msgsOf(THREAD);let html='',prevDay='',prevSender='';
   for(const m of list){const t=new Date(m.created_at),dk=t.toDateString(),me=m.sender===SBU.id;
     if(dk!==prevDay){html+=`<div class="dchip">${esc(dayChip(t))}</div>`;prevDay=dk;prevSender=''}
@@ -1273,9 +1274,14 @@ function renderThread(keepScroll){if(!THREAD||!SBU)return;const box=$('msgs'),at
   box.innerHTML=html||`<div class="tempty">${THREAD==='team'?'Messages here go to everyone on the team.':'Messages here are only between you and '+esc(roomName(THREAD))+'.'}<br>Use WO numbers — not customer names or phone numbers.</div>`;
   if(!keepScroll||atBottom)box.scrollTop=box.scrollHeight;
   markSeen(THREAD)}
-function openThread(room){THREAD=ROOM=room;$('thread').hidden=false;$('mic').hidden=true;try{history.pushState({thread:room},'',location.hash)}catch(e){}renderThread();chatBadge()}
-function closeThread(silent){if(!THREAD)return;markSeen(THREAD);THREAD=null;$('thread').hidden=true;$('chatIn').blur();if(!silent&&history.state&&history.state.thread){try{history.back()}catch(e){}}if(location.hash==='#chat')renderChat()}
-addEventListener('popstate',()=>{if(THREAD){markSeen(THREAD);THREAD=null;$('thread').hidden=true;if(location.hash==='#chat')renderChat()}});
+addEventListener('focusout',()=>setTimeout(()=>{const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;if(window.visualViewport&&visualViewport.offsetTop)scrollTo(scrollX,scrollY);if(document.body.classList.contains('thr'))scrollTo(0,0);fitThread()},120));
+addEventListener('focusin',()=>setTimeout(fitThread,60));
+/* keep the chat exactly the size of the visible screen when the keyboard opens/closes (iPhone) */
+function fitThread(){const t=$('thread'),v=window.visualViewport;if(!t||t.hidden)return;const typing=document.activeElement===$('chatIn');if(v&&typing){t.style.height=v.height+'px';t.style.top=v.offsetTop+'px'}else{t.style.height='';t.style.top='0px'}}
+if(window.visualViewport){visualViewport.addEventListener('resize',fitThread);visualViewport.addEventListener('scroll',fitThread)}addEventListener('resize',fitThread);
+function openThread(room){THREAD=ROOM=room;$('thread').hidden=false;document.body.classList.add('thr');fitThread();$('mic').hidden=true;try{history.pushState({thread:room},'',location.hash)}catch(e){}renderThread();chatBadge()}
+function closeThread(silent){if(!THREAD)return;markSeen(THREAD);THREAD=null;$('thread').hidden=true;document.body.classList.remove('thr');scrollTo(0,0);$('chatIn').blur();if(!silent&&history.state&&history.state.thread){try{history.back()}catch(e){}}if(location.hash==='#chat')renderChat()}
+addEventListener('popstate',()=>{if(THREAD){markSeen(THREAD);THREAD=null;$('thread').hidden=true;document.body.classList.remove('thr');if(location.hash==='#chat')renderChat()}});
 $('thBack').onclick=()=>closeThread();
 document.addEventListener('click',e=>{const b=e.target.closest('[data-room]');if(!b)return;openThread(b.dataset.room)});
 {const ta=$('chatIn');const grow=()=>{ta.style.height='auto';ta.style.height=Math.min(120,ta.scrollHeight)+'px'};ta.addEventListener('input',grow);
@@ -1730,7 +1736,7 @@ function renderToday(){
   else if(!next)$('tNext').innerHTML=`<div class="card"><b>All stops finished.</b> <span class="note">Don't forget to check out.</span></div>`;
   else{const i=gs.indexOf(next);$('tNext').innerHTML=`<div class="note" style="margin:4px 2px 6px;font-weight:700">Next stop · ${i+1} of ${gs.length}</div>`+stopCard(next,i+1,TODAY,true)+`<button class="wide" data-go="route" style="margin-bottom:12px">See full route</button>`}
   const ws=weekStart(TODAY),t=weekSum(ws),tg=+S.settings.target||0;
-  $('tWeek').textContent=money(t.total);$('tWeekBar').style.width=Math.min(100,tg?t.total/tg*100:0)+'%';$('tWeekMsg').textContent='of '+money(tg)+' · '+weekMsg(ws,t);
+  $('tWeek').textContent=money(t.total);$('tWeekBar').style.width=Math.min(100,tg?t.total/tg*100:0)+'%';$('tWeekMsg').textContent='of '+money(tg).replace(/\.00$/,'');
 }
 function weekMsg(ws,t){const left=(+S.settings.target||0)-t.total;if(left<=0)return 'Target hit — '+money(-left)+' over.';
   let n=0;for(let i=0;i<7;i++){const d=addDays(ws,i);if(parseD(d).getDay()!==0&&d>=TODAY&&!(S.days[d]&&+S.days[d].h))n++}
