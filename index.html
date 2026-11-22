@@ -202,10 +202,11 @@ tr.go{cursor:pointer}
 details.odo{margin-top:10px;font-size:14px}details.odo summary{cursor:pointer;font-weight:700;opacity:.75}details.odo label{margin-top:6px}
 /* sign-in screen */
 #gate{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top)) 22px calc(20px + env(safe-area-inset-bottom));overflow:auto}
-#gate .gbox{width:100%;max-width:380px}
-#gate img{width:72px;height:72px;border-radius:18px;display:block;margin-bottom:16px}
-#gate h1{font-size:30px;line-height:1.1;margin:0 0 4px;font-weight:800}
-#gate .gerr{min-height:20px;color:#c62828;font-weight:700;font-size:14px;margin:8px 0 0}
+#onb{position:fixed;inset:0;z-index:39;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top)) 22px calc(20px + env(safe-area-inset-bottom));overflow:auto}
+#onb .gbox,#gate .gbox{width:100%;max-width:380px}
+#onb img,#gate img{width:72px;height:72px;border-radius:18px;display:block;margin-bottom:16px}
+#onb h1,#gate h1{font-size:30px;line-height:1.1;margin:0 0 4px;font-weight:800}
+#onb .gerr,#gate .gerr{min-height:20px;color:#c62828;font-weight:700;font-size:14px;margin:8px 0 0}
 /* chat — WhatsApp-style */
 :root{--wa:#00a884;--wabg:light-dark(#efeae2,#0b141a);--win:light-dark(#fff,#202c33);--wout:light-dark(#d9fdd3,#005c4b);--wtx:light-dark(#111b21,#e9edef);--wsub:light-dark(#667781,#8696a0)}
 .clist{margin:0 -4px}
@@ -407,6 +408,7 @@ body.thr{overflow:hidden}
     </div>
     <h3>Piece rates</h3>
     <div class="rates" id="rateList"></div>
+    <button class="wide" id="teamSave" style="margin-top:12px" hidden>Save as team rates</button>
     </div>
     <div data-pane="route" hidden>
     <div class="grid2">
@@ -500,6 +502,17 @@ body.thr{overflow:hidden}
   <button class="primary wide" id="gGo" style="margin-top:14px;min-height:52px">Sign in</button>
   <p class="gerr" id="gErr" role="alert"></p>
   <p class="note" style="margin-top:28px;text-align:center">© 2026 Yonas Yohans</p>
+</div></div>
+<div id="onb" hidden><div class="gbox">
+  <img src="icon-192.png" alt="">
+  <h1>Welcome</h1>
+  <div style="height:14px"></div>
+  <label class="f">Your name<input id="oName" autocomplete="name" placeholder="e.g. Yonas"></label>
+  <label class="f" style="margin-top:10px">Your name on the schedule<input id="oTag" autocapitalize="off" autocomplete="off" placeholder="e.g. 126h_yonas"></label>
+  <label class="f" style="margin-top:10px">Home address <span style="font-weight:500">(optional)</span><input id="oHome" autocomplete="street-address" placeholder="e.g. 123 Main St E"></label>
+  <label class="f" style="margin-top:10px">Home city<input id="oCity" placeholder="e.g. Milton"></label>
+  <button class="primary wide" id="oGo" style="margin-top:14px;min-height:52px">Start</button>
+  <p class="gerr" id="oErr" role="alert"></p>
 </div></div>
 <div class="toast" id="toast" role="status"></div>
 <div id="sheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetT"><div id="sheetT" style="font-weight:800;font-size:18px;margin-bottom:10px"></div><div id="sheetB" style="display:grid;gap:8px"></div><button id="sheetX" class="wide" style="margin-top:10px">Cancel</button></div></div>
@@ -1190,7 +1203,7 @@ function cloudCopy(){const days={};for(const k in S.days){const d=S.days[k],o={}
   const st=Object.assign({},S.settings);delete st.fix;return{settings:st,days,stock:S.stock||{},expenses:S.expenses||[]}}
 function mergeCloud(r){const days=Object.assign({},S.days);for(const k in r.days){const local=days[k]||{};days[k]=Object.assign({},local,r.days[k],{stops:local.stops,plan:local.plan})}
   S.days=days;S.settings=Object.assign({},DEF,r.settings,{fix:S.settings.fix||{}});S.stock=r.stock||{};S.expenses=r.expenses||[];ls.set('pt2',JSON.stringify(S));GEO.clear()}
-function acctUI(){const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;
+function acctUI(){{const t=$('teamSave');if(t)t.hidden=!(SB_ON&&SBU)}const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;
   setSync(SBU?'cloud':'local',SBU?'Synced to your account':'Saved on this phone');$('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in with the email and password you were given to save your data and use Chat.'}
 async function sbPush(manual){if(!SBU||sbBusy)return;if(!navigator.onLine){return}sbBusy=true;
   try{const at=new Date().toISOString();const{error}=await SB.from('user_data').upsert({user_id:SBU.id,data:cloudCopy(),updated_at:at});if(error)throw error;SBS.last=Date.now();SBS.dirty=0;SBS.remoteAt=at;sbSave();acctUI();if(manual)toast('Synced')}
@@ -1203,13 +1216,13 @@ async function sbPull(force){if(!SBU)return;try{const{data,error}=await SB.from(
 const ghSched=scheduleSync;
 scheduleSync=()=>{ghSched();if(!SBU)return;SBS.dirty=Date.now();sbSave();clearTimeout(sbTimer);sbTimer=setTimeout(()=>sbPush(false),20000)};
 async function acctStart(){if(!SB_ON){acctUI();return}try{await loadSB()}catch(e){return}
-  const{data}=await SB.auth.getSession();SBU=data.session?data.session.user:null;acctUI();gateUI();if(SBU){sbPull(false);chatInit().catch(()=>{})}
+  const{data}=await SB.auth.getSession();SBU=data.session?data.session.user:null;acctUI();gateUI();if(SBU)teamPull();if(SBU){sbPull(false);chatInit().catch(()=>{})}
   SB.auth.onAuthStateChange((ev,sess)=>{if(sess)SBU=sess.user;else if(ev==='SIGNED_OUT')SBU=null;acctUI();gateUI()});
-  document.addEventListener('visibilitychange',()=>{if(!SBU)return;if(document.visibilityState==='hidden'&&SBS.dirty)sbPush(false);if(document.visibilityState==='visible')sbPull(false)})}
+  document.addEventListener('visibilitychange',()=>{if(!SBU)return;if(document.visibilityState==='hidden'&&SBS.dirty)sbPush(false);if(document.visibilityState==='visible'){sbPull(false);teamPull()}})}
 async function signIn(em,pw,btn,errEl){em=String(em||'').trim();const err=t=>{if(errEl)errEl.textContent=t;else toast(t)};
   if(!/^\S+@\S+\.\S+$/.test(em)){err('Enter your email');return false}if(!pw){err('Enter your password');return false}
   const lbl=btn.textContent;btn.disabled=true;btn.textContent='Signing in…';if(errEl)errEl.textContent='';
-  try{await loadSB();const{data,error}=await SB.auth.signInWithPassword({email:em,password:pw});if(error)throw error;SBU=data.user;acctUI();gateUI();toast('Signed in');await sbPull(false);chatInit().catch(()=>{});renderAll();return true}
+  try{await loadSB();const{data,error}=await SB.auth.signInWithPassword({email:em,password:pw});if(error)throw error;SBU=data.user;acctUI();gateUI();toast('Signed in');await teamPull();await sbPull(false);chatInit().catch(()=>{});renderAll();return true}
   catch(e){const m=e.message||String(e);err(/invalid/i.test(m)?'Wrong email or password.':/fetch|network|load/i.test(m)?'No connection — you need internet to sign in the first time.':'Couldn\'t sign in: '+m);return false}
   finally{btn.disabled=false;btn.textContent=lbl}}
 $('acSend').onclick=async()=>{if(await signIn($('acEmail').value,$('acPass').value,$('acSend')))$('acPass').value=''};
@@ -1217,8 +1230,20 @@ $('gGo').onclick=async()=>{if(await signIn($('gEmail').value,$('gPass').value,$(
 $('gPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('gGo').click()});
 /* sign-in screen: shown until you sign in. Once signed in it stays out of the way, even with no signal. */
 const hasSession=()=>{try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^sb-.*-auth-token$/.test(k)&&localStorage.getItem(k))return true}}catch(e){}return false};
-function gateUI(){const g=$('gate');if(!g)return;const on=SB_ON&&!SBU&&!hasSession();g.hidden=!on;if(on&&!$('gEmail').value)setTimeout(()=>{try{$('gEmail').focus()}catch(e){}},50)}
+function gateUI(){const g=$('gate');if(!g)return;const on=SB_ON&&!SBU&&!hasSession();g.hidden=!on;setTimeout(onbUI,0);if(on&&!$('gEmail').value)setTimeout(()=>{try{$('gEmail').focus()}catch(e){}},50)}
 gateUI();
+/* first-run: your name goes into texts, chat and finding your part of the schedule */
+const tagFrom=v=>{v=String(v||'').trim().toLowerCase().replace(/\s*\(.*\)\s*$/,'');const m=/^\d+h(_.+)$/.exec(v);if(m)return m[1];v=v.replace(/^_+/,'').replace(/\s+/g,'');return v?'_'+v:''};
+function onbUI(){const o=$('onb');if(!o)return;const need=(!SB_ON||SBU||hasSession())&&(!S.settings.myName||!S.settings.tag);
+  if(need&&o.hidden){$('oName').value=S.settings.myName||'';$('oTag').value=S.settings.tag?S.settings.tag.replace(/^_/,''):'';$('oHome').value=S.settings.homeAddr||'';$('oCity').value=S.settings.homeCity||''}
+  o.hidden=!need||!$('gate').hidden}
+$('oName').addEventListener('input',()=>{const t=$('oTag');if(!t.dataset.touched)t.value=$('oName').value.trim().split(/\s+/)[0].toLowerCase()});
+$('oTag').addEventListener('input',()=>{$('oTag').dataset.touched=1});
+$('oGo').onclick=async()=>{const nm=$('oName').value.trim(),tg=tagFrom($('oTag').value);
+  if(!nm){$('oErr').textContent='Enter your name';return}if(!tg){$('oErr').textContent='Enter your name as it shows on the schedule';return}
+  const st=S.settings;st.myName=nm;st.tag=tg;if($('oHome').value.trim()){st.homeAddr=$('oHome').value.trim();st.homeCity=$('oCity').value.trim()}
+  cache();$('onb').hidden=true;renderAll();toast('All set, '+nm.split(' ')[0]);
+  try{if(SBU&&SB)await SB.from('profiles').upsert({user_id:SBU.id,name:nm,updated_at:new Date().toISOString()})}catch(e){}};
 $('acPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('acSend').click()});
 $('acPw').onclick=()=>{$('sheetT').textContent='Change your password';$('sheetB').innerHTML='<label class="f">New password (8+ characters)<input id="pwNew" type="password" autocomplete="new-password"></label><button class="primary" id="pwOk">Save new password</button>';$('sheet').hidden=false;$('sheetB').onclick=null;
   $('pwOk').onclick=async()=>{const v=$('pwNew').value;if(v.length<8){toast('Use at least 8 characters');return}try{const{error}=await SB.auth.updateUser({password:v});if(error)throw error;$('sheet').hidden=true;toast('Password changed')}catch(e){toast('Couldn\'t change it: '+(e.message||e))}}};
@@ -1229,7 +1254,18 @@ $('acOut').onclick=async()=>{if(SBS.dirty)await sbPush(false);if(chatSub){SB.rem
 /* ---------- team chat (Supabase, invited coworkers only) ---------- */
 let ROOM='team',MSGS=[],PEOPLE=[],chatSub=null,chatSeen=+(ls.get('chatSeen')||0);
 const meName=()=>(S.settings.myName||'').trim()||(SBU?SBU.email.split('@')[0]:'Me');
-async function chatInit(){if(!SBU||chatSub)return;
+/* team rates: one shared copy in Supabase, so everyone's pay uses the same piece rates */
+const TEAM_KEYS=['rates','hourly','kmRate'],TEAM_FILL=['shopAddr','shopCity','shopDays'];
+async function teamPull(){if(!SBU||!SB)return;try{const{data,error}=await SB.from('team_settings').select('data').eq('id',1).maybeSingle();if(error||!data||!data.data)return;const t=data.data,st=S.settings;let ch=false;
+  for(const k of TEAM_KEYS)if(t[k]!=null&&JSON.stringify(st[k])!==JSON.stringify(t[k])){st[k]=k==='rates'?Object.assign({},t[k]):t[k];ch=true}
+  for(const k of TEAM_FILL)if(t[k]&&!st[k]){st[k]=t[k];ch=true}
+  if(ch){cache();renderAll();toast('Team pay rates updated')}}catch(e){}}
+async function teamPush(){if(!SBU)return;const st=S.settings,d={};for(const k of [...TEAM_KEYS,...TEAM_FILL])d[k]=st[k];
+  const{error}=await SB.from('team_settings').upsert({id:1,data:d,updated_at:new Date().toISOString()});
+  toast(error?(/row-level|permission|denied/i.test(error.message)?'Only the app admin can change team rates':'Couldn\'t save: '+error.message):'Saved — everyone gets these rates next time they open the app')}
+$('teamSave').onclick=teamPush;
+let chatP=null;function chatInit(){if(!SBU||chatSub)return Promise.resolve();return chatP||(chatP=chatInit1().finally(()=>{chatP=null}))}
+async function chatInit1(){if(!SBU||chatSub)return;
   await SB.from('profiles').upsert({user_id:SBU.id,name:meName(),updated_at:new Date().toISOString()});
   const{data:pp}=await SB.from('profiles').select('user_id,name').order('name');PEOPLE=(pp||[]).filter(x=>x.user_id!==SBU.id);
   await chatLoad();
