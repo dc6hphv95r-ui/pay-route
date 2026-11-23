@@ -11,5 +11,6 @@ Third-party parts keep their own licences and are not covered by the notice abov
 - PDF.js (pdf.min.js, pdf.worker.min.js) - Apache License 2.0
 - SheetJS Community Edition (xlsx.full.min.js) - Apache License 2.0
 - Supabase JS client (supabase.js) - MIT licence
+- Tesseract.js and its English language data (tesseract.min.js, worker.min.js, tesseract-core-*.wasm.js, eng.traineddata.gz) - Apache License 2.0
 - Map data (halton-map.txt) - (c) OpenStreetMap contributors, Open Database License (ODbL)
 - Map tiles - OpenFreeMap / OpenMapTiles
