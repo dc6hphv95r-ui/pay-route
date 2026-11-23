@@ -1165,16 +1165,16 @@ async function shotPrep(file){const img=await createImageBitmap(file),k=img.widt
   for(let xx=0;xx<W;xx++){let st=-1;for(let y=0;y<=H;y++){const on=y<H&&g[y*W+xx]<215;if(on&&st<0)st=y;if(!on&&st>=0){if(y-st>Math.max(40*k,H*0.05))for(let z=st;z<y;z++)g[z*W+xx]=255;st=-1}}}
   for(let i=0,p=0;i<a.length;i+=4,p++){a[i]=a[i+1]=a[i+2]=g[p];a[i+3]=255}x.putImageData(d,0,0);return c}
 const STREET=/\b(ST|RD|DR|AVE?|CRES|CRT|CT|BLVD|LANE|LN|WAY|CIR|PL|TERR|PKY|PKWY|COMMON|LINE|SIDERD|GATE|TRAIL|TRL|HTS|GDNS|SQ|PATH|HWY|ROW|GROVE|CLOSE|GREEN|MEWS|HILL|PARK|LANDNG|LANDING|CIRCLE|DRIVE|ROAD|STREET|AVENUE|CRESCENT|COURT)\b(\s+[NSEW])?/;
-function ocrFix(t){return t.replace(/\b(\d{1,2})[:.;](\d\d)[:.;](\d\d)\b/g,'$1:$2:$3').replace(/[|]/g,'1').replace(/(\d)[Oo](\d)/g,'$10$2').replace(/\bA\s?M\b/g,'AM').replace(/\bP\s?M\b/g,'PM').replace(/(\d)\s*[.;]\s*(\d\d)\s*[.;:]?\s*(\d\d)?\s*([AP]M)/g,(m,h,mm,ss,ap)=>h+':'+mm+(ss?':'+ss:'')+' '+ap)}
+function ocrFix(t){return t.replace(/(\d)\)(?=\s|$)/g,'$11').replace(/\b(\d{1,2})[:.;](\d\d)[:.;](\d\d)\b/g,'$1:$2:$3').replace(/[|]/g,'1').replace(/(\d)[Oo](\d)/g,'$10$2').replace(/\bA\s?M\b/g,'AM').replace(/\bP\s?M\b/g,'PM').replace(/(\d)\s*[.;]\s*(\d\d)\s*[.;:]?\s*(\d\d)?\s*([AP]M)/g,(m,h,mm,ss,ap)=>h+':'+mm+(ss?':'+ss:'')+' '+ap)}
 /* turn recognised words (with positions) into work orders, column by column — cells may wrap onto 2 lines */
 function ocrTable(words,tag){
   const want=String(tag||'').toLowerCase().replace(/^_?/,'_');
   const W=words.map(w=>({t:ocrFix(w.text).trim(),x0:w.bbox.x0,x1:w.bbox.x1,y0:w.bbox.y0,y1:w.bbox.y1})).filter(w=>w.t);W.forEach(w=>{w.cy=(w.y0+w.y1)/2;w.h=w.y1-w.y0});
   const lh=W.length?W.map(w=>w.h).sort((a,b)=>a-b)[W.length>>1]:12;
   // header rows: a "WO" word with "TIME" on the same line
-  const heads=[];for(const w of W)if(/^WO#?$/i.test(w.t)){const line=W.filter(v=>Math.abs(v.cy-w.cy)<lh*0.7).sort((a,b)=>a.x0-b.x0);if(line.some(v=>/^TIME$/i.test(v.t))){
+  const heads=[];for(const w of W)if(/^TIME$/i.test(w.t)&&!heads.some(h=>Math.abs(h.y-w.cy)<lh)){const line=W.filter(v=>Math.abs(v.cy-w.cy)<lh*0.7).sort((a,b)=>a.x0-b.x0);if(line.some(v=>/address|name/i.test(v.t))){const wi=line.indexOf(w);if(wi>0&&!/^WO/i.test(line[wi-1].t))line[wi-1].t='WO#';
     const cells=[];for(const v of line){const l=cells[cells.length-1];if(l&&/^(#|2:?|_?Name|Type)$/i.test(v.t)&&v.x0-l.x1<lh*1.2){l.s+=' '+v.t;l.x1=v.x1}else cells.push({s:v.t,x0:v.x0,x1:v.x1})}
-    const cols=cells.filter(c=>c.x0>=w.x0-lh).map(c=>{const k=PDF_COL.find(([re])=>re.test(c.s.toLowerCase().replace(/:$/,'')));return{f:k?k[1]:'',x:c.x0}});for(let i=cols.length-2;i>=0;i--)if(!cols[i].f&&cols[i+1].f&&cols[i+1].x-cols[i].x<lh*6)cols[i].f=cols[i+1].f;heads.push({y:w.cy,cols})}}
+    const woCell=cells.find(c=>/^WO/i.test(c.s));if(!woCell)continue;const cols=cells.filter(c=>c.x0>=woCell.x0-lh).map(c=>{const k=PDF_COL.find(([re])=>re.test(c.s.toLowerCase().replace(/:$/,'')));return{f:k?k[1]:'',x:c.x0}});for(let i=cols.length-2;i>=0;i--)if(!cols[i].f&&cols[i+1].f&&cols[i+1].x-cols[i].x<lh*6)cols[i].f=cols[i+1].f;heads.push({y:w.cy,cols})}}
   const tags=[];{const seen=new Set();for(const w of W){if(seen.has(w))continue;const line=W.filter(v=>Math.abs(v.cy-w.cy)<lh*0.6).sort((a,b)=>a.x0-b.x0);line.forEach(v=>seen.add(v));
     const m=/\d{2,4}\s*[hn]\s*[_\s.-]\s*([a-z]{2,})/i.exec(line.map(v=>v.t).join(' '));if(m&&!/\bWO\b/i.test(line.map(v=>v.t).join(' ')))tags.push({y:line.reduce((a,v)=>a+v.cy,0)/line.length,t:'_'+m[1].toLowerCase()})}}
   const anchors=W.filter(w=>/^1\d{6}$/.test(w.t)).sort((a,b)=>a.y0-b.y0);
@@ -1193,12 +1193,13 @@ function ocrTable(words,tag){
     const all=inRow.map(w=>w.t).join(' ');
     let s=null;
     if(hd&&rec.addr){let tt=(rec.time||'').replace(/\s+/g,' ').toUpperCase().replace(/(\d)\s*([AP]M)/,'$1 $2'),ph=v=>v&&v!=='0'?v.replace(/\s+/g,''):'',ward=(rec.ward||'').replace(/\s/g,'');
-      {const m=/\d{1,2}:\d\d(?::\d\d)?\s*[AP]M/.exec(tt);if(m)tt=m[0].replace(/(\d)\s*([AP]M)/,'$1 $2')}
+      {const m=/\d{1,2}:\d\d(?::\d\d)?\s*[AP]M/.exec(tt);if(m)tt=m[0].replace(/(\d)\s*([AP]M)/,'$1 $2');
+        else{const dg=(tt.match(/\d/g)||[]).join(''),ap=(/([AP])\s*M/.exec(tt)||[])[1];if(dg.length>=3){const h=+dg.slice(0,dg.length>=6?2:dg.length===5||dg.length===3?1:dg.length===4&&+dg.slice(0,2)>12?1:2);if(h>=1&&h<=12)tt=h+':00:00 '+(ap?ap+'M':(h>=8&&h<12?'AM':'PM'))}}}
       s={wo:a.t,time:tt.replace(/:00(\s*[AP]M)$/i,'$1'),win:/\d:\d\d/.test(tt)?winMin(tt):-1,name:(rec.name||'').trim(),addr:(rec.addr||'').toUpperCase().replace(/\s+/g,' ').trim(),unit:ph(rec.unit),ward,city:cityOf(ward),ph:ph(rec.ph),ph2:ph(rec.ph2),size:(rec.size||'').replace(/\D/g,''),meter:ph(rec.meter).replace(/\D/g,''),notes:(rec.notes||'').trim(),problem:rec.problem||'',program:rec.program||'',type:(rec.type||'').toUpperCase().replace(/\s/g,''),st:''}}
     else{const r=ocrRows([all],'');if(r[0]){s=r[0];s.wo=a.t}}
     if(!s||!s.addr)return;
     {const m=STREET.exec(s.addr);if(m)s.addr=s.addr.slice(0,m.index+m[0].length).trim();s.addr=s.addr.replace(/[^A-Z0-9 '.-]/g,'').replace(/\s+/g,' ').trim()}
-    s.name=s.name.replace(/[^A-Za-z0-9&' .-]/g,'').replace(/\s+/g,' ').trim();s.unit=/^[0-9A-Z]{1,5}$/i.test(s.unit)&&s.unit!=='0'?s.unit:'';
+    s.name=s.name.replace(/[^A-Za-z0-9&' .-]/g,'').replace(/\s+/g,' ').trim();s.unit=/^([A-Z]{1,2})?\d{1,4}[A-Z]?$/.test(s.unit)&&s.unit!=='0'?s.unit:'';if(!/([a-z]{3,}\W+){2}/i.test(s.notes||''))s.notes='';
     if(!/^\d{2,3}$/.test(s.size))s.size='';if(!/^\d{6,10}$/.test(s.meter))s.meter='';s.ph=s.ph.replace(/[^\d()+-]/g,'');s.ph2=s.ph2.replace(/[^\d()+-]/g,'');
     if(!/^(REPL_MRT|REPL_T|REPAIR|INVESTIGAT|REMOVE|INSTALL)$/.test(s.type)){const m=/REPL.?MRT|REPL.?T\b|REPAIR|INVESTIG/i.exec(all);s.type=m?m[0].toUpperCase().replace(/REPL.?MRT/,'REPL_MRT').replace(/REPL.?T$/,'REPL_T').replace(/INVESTIG.*/,'INVESTIGAT'):'REPL_MRT';if(!m)s.guess=1}
     if(s.win<0)s.any=1;
@@ -1229,13 +1230,22 @@ function ocrRows(lines,tag){const want=String(tag||'').toLowerCase().replace(/^_
     if(!T)s.guess=1;if(!tt){s.any=1}
     if(!out.some(x=>x.wo===s.wo)){out.push(s);last=s}}
   return out}
+function ocrVote(stops){const by={};stops.forEach(s=>{const m=/^(\d+)(.*)$/.exec(s.addr);if(m)(by[m[2].trim()]=by[m[2].trim()]||[]).push([s,m[1]])});
+  for(const st in by){const g=by[st];if(g.length<3)continue;const cnt={};g.forEach(([,n])=>cnt[n]=(cnt[n]||0)+1);
+    const key=n=>n.replace(/[17]/g,'1');for(const [s,n] of g){const best=Object.keys(cnt).filter(k=>k.length===n.length&&key(k)===key(n)).sort((a,b)=>cnt[b]-cnt[a])[0];if(best&&best!==n&&cnt[best]>cnt[n])s.addr=best+' '+st}}
+  // a cut-off address (e.g. "BLVD" or "451 SMOKEY BLVD") takes the full one that most rows share
+  const cnt={};stops.forEach(s=>{if(/^\d/.test(s.addr))cnt[s.addr]=(cnt[s.addr]||0)+1});const common=Object.keys(cnt).filter(a=>cnt[a]>=3);
+  for(const s of stops){if(cnt[s.addr]>=3)continue;const tk=s.addr.split(' ');const m=common.find(a=>{const at=a.split(' ');return tk.every(t=>at.includes(t))&&tk[tk.length-1]===at[at.length-1]});if(m)s.addr=m}
+  // a time the reader lost (e.g. "PM" or "00 AM") takes the one from the row above
+  let prev=null;for(const s of stops){if(/^\d{1,2}:\d\d\s[AP]M$/.test(s.time)){prev=s}else if(prev){s.time=prev.time;s.win=prev.win;delete s.any}}
+  return stops}
 async function importShots(files,fallbackDate){files=[...files].filter(f=>/^image\//.test(f.type)||/\.(png|jpe?g|heic|webp)$/i.test(f.name));if(!files.length)return false;
   rMsg('Getting the text reader ready… (first time only, about 10 MB)');let w;try{w=await ocrWorker(p=>rMsg('Reading screenshot '+(cur+1)+' of '+files.length+'… '+Math.round(p*100)+'%'))}catch(e){rMsg('Couldn\'t start the text reader — check your connection the first time.',true);return false}
   let cur=0,lines=[],txt='';
   let stops=[];
   for(;cur<files.length;cur++){try{const c=await shotPrep(files[cur]);const r=await w.recognize(c,{},{blocks:true,text:true});txt+=r.data.text+'\n';
     const words=[];(r.data.blocks||[]).forEach(b=>(b.paragraphs||[]).forEach(p=>(p.lines||[]).forEach(l=>(l.words||[]).forEach(x=>words.push(x)))));
-    for(const st of ocrTable(words,S.settings.tag))if(!stops.some(x=>x.wo===st.wo))stops.push(st)}catch(e){console.error(e);rMsg('Couldn\'t read screenshot '+(cur+1)+'.',true)}}const date=dateInText(txt,null)||fallbackDate;
+    for(const st of ocrTable(words,S.settings.tag))if(!stops.some(x=>x.wo===st.wo))stops.push(st)}catch(e){console.error(e);rMsg('Couldn\'t read screenshot '+(cur+1)+'.',true)}}ocrVote(stops);const date=dateInText(txt,null)||fallbackDate;
   if(!stops.length){rMsg('Couldn\'t find work orders in '+(files.length>1?'those screenshots':'that screenshot')+'. Make sure the WO #, time and address are in the picture'+(S.settings.tag?' (and your block, '+S.settings.tag+')':'')+'.',true);return false}
   const guessed=await inferCities(stops,date);loadStops('',date,'screenshot',{stops,found:true});routeDate=date;pane('route','stops');await planRoute(date,true);
   rMsg('Read '+stops.length+' work order'+(stops.length>1?'s':'')+' for '+longD(date)+' from '+(files.length>1?files.length+' screenshots':'the screenshot')+'. Check the addresses — screenshots can misread a letter or number.'+(guessed?' '+guessed+' cit'+(guessed>1?'ies':'y')+' guessed.':''));
