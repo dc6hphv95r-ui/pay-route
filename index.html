@@ -222,6 +222,20 @@ body.thr{overflow:hidden}
 .th{display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px 4px;background:light-dark(#f0f2f5,#202c33);color:var(--wtx)}
 .th .back{border:0;background:none;width:40px;min-height:44px;padding:0;font-size:30px;line-height:1;color:inherit}
 .th .av{width:40px;height:40px;font-size:15px}
+.avw{position:relative;flex:none}.avw .on{position:absolute;right:1px;bottom:1px;width:13px;height:13px;border-radius:50%;background:#25d366;border:2.5px solid var(--bg)}
+.th .avw .on{border-color:light-dark(#f0f2f5,#202c33);width:11px;height:11px}
+.th .ts.live{color:var(--wa)}
+.tcall.app{color:var(--wa)}
+#call{position:fixed;inset:0;z-index:45;display:flex;flex-direction:column;justify-content:space-between;align-items:center;background:linear-gradient(#0b141a,#1f2c34);color:#e9edef;padding:calc(40px + env(safe-area-inset-top)) 20px calc(40px + env(safe-area-inset-bottom))}
+.cl-top{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}.cl-sec{font-size:13px;color:#8696a0}
+#clAv .av{width:110px;height:110px;font-size:40px}#clAv .avw .on{display:none}
+.cl-name{font-size:28px;font-weight:800}.cl-st{font-size:16px;color:#8696a0;font-variant-numeric:tabular-nums}
+.cl-btns{display:flex;gap:56px;justify-content:center}
+.cl-b{display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:none;color:#e9edef;font-size:13px;font-weight:600;padding:0;min-height:0}
+.cl-b svg{width:68px;height:68px;padding:19px;border-radius:50%;box-sizing:border-box}
+.cl-b.yes svg{background:#00a884}.cl-b.no svg{background:#ea0038}.cl-b.no #x{}.cl-b.sm svg{background:rgba(255,255,255,.14)}.cl-b.sm.on svg{background:#e9edef;color:#111}
+#clDecline svg,#clEnd svg{transform:rotate(0)}
+.tcalls{display:flex;gap:2px;margin-left:auto}.tcall{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--wtx)}.tcall:active{background:rgba(127,127,127,.2)}
 .th .tn{font-weight:800;font-size:17px;line-height:1.2}.th .ts{font-size:13px;color:var(--wsub)}
 .tmsgs{flex:1;overflow-y:auto;padding:10px 10px 6px;display:flex;flex-direction:column;gap:2px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .dchip{align-self:center;background:light-dark(#fff,#182229);color:var(--wsub);font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;margin:10px 0 6px;box-shadow:0 1px .5px rgba(0,0,0,.13)}
@@ -446,6 +460,7 @@ body.thr{overflow:hidden}
     <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-weight:700"><input type="checkbox" id="sArrive" style="width:22px;min-height:22px"> Mark “arrived” by itself when I pull up (GPS)</label>
     <h3>Text to customers</h3>
     <label class="f">Your name in texts<input id="sMe"></label>
+    <label class="f">My phone (coworkers can call you)<input id="sMyPh" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 416-555-0123"></label>
     <label class="f" style="margin-top:8px">Message<textarea id="sTpl" style="min-height:110px"></textarea></label>
     <p class="note">{first} {addr} {min} {eta} {me}</p>
     </div>
@@ -489,7 +504,7 @@ body.thr{overflow:hidden}
 </nav>
 <button id="mic" aria-label="Voice command" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="26" height="26"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
 <div id="thread" hidden role="dialog" aria-label="Chat">
-  <div class="th"><button class="back" id="thBack" aria-label="Back to chats">‹</button><div id="thAv"></div><div style="min-width:0"><div class="tn" id="thName"></div><div class="ts" id="thSub"></div></div></div>
+  <div class="th"><button class="back" id="thBack" aria-label="Back to chats">‹</button><div id="thAv"></div><div style="min-width:0;flex:1"><div class="tn" id="thName"></div><div class="ts" id="thSub"></div></div><div class="tcalls" id="thCalls"></div></div>
   <div class="tmsgs" id="msgs"></div>
   <form class="tcomp" id="composer"><textarea id="chatIn" rows="1" placeholder="Message" enterkeyhint="send" autocomplete="off"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button></form>
 </div>
@@ -509,11 +524,18 @@ body.thr{overflow:hidden}
   <div style="height:14px"></div>
   <label class="f">Your name<input id="oName" autocomplete="name" placeholder="e.g. Yonas"></label>
   <label class="f" style="margin-top:10px">Your name on the schedule<input id="oTag" autocapitalize="off" autocomplete="off" placeholder="e.g. 126h_yonas"></label>
+  <label class="f" style="margin-top:10px">Your phone <span style="font-weight:500">(optional — so coworkers can call you)</span><input id="oPh" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 416-555-0123"></label>
   <label class="f" style="margin-top:10px">Home address <span style="font-weight:500">(optional)</span><input id="oHome" autocomplete="street-address" placeholder="e.g. 123 Main St E"></label>
   <label class="f" style="margin-top:10px">Home city<input id="oCity" placeholder="e.g. Milton"></label>
   <button class="primary wide" id="oGo" style="margin-top:14px;min-height:52px">Start</button>
   <p class="gerr" id="oErr" role="alert"></p>
 </div></div>
+<div id="call" hidden role="dialog" aria-label="Call">
+  <div class="cl-top"><div class="cl-sec">🔒 Pay &amp; Route call</div><div id="clAv"></div><div class="cl-name" id="clName"></div><div class="cl-st" id="clSt"></div></div>
+  <div class="cl-btns" id="clIn"><button class="cl-b no" id="clDecline" aria-label="Decline"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M12 9c-1.6 0-3.2.25-4.7.73v3.1a1 1 0 0 1-.56.9 11.5 11.5 0 0 0-2.66 1.85 1 1 0 0 1-1.41 0L.29 13.2a1 1 0 0 1 0-1.41A16.9 16.9 0 0 1 12 7a16.9 16.9 0 0 1 11.71 4.79 1 1 0 0 1 0 1.41l-2.38 2.38a1 1 0 0 1-1.41 0 11.3 11.3 0 0 0-2.66-1.85 1 1 0 0 1-.56-.9v-3.1A15 15 0 0 0 12 9z"/></svg><span>Decline</span></button><button class="cl-b yes" id="clAccept" aria-label="Accept"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>Accept</span></button></div>
+  <div class="cl-btns" id="clOn" hidden><button class="cl-b sm" id="clMute" aria-label="Mute"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg><span>Mute</span></button><button class="cl-b no" id="clEnd" aria-label="End call"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M12 9c-1.6 0-3.2.25-4.7.73v3.1a1 1 0 0 1-.56.9 11.5 11.5 0 0 0-2.66 1.85 1 1 0 0 1-1.41 0L.29 13.2a1 1 0 0 1 0-1.41A16.9 16.9 0 0 1 12 7a16.9 16.9 0 0 1 11.71 4.79 1 1 0 0 1 0 1.41l-2.38 2.38a1 1 0 0 1-1.41 0 11.3 11.3 0 0 0-2.66-1.85 1 1 0 0 1-.56-.9v-3.1A15 15 0 0 0 12 9z"/></svg><span>End</span></button></div>
+  <audio id="clAudio" autoplay playsinline></audio>
+</div>
 <div class="toast" id="toast" role="status"></div>
 <div id="sheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetT"><div id="sheetT" style="font-weight:800;font-size:18px;margin-bottom:10px"></div><div id="sheetB" style="display:grid;gap:8px"></div><button id="sheetX" class="wide" style="margin-top:10px">Cancel</button></div></div>
 
@@ -1241,14 +1263,14 @@ $('oName').addEventListener('input',()=>{const t=$('oTag');if(!t.dataset.touched
 $('oTag').addEventListener('input',()=>{$('oTag').dataset.touched=1});
 $('oGo').onclick=async()=>{const nm=$('oName').value.trim(),tg=tagFrom($('oTag').value);
   if(!nm){$('oErr').textContent='Enter your name';return}if(!tg){$('oErr').textContent='Enter your name as it shows on the schedule';return}
-  const st=S.settings;st.myName=nm;st.tag=tg;if($('oHome').value.trim()){st.homeAddr=$('oHome').value.trim();st.homeCity=$('oCity').value.trim()}
+  const st=S.settings;st.myName=nm;st.tag=tg;if($('oPh').value.trim())st.myPhone=$('oPh').value.trim();if($('oHome').value.trim()){st.homeAddr=$('oHome').value.trim();st.homeCity=$('oCity').value.trim()}
   cache();$('onb').hidden=true;renderAll();toast('All set, '+nm.split(' ')[0]);
-  try{if(SBU&&SB)await SB.from('profiles').upsert({user_id:SBU.id,name:nm,updated_at:new Date().toISOString()})}catch(e){}};
+  profPush()};
 $('acPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('acSend').click()});
 $('acPw').onclick=()=>{$('sheetT').textContent='Change your password';$('sheetB').innerHTML='<label class="f">New password (8+ characters)<input id="pwNew" type="password" autocomplete="new-password"></label><button class="primary" id="pwOk">Save new password</button>';$('sheet').hidden=false;$('sheetB').onclick=null;
   $('pwOk').onclick=async()=>{const v=$('pwNew').value;if(v.length<8){toast('Use at least 8 characters');return}try{const{error}=await SB.auth.updateUser({password:v});if(error)throw error;$('sheet').hidden=true;toast('Password changed')}catch(e){toast('Couldn\'t change it: '+(e.message||e))}}};
 $('acSync').onclick=async()=>{await sbPull(false);await sbPush(true)};
-$('acOut').onclick=async()=>{if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();closeThread(true);gateUI();toast('Signed out — your data stays on this phone')};
+$('acOut').onclick=async()=>{if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];try{if(CALL)callEnd(true);if(presCh){presCh.untrack();SB.removeChannel(presCh);presCh=null}if(sigIn){SB.removeChannel(sigIn);sigIn=null}}catch(e){}await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();closeThread(true);gateUI();toast('Signed out — your data stays on this phone')};
 
 
 /* ---------- team chat (Supabase, invited coworkers only) ---------- */
@@ -1265,9 +1287,25 @@ async function teamPush(){if(!SBU)return;const st=S.settings,d={};for(const k of
   toast(error?(/row-level|permission|denied/i.test(error.message)?'Only the app admin can change team rates':'Couldn\'t save: '+error.message):'Saved — everyone gets these rates next time they open the app')}
 $('teamSave').onclick=teamPush;
 let chatP=null;function chatInit(){if(!SBU||chatSub)return Promise.resolve();return chatP||(chatP=chatInit1().finally(()=>{chatP=null}))}
+/* who's online (live) + last seen + phone for calling */
+let ONLINE=new Set(),presCh=null,profT=null;
+async function profPush(extra){if(!SBU||!SB)return;const row={user_id:SBU.id,name:meName(),updated_at:new Date().toISOString(),...(extra||{})};
+  let r=await SB.from('profiles').upsert({...row,phone:S.settings.myPhone||null});
+  if(r.error&&/phone|last_seen|column/i.test(r.error.message||''))r=await SB.from('profiles').upsert({user_id:row.user_id,name:row.name,updated_at:row.updated_at});}
+function profSoon(){clearTimeout(profT);profT=setTimeout(()=>profPush(),1500)}
+async function loadPeople(){let r=await SB.from('profiles').select('user_id,name,phone,last_seen').order('name');if(r.error)r=await SB.from('profiles').select('user_id,name').order('name');PEOPLE=(r.data||[]).filter(x=>x.user_id!==SBU.id)}
+function presenceStart(){if(!SBU||presCh)return;presCh=SB.channel('online',{config:{presence:{key:SBU.id}}});
+  presCh.on('presence',{event:'sync'},()=>{ONLINE=new Set(Object.keys(presCh.presenceState()));chatPresenceUI()})
+    .subscribe(st=>{if(st==='SUBSCRIBED'&&document.visibilityState==='visible')presCh.track({at:Date.now()})})}
+function seenNow(){if(SBU&&SB)SB.from('profiles').update({last_seen:new Date().toISOString()}).eq('user_id',SBU.id).then(()=>{},()=>{})}
+document.addEventListener('visibilitychange',()=>{if(!presCh)return;if(document.visibilityState==='visible'){presCh.track({at:Date.now()});loadPeople().then(chatPresenceUI)}else{presCh.untrack();seenNow()}});
+setInterval(()=>{if(SBU&&presCh&&document.visibilityState==='visible')seenNow()},120000);
+const isOn=id=>ONLINE.has(id);
+function lastSeen(p){if(isOn(p.user_id))return'online';if(!p.last_seen)return'offline';const t=new Date(p.last_seen),n=new Date(),y=new Date();y.setDate(n.getDate()-1);const tm=t.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'});
+  return 'last seen '+(sameDay(t,n)?'today at '+tm:sameDay(t,y)?'yesterday at '+tm:t.toLocaleDateString('en-CA',{month:'short',day:'numeric'}))}
+function chatPresenceUI(){if(THREAD)renderThreadHead();else if(location.hash==='#chat')renderChat()}
 async function chatInit1(){if(!SBU||chatSub)return;
-  await SB.from('profiles').upsert({user_id:SBU.id,name:meName(),updated_at:new Date().toISOString()});
-  const{data:pp}=await SB.from('profiles').select('user_id,name').order('name');PEOPLE=(pp||[]).filter(x=>x.user_id!==SBU.id);
+  await profPush({last_seen:new Date().toISOString()});await loadPeople();presenceStart();sigListen();
   await chatLoad();
   chatSub=SB.channel('msgs').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},pl=>{const m=pl.new;if(!m)return;
       if(m.to_user&&m.to_user!==SBU.id&&m.sender!==SBU.id)return;if(MSGS.some(x=>x.id===m.id))return;MSGS.push(m);
@@ -1278,7 +1316,9 @@ async function chatLoad(){const{data,error}=await SB.from('messages').select('*'
 const AVC=['#00a884','#1f7aec','#e2662b','#a05fd6','#d63b5b','#0f8a8a','#c79100','#5b6bd6'];
 const avColor=id=>{let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return AVC[h%AVC.length]};
 const initials=n=>String(n||'?').replace(/^_+/,'').split(/[\s._-]+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('')||'?';
-const avHtml=(id,name)=>id==='team'?`<div class="av" style="background:#00a884"><svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.8"/><path d="M2 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5zM16.5 13.6c3 .2 5.5 2 5.5 5.4V20h-4.4c0-2.5-.4-4.6-1.1-6.4z"/></svg></div>`:`<div class="av" style="background:${avColor(id)}">${esc(initials(name))}</div>`;
+const avDot=(id,h)=>id!=='team'&&typeof ONLINE!=='undefined'&&ONLINE.has(id)?`<div class="avw">${h}<i class="on"></i></div>`:h;
+const avHtml0=(id,name)=>id==='team'?`<div class="av" style="background:#00a884"><svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.8"/><path d="M2 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5zM16.5 13.6c3 .2 5.5 2 5.5 5.4V20h-4.4c0-2.5-.4-4.6-1.1-6.4z"/></svg></div>`:`<div class="av" style="background:${avColor(id)}">${esc(initials(name))}</div>`;
+const avHtml=(id,name)=>avDot(id,avHtml0(id,name));
 let THREAD=null;
 function msgsOf(room){return MSGS.filter(m=>room==='team'?!m.to_user:((m.sender===SBU.id&&m.to_user===room)||(m.sender===room&&m.to_user===SBU.id)))}
 function roomMsgs(){return msgsOf(ROOM)}
@@ -1298,11 +1338,17 @@ function renderChat(){const gate=$('chatGate'),main=$('chatMain');
   rooms.sort((a,b)=>(a.r==='team'?-1:b.r==='team'?1:0)||((b.last?+new Date(b.last.created_at):0)-(a.last?+new Date(a.last.created_at):0))||roomName(a.r).localeCompare(roomName(b.r)));
   $('rooms').innerHTML=rooms.map(({r,last,un})=>{const t=last?new Date(last.created_at):null;
     const pre=last?(last.sender===SBU.id?'You: ':(r==='team'?last.sender_name.split(' ')[0]+': ':'')):'';
-    return `<button class="crow" data-room="${esc(r)}">${avHtml(r,roomName(r))}<div style="min-width:0"><div class="cn">${esc(roomName(r))}</div><div class="cp">${last?esc(pre+last.body.replace(/\s+/g,' ')):(r==='team'?'Everyone on the team':'Tap to start chatting')}</div></div><div class="ct2${un?' un':''}">${t?esc(whenShort(t)):''}${un?`<span class="ub2">${un>99?'99+':un}</span>`:''}</div></button>`}).join('')
+    return `<button class="crow" data-room="${esc(r)}">${avHtml(r,roomName(r))}<div style="min-width:0"><div class="cn">${esc(roomName(r))}</div><div class="cp">${last?esc(pre+last.body.replace(/\s+/g,' ')):(r==='team'?(ONLINE.size>1?(ONLINE.size-1)+' online now':'Everyone on the team'):lastSeen(PEOPLE.find(p=>p.user_id===r)||{}))}</div></div><div class="ct2${un?' un':''}">${t?esc(whenShort(t)):''}${un?`<span class="ub2">${un>99?'99+':un}</span>`:''}</div></button>`}).join('')
     +(PEOPLE.length?'':'<p class="note" style="padding:10px 4px">Coworkers show up here after they sign in for the first time.</p>');
   if(THREAD)renderThread();chatBadge()}
+function renderThreadHead(){if(!THREAD||!SBU)return;$('thAv').innerHTML=avHtml(THREAD,roomName(THREAD));$('thName').textContent=roomName(THREAD);
+  const p=PEOPLE.find(x=>x.user_id===THREAD)||{},sub=$('thSub');
+  if(THREAD==='team'){const on=PEOPLE.filter(x=>isOn(x.user_id)).map(x=>x.name.split(' ')[0]);sub.textContent=PEOPLE.length?(on.length?on.join(', ')+(on.length>1?' are':' is')+' online':(PEOPLE.length+1)+' people'):'Just you so far';sub.classList.toggle('live',!!on.length)}
+  else{sub.textContent=lastSeen(p);sub.classList.toggle('live',isOn(THREAD))}
+  const ph=String(p.phone||'').replace(/[^\d+]/g,''),wa=ph.replace(/\D/g,'').replace(/^(\d{10})$/,'1$1');
+  $('thCalls').innerHTML=THREAD==='team'?'':`<button class="tcall app" data-callapp="1" aria-label="Call ${esc(roomName(THREAD))}"><svg viewBox="0 0 24 24" width="23" height="23" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></button><button class="tcall" data-callmore="1" aria-label="More ways to call"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>`}
 function renderThread(keepScroll){if(!THREAD||!SBU)return;const box=$('msgs'),atBottom=box.scrollHeight-box.scrollTop-box.clientHeight<80;
-  $('thAv').innerHTML=avHtml(THREAD,roomName(THREAD));$('thName').textContent=roomName(THREAD);$('thSub').textContent=THREAD==='team'?(PEOPLE.length?(PEOPLE.length+1)+' people':'Just you so far'):'Coworker';
+  renderThreadHead();
   const list=msgsOf(THREAD);let html='',prevDay='',prevSender='';
   for(const m of list){const t=new Date(m.created_at),dk=t.toDateString(),me=m.sender===SBU.id;
     if(dk!==prevDay){html+=`<div class="dchip">${esc(dayChip(t))}</div>`;prevDay=dk;prevSender=''}
@@ -1320,6 +1366,66 @@ function openThread(room){THREAD=ROOM=room;$('thread').hidden=false;document.bod
 function closeThread(silent){if(!THREAD)return;markSeen(THREAD);THREAD=null;$('thread').hidden=true;document.body.classList.remove('thr');scrollTo(0,0);$('chatIn').blur();if(!silent&&history.state&&history.state.thread){try{history.back()}catch(e){}}if(location.hash==='#chat')renderChat()}
 addEventListener('popstate',()=>{if(THREAD){markSeen(THREAD);THREAD=null;$('thread').hidden=true;document.body.classList.remove('thr');if(location.hash==='#chat')renderChat()}});
 $('thBack').onclick=()=>closeThread();
+$('thCalls').addEventListener('click',e=>{
+  if(e.target.closest('[data-callapp]')){callStart(THREAD);return}
+  if(e.target.closest('[data-callmore]')){const p=PEOPLE.find(x=>x.user_id===THREAD)||{},ph=String(p.phone||'').replace(/[^\d+]/g,''),wa=ph.replace(/\D/g,'').replace(/^(\d{10})$/,'1$1');
+    $('sheetT').textContent='Call '+roomName(THREAD);$('sheetB').innerHTML=`<button class="primary" data-cm="app">Call in the app</button>${ph?`<a class="btn" href="tel:${esc(ph)}">Call phone number</a><a class="btn" href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp</a>`:'<p class="note">No phone number added yet.</p>'}`;$('sheet').hidden=false;
+    $('sheetB').onclick=ev=>{if(ev.target.closest('[data-cm]')){$('sheet').hidden=true;callStart(THREAD)}else if(ev.target.closest('a'))$('sheet').hidden=true}}});
+/* ---------- in-app voice calls (WebRTC, signalling over Supabase Realtime) ---------- */
+const ICE=[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}].concat((window.PR_CONFIG&&PR_CONFIG.turn)||[]);
+let CALL=null,sigIn=null;const sigOut={};
+function sigListen(){if(!SBU||sigIn)return;sigIn=SB.channel('call:'+SBU.id,{config:{broadcast:{self:false}}}).on('broadcast',{event:'sig'},({payload})=>onSig(payload)).subscribe()}
+async function sigSend(to,msg){let ch=sigOut[to];if(!ch){ch=sigOut[to]=SB.channel('call:'+to,{config:{broadcast:{self:false}}});await new Promise(r=>{ch.subscribe(st=>{if(st==='SUBSCRIBED')r()});setTimeout(r,4000)})}
+  return ch.send({type:'broadcast',event:'sig',payload:{...msg,from:SBU.id,name:meName()}})}
+let ringT=null,ringCtx=null;
+function ring(kind){stopRing();try{ringCtx=new (window.AudioContext||window.webkitAudioContext)();const beep=()=>{const o=ringCtx.createOscillator(),g=ringCtx.createGain();o.frequency.value=kind==='in'?520:440;g.gain.value=.0001;o.connect(g);g.connect(ringCtx.destination);const t=ringCtx.currentTime;g.gain.exponentialRampToValueAtTime(.18,t+.05);g.gain.setValueAtTime(.18,t+(kind==='in'?.9:1.4));g.gain.exponentialRampToValueAtTime(.0001,t+(kind==='in'?1:1.5));o.start(t);o.stop(t+1.6)};beep();ringT=setInterval(()=>{beep();if(kind==='in'&&navigator.vibrate)navigator.vibrate([400,200,400])},kind==='in'?2000:3500)}catch(e){}if(kind==='in'&&navigator.vibrate)navigator.vibrate([400,200,400])}
+function stopRing(){clearInterval(ringT);ringT=null;try{ringCtx&&ringCtx.close()}catch(e){}ringCtx=null;if(navigator.vibrate)navigator.vibrate(0)}
+function callUI(state,txt){const c=$('call');c.hidden=false;$('clAv').innerHTML=avHtml0(CALL.peer,CALL.name);$('clName').textContent=CALL.name;$('clSt').textContent=txt||'';
+  $('clIn').hidden=state!=='incoming';$('clOn').hidden=state==='incoming';$('clMute').classList.toggle('on',!!CALL.muted)}
+function newPC(){const pc=new RTCPeerConnection({iceServers:ICE});
+  pc.onicecandidate=e=>{if(e.candidate&&CALL)sigSend(CALL.peer,{t:'ice',cid:CALL.cid,cand:e.candidate.toJSON()})};
+  pc.ontrack=e=>{const a=$('clAudio');a.srcObject=e.streams[0];a.play().catch(()=>{})};
+  pc.onconnectionstatechange=()=>{if(!CALL)return;const st=pc.connectionState;
+    if(st==='connected'&&!CALL.startAt){CALL.startAt=Date.now();stopRing();clearTimeout(CALL.noAns);CALL.tick=setInterval(()=>{if(CALL)$('clSt').textContent=cdur(Date.now()-CALL.startAt)},1000);$('clSt').textContent='0:00'}
+    if(st==='failed'){$('clSt').textContent='Connection failed';setTimeout(()=>callEnd(true,'failed'),1500)}
+    if(st==='disconnected'){$('clSt').textContent='Reconnecting…'}};
+  return pc}
+const cdur=ms=>{const t=Math.round(ms/1000);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};
+async function getMic(){return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false})}
+async function callStart(peer){if(!SBU||!peer||peer==='team')return;if(CALL){toast('Already in a call');return}
+  if(!window.RTCPeerConnection||!navigator.mediaDevices){toast('This phone can\'t make app calls');return}
+  const name=roomName(peer);
+  CALL={peer,name,cid:Math.random().toString(36).slice(2),dir:'out',queue:[]};callUI('out',isOn(peer)?'Calling…':'Calling… ('+name.split(' ')[0]+' may not have the app open)');
+  try{CALL.mic=await getMic()}catch(e){toast('Microphone blocked — allow it in your phone settings');CALL=null;$('call').hidden=true;return}
+  sigListen();CALL.pc=newPC();CALL.mic.getTracks().forEach(t=>CALL.pc.addTrack(t,CALL.mic));
+  const off=await CALL.pc.createOffer();await CALL.pc.setLocalDescription(off);
+  await sigSend(peer,{t:'offer',cid:CALL.cid,sdp:CALL.pc.localDescription.toJSON()});ring('out');
+  CALL.noAns=setTimeout(()=>{if(CALL&&!CALL.startAt&&!CALL.answered){$('clSt').textContent='No answer';sigSend(peer,{t:'end',cid:CALL.cid});setTimeout(()=>callEnd(false,'missed'),1200)}},40000)}
+async function callAccept(){if(!CALL||CALL.dir!=='in')return;stopRing();callUI('on','Connecting…');
+  try{CALL.mic=await getMic()}catch(e){toast('Microphone blocked — allow it in your phone settings');sigSend(CALL.peer,{t:'decline',cid:CALL.cid});callEnd(false);return}
+  CALL.pc=newPC();CALL.mic.getTracks().forEach(t=>CALL.pc.addTrack(t,CALL.mic));
+  await CALL.pc.setRemoteDescription(CALL.offer);for(const c of CALL.queue)try{await CALL.pc.addIceCandidate(c)}catch(e){}CALL.queue=[];
+  const ans=await CALL.pc.createAnswer();await CALL.pc.setLocalDescription(ans);await sigSend(CALL.peer,{t:'answer',cid:CALL.cid,sdp:CALL.pc.localDescription.toJSON()})}
+async function onSig(m){if(!m||!m.t)return;
+  if(m.t==='offer'){if(CALL){sigSend(m.from,{t:'busy',cid:m.cid});return}
+    CALL={peer:m.from,name:m.name||roomName(m.from),cid:m.cid,dir:'in',offer:m.sdp,queue:[]};callUI('incoming','Incoming call…');ring('in');
+    if(document.visibilityState!=='visible')toast(CALL.name+' is calling');
+    CALL.noAns=setTimeout(()=>{if(CALL&&CALL.dir==='in'&&!CALL.pc)callEnd(false)},45000);return}
+  if(!CALL||m.cid!==CALL.cid)return;
+  if(m.t==='answer'){CALL.answered=true;stopRing();$('clSt').textContent='Connecting…';await CALL.pc.setRemoteDescription(m.sdp);for(const c of CALL.queue)try{await CALL.pc.addIceCandidate(c)}catch(e){}CALL.queue=[]}
+  else if(m.t==='ice'){if(CALL.pc&&CALL.pc.remoteDescription)try{await CALL.pc.addIceCandidate(m.cand)}catch(e){}else CALL.queue.push(m.cand)}
+  else if(m.t==='decline'){$('clSt').textContent='Declined';setTimeout(()=>callEnd(false,'declined'),1200)}
+  else if(m.t==='busy'){$('clSt').textContent='On another call';setTimeout(()=>callEnd(false,'busy'),1500)}
+  else if(m.t==='end'){$('clSt').textContent=CALL.startAt?'Call ended':'Missed call';setTimeout(()=>callEnd(false),900)}}
+function callEnd(tell,why){if(!CALL)return;const c=CALL;CALL=null;stopRing();clearTimeout(c.noAns);clearInterval(c.tick);
+  if(tell)sigSend(c.peer,{t:'end',cid:c.cid});try{c.mic&&c.mic.getTracks().forEach(t=>t.stop())}catch(e){}try{c.pc&&c.pc.close()}catch(e){}
+  $('clAudio').srcObject=null;$('call').hidden=true;
+  if(c.dir==='out'&&SB&&SBU){const body=c.startAt?'📞 Voice call · '+cdur(Date.now()-c.startAt):'📞 Missed call';
+    SB.from('messages').insert({sender:SBU.id,sender_name:meName(),body,to_user:c.peer}).select().single().then(({data})=>{if(data&&!MSGS.some(x=>x.id===data.id)){MSGS.push(data);if(THREAD)renderThread(true)}},()=>{})}}
+$('clAccept').onclick=callAccept;
+$('clDecline').onclick=()=>{if(CALL){sigSend(CALL.peer,{t:'decline',cid:CALL.cid});callEnd(false)}};
+$('clEnd').onclick=()=>callEnd(true);
+$('clMute').onclick=()=>{if(!CALL||!CALL.mic)return;CALL.muted=!CALL.muted;CALL.mic.getAudioTracks().forEach(t=>t.enabled=!CALL.muted);$('clMute').classList.toggle('on',CALL.muted)};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-room]');if(!b)return;openThread(b.dataset.room)});
 {const ta=$('chatIn');const grow=()=>{ta.style.height='auto';ta.style.height=Math.min(120,ta.scrollHeight)+'px'};ta.addEventListener('input',grow);
   ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&matchMedia('(pointer:fine)').matches){e.preventDefault();$('composer').requestSubmit()}});
@@ -1838,7 +1944,7 @@ $('copy').onclick=async()=>{
 /* ---------- setup ---------- */
 function renderSetup(){renderGH();acctUI();
   if(document.activeElement&&document.activeElement.closest('#v-setup'))return;
-  $('sTag').value=S.settings.tag||'';$('sHome').value=S.settings.homeAddr||'';$('sHomeCity').value=S.settings.homeCity||'';$('sShop').value=S.settings.shopAddr||'';$('sShopCity').value=S.settings.shopCity||'';$('sShopMin').value=S.settings.shopMin;$('sEndHome').checked=!!S.settings.endHome;$('sTax').value=S.settings.taxPct;$('sLearn').checked=!!S.settings.learn;$('sGps').checked=!!S.settings.useGps;$('sVoice').checked=!!S.settings.voice;$('sArrive').checked=!!S.settings.autoArrive;$('sMe').value=S.settings.myName||'';$('sTpl').value=S.settings.smsTpl||'';$('sSchool').value=S.settings.schoolAddr||'';$('sSchoolCity').value=S.settings.schoolCity||'';$('sClass').value=S.settings.classAt||'17:30';$('sClassLate').value=S.settings.classLatest||'17:45';$('sSchoolBuf').value=S.settings.schoolBuf;$('sSchoolDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-cd="${i+1}" class="${String(S.settings.schoolDays).includes(i+1)?'primary':''}">${n}</button>`).join('');$('sShopDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-sd="${i+1}" class="${String(S.settings.shopDays).includes(i+1)?'primary':''}">${n}</button>`).join('');const nf=Object.keys(S.settings.fix||{}).length;$('clearFix').textContent=nf?'Clear '+nf+' map pin fix'+(nf>1?'es':''):'No map pin fixes';$('clearFix').disabled=!nf;$('sDay').value=S.settings.dayStart||'08:00';$('sSat').value=S.settings.satStart||'09:00';$('sMinA').value=S.settings.minAppt;$('sMinR').value=S.settings.minRT;$('sTarget').value=S.settings.target;$('sHourly').value=S.settings.hourly;$('sKm').value=S.settings.kmRate;
+  $('sTag').value=S.settings.tag||'';$('sHome').value=S.settings.homeAddr||'';$('sHomeCity').value=S.settings.homeCity||'';$('sShop').value=S.settings.shopAddr||'';$('sShopCity').value=S.settings.shopCity||'';$('sShopMin').value=S.settings.shopMin;$('sEndHome').checked=!!S.settings.endHome;$('sTax').value=S.settings.taxPct;$('sLearn').checked=!!S.settings.learn;$('sGps').checked=!!S.settings.useGps;$('sVoice').checked=!!S.settings.voice;$('sArrive').checked=!!S.settings.autoArrive;$('sMyPh').value=S.settings.myPhone||'';$('sMe').value=S.settings.myName||'';$('sTpl').value=S.settings.smsTpl||'';$('sSchool').value=S.settings.schoolAddr||'';$('sSchoolCity').value=S.settings.schoolCity||'';$('sClass').value=S.settings.classAt||'17:30';$('sClassLate').value=S.settings.classLatest||'17:45';$('sSchoolBuf').value=S.settings.schoolBuf;$('sSchoolDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-cd="${i+1}" class="${String(S.settings.schoolDays).includes(i+1)?'primary':''}">${n}</button>`).join('');$('sShopDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-sd="${i+1}" class="${String(S.settings.shopDays).includes(i+1)?'primary':''}">${n}</button>`).join('');const nf=Object.keys(S.settings.fix||{}).length;$('clearFix').textContent=nf?'Clear '+nf+' map pin fix'+(nf>1?'es':''):'No map pin fixes';$('clearFix').disabled=!nf;$('sDay').value=S.settings.dayStart||'08:00';$('sSat').value=S.settings.satStart||'09:00';$('sMinA').value=S.settings.minAppt;$('sMinR').value=S.settings.minRT;$('sTarget').value=S.settings.target;$('sHourly').value=S.settings.hourly;$('sKm').value=S.settings.kmRate;
   $('rateList').innerHTML=JOBS.map(([id,n])=>`<label class="f">${n}<input type="number" inputmode="decimal" step="0.01" data-r="${id}" value="${rate(id)}"></label>`).join('');
 }
 $('v-setup').addEventListener('click',e=>{const c=e.target.closest('[data-cd]');if(c){const d=c.dataset.cd;let v=String(S.settings.schoolDays||'');v=v.includes(d)?v.replace(d,''):(v+d).split('').sort().join('');S.settings.schoolDays=v;c.classList.toggle('primary',v.includes(d));touch('settings');return}
@@ -1848,7 +1954,7 @@ $('v-setup').addEventListener('change',e=>{const id=e.target.id;
   if(id==='sEndHome'||id==='sLearn'||id==='sGps'||id==='sVoice'||id==='sArrive'){S.settings[{sEndHome:'endHome',sLearn:'learn',sGps:'useGps',sVoice:'voice',sArrive:'autoArrive'}[id]]=e.target.checked;touch('settings');if(id==='sGps'&&e.target.checked)startGPS()}
   if(id==='bkFile'&&e.target.files[0]){e.target.files[0].text().then(restore);e.target.value=''}});
 $('v-setup').addEventListener('input',e=>{const t=e.target;
-  if(t.id==='sMe')S.settings.myName=t.value.trim();else if(t.id==='sTpl')S.settings.smsTpl=t.value;else if(t.id==='sTax')S.settings.taxPct=Math.max(0,Math.min(60,+t.value||0));else if(t.id==='sSchool')S.settings.schoolAddr=t.value.trim();else if(t.id==='sSchoolCity')S.settings.schoolCity=t.value.trim();else if(t.id==='sClass')S.settings.classAt=t.value||'17:30';else if(t.id==='sClassLate')S.settings.classLatest=t.value||'17:45';else if(t.id==='sSchoolBuf')S.settings.schoolBuf=Math.max(0,+t.value||0);
+  if(t.id==='sMyPh'){S.settings.myPhone=t.value.trim();profSoon()}else if(t.id==='sMe'){S.settings.myName=t.value.trim();profSoon()}else if(t.id==='sTpl')S.settings.smsTpl=t.value;else if(t.id==='sTax')S.settings.taxPct=Math.max(0,Math.min(60,+t.value||0));else if(t.id==='sSchool')S.settings.schoolAddr=t.value.trim();else if(t.id==='sSchoolCity')S.settings.schoolCity=t.value.trim();else if(t.id==='sClass')S.settings.classAt=t.value||'17:30';else if(t.id==='sClassLate')S.settings.classLatest=t.value||'17:45';else if(t.id==='sSchoolBuf')S.settings.schoolBuf=Math.max(0,+t.value||0);
   else if(t.id==='sHome')S.settings.homeAddr=t.value.trim();else if(t.id==='sHomeCity')S.settings.homeCity=t.value.trim();else if(t.id==='sShop')S.settings.shopAddr=t.value.trim();else if(t.id==='sShopCity')S.settings.shopCity=t.value.trim();else if(t.id==='sShopMin')S.settings.shopMin=Math.max(0,+t.value||0);else if(t.id==='sEndHome')S.settings.endHome=t.checked;else if(t.id==='sDay')S.settings.dayStart=t.value||'08:00';else if(t.id==='sSat')S.settings.satStart=t.value||'09:00';else if(t.id==='sMinA')S.settings.minAppt=Math.max(0,+t.value||0);else if(t.id==='sMinR')S.settings.minRT=Math.max(0,+t.value||0);
   else if(t.id==='sTag')S.settings.tag=t.value.trim();else if(t.id==='sTarget')S.settings.target=+t.value||0;else if(t.id==='sHourly')S.settings.hourly=+t.value||0;else if(t.id==='sKm')S.settings.kmRate=+t.value||0;else if(t.dataset.r)S.settings.rates[t.dataset.r]=+t.value||0;else return;
   touch('settings');});
