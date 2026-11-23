@@ -54,6 +54,20 @@ label.f input{margin-top:4px}
 .big{font-size:clamp(40px,12vw,58px);font-weight:800;line-height:1;letter-spacing:-.02em}
 /* clock */
 .clock{border:2px solid var(--ink);background:var(--bg)}
+.hero{padding:14px 16px}.hrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
+.hpay{display:flex;flex-direction:column;align-items:flex-start;gap:0;border:0;background:none;padding:0;min-height:0;text-align:left;color:inherit;font-weight:500}
+.hl{font-size:13px;font-weight:700;opacity:.7}.hbig{font-size:clamp(34px,10vw,44px);font-weight:800;line-height:1.05;letter-spacing:-.02em}
+.hclk{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}.hero .hclk .go{min-height:48px;font-size:16px;padding:0 18px}.hero .hclk .cl{font-size:12px;font-weight:700;opacity:.75}.hero .hclk .ct{font-size:15px;font-weight:800}
+.hero .goal{margin-top:8px}.hero .goal .gh{display:none}
+.hweek{display:flex;gap:6px;align-items:baseline;width:100%;margin-top:10px;padding:8px 0 0;border:0;border-top:1px solid var(--line);border-radius:0;background:none;min-height:0;font-size:14px;font-weight:500;color:inherit;justify-content:flex-start}.hweek b{font-size:16px}.hweek span{opacity:.75}
+.hmore{margin-top:6px;font-size:13px}.hmore summary{opacity:.6;cursor:pointer;font-weight:700;padding:4px 0}.hmore .split{margin:6px 0}
+.clock.on .hweek{border-color:rgba(0,0,0,.2)}
+.qa{display:flex;gap:8px;overflow-x:auto;margin:0 -2px 12px;padding:2px;scrollbar-width:none}.qa::-webkit-scrollbar{display:none}
+.qa button{flex:none;min-height:44px;padding:0 14px;border-radius:22px;font-size:14px;white-space:nowrap}
+.qa button.hot{background:var(--y);color:#111;border-color:var(--y)}
+.wxd{padding:0}.wxd>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;font-weight:800;cursor:pointer}.wxd>summary::-webkit-details-marker{display:none}
+.wxd>summary:after{content:'▾';opacity:.5}.wxd[open]>summary:after{content:'▴'}.wxd #tWx .card{margin:0;border-radius:0 0 18px 18px;box-shadow:none;background:transparent;padding-top:0}
+.wxd .wsub{font-weight:600;font-size:13px;opacity:.7;margin-left:auto}
 .clock.on{background:var(--y);border-color:var(--y);color:#111}
 .clock .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}
 .cl{font-size:13px;font-weight:700;opacity:.75}
@@ -197,6 +211,11 @@ tr.go{cursor:pointer}
 #brief .focus{background:var(--y);color:#111;border-radius:16px;padding:12px 14px;font-weight:700;margin:6px 0 4px}
 #brief .bbtns{display:grid;gap:8px;margin-top:18px}#brief .bbtns button{min-height:52px}
 .chip.kind{background:rgba(31,122,236,.14);color:light-dark(#1557b0,#8ab4f8);border-color:transparent;font-weight:700}
+.stg{border-top:1px solid var(--line);padding:2px 0}.stg>summary{display:flex;justify-content:space-between;align-items:center;min-height:44px;font-weight:800;cursor:pointer;list-style:none}.stg>summary::-webkit-details-marker{display:none}.stg>summary span:first-child:before{content:'▸ ';opacity:.5}.stg[open]>summary span:first-child:before{content:'▾ '}
+.stg .pk{grid-template-columns:minmax(0,1fr) auto}
+.stadd{width:100%;margin:6px 0 10px;min-height:40px;border-style:dashed;font-size:14px}
+.tplchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:13px;color:var(--mute);font-weight:700}.tplchips button{min-height:36px;padding:0 12px;border-radius:18px;font-size:13px}
+.tplprev{margin-top:12px;background:var(--plane);border-radius:14px;padding:10px 12px}.tplprev #tplPrev{margin-top:4px;font-size:15px;line-height:1.4}
 .exl{margin-top:6px;font-size:14px;font-weight:800;color:var(--ok,#2e7d32)}
 .exg{margin-bottom:10px}.exh{font-size:13px;font-weight:800;color:var(--mute);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
 .exo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
@@ -298,32 +317,24 @@ body.thr{overflow:hidden}
 
   <!-- TODAY -->
   <section class="view" id="v-today">
+    <h2>Today</h2>
     <div id="tSetup"></div>
-    <div class="card clock" id="clock">
-      <div class="row">
-        <div><div class="cl" id="clockLabel">Not checked in</div><div class="ct" id="clockTime">Start your day</div></div>
-        <button class="go primary" id="clockBtn">Check in</button>
+    <div class="card hero" id="clock">
+      <div class="hrow">
+        <button class="hpay" data-go="log"><span class="hl">Today</span><span class="hbig money" id="tPay">$0.00</span><span class="hl" id="tGoalShort"></span></button>
+        <div class="hclk"><button class="go primary" id="clockBtn">Check in</button><span class="cl" id="clockLabel">Not checked in</span><span class="ct" id="clockTime"></span></div>
       </div>
-      <details class="odo"><summary>Odometer (optional)</summary><label class="f"><span id="odoLabel">Odometer at check in (optional)</span><input type="number" id="odo" inputmode="decimal" placeholder="e.g. 84213"></label></details>
-    </div>
-
-    <div class="card paywk">
-      <div class="pw">
-        <button class="pwc" data-go="log"><span class="note">Today</span><span class="mid money" id="tPay">$0.00</span><span class="note" id="tGoalShort">+ Add jobs</span></button>
-        <button class="pwc" data-go="week"><span class="note">This week</span><span class="mid money" id="tWeek"></span><span class="note" id="tWeekMsg"></span></button>
-      </div>
-      <div class="bar" hidden><i id="tWeekBar" style="width:0"></i></div>
       <div id="tGoal"></div>
-      <div class="split" id="tSplit" style="margin-top:2px"></div>
+      <button class="hweek" data-go="week"><span>This week</span><b id="tWeek"></b><span id="tWeekMsg"></span><i class="bar" hidden><i id="tWeekBar"></i></i></button>
+      <details class="hmore"><summary>Breakdown &amp; odometer</summary><div class="split" id="tSplit"></div><label class="f odo"><span id="odoLabel">Odometer (optional)</span><input type="number" id="odo" inputmode="decimal" placeholder="e.g. 84213"></label></details>
     </div>
-
-    <div class="grid2" style="margin-bottom:12px"><button id="tBriefBtn">☀️ Today's brief</button><button id="tWrapBtn">📊 Day wrap-up</button></div>
     <div id="tClass"></div>
     <div id="tNext"></div>
+    <div class="qa" id="tQuick"></div>
     <div id="tShop"></div>
-    <div id="tWx"></div>
-    <div id="tFollow"></div>
+    <details class="card wxd" id="tWxWrap"><summary id="tWxSum">Weather</summary><div id="tWx"></div></details>
     <div id="tTomorrow"></div>
+    <div id="tFollow" hidden></div>
   </section>
 
   <!-- ROUTE -->
@@ -486,8 +497,9 @@ body.thr{overflow:hidden}
     <h3>Text to customers</h3>
     <label class="f">Your name in texts<input id="sMe"></label>
     <label class="f">My phone (coworkers can call you)<input id="sMyPh" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 416-555-0123"></label>
-    <label class="f" style="margin-top:8px">Message<textarea id="sTpl" style="min-height:110px"></textarea></label>
-    <p class="note">{first} {addr} {min} {eta} {me}</p>
+    <label class="f" style="margin-top:8px">Message to customers<textarea id="sTpl" style="min-height:110px"></textarea></label>
+    <div class="tplchips">Tap to add: <button type="button" data-tk="first">Customer name</button><button type="button" data-tk="addr">Address</button><button type="button" data-tk="min">Minutes away</button><button type="button" data-tk="eta">Arrival time</button><button type="button" data-tk="me">My name</button></div>
+    <div class="tplprev"><div class="note" style="font-weight:800">How it looks</div><div id="tplPrev"></div></div>
     </div>
     <div data-pane="acct" hidden>
     <div class="card" id="acctCard" hidden>
@@ -622,6 +634,11 @@ const isPermit=s=>/INSTALL|PERMIT|NEW ?HOME|^NH$/i.test([s.type,s.problem,s.prog
 const EXTRAS=[['Plumbing',[['pmin','Minor','1–3 fittings'],['pnor','Normal','4–6 fittings']]],['Carpentry',[['cmin','Minor'],['cnor','Normal']]],['Wire',[['wf4','Fix <4′'],['wf12','Fix 4–12′'],['wr','Run <25′ / fix >12′'],['wrl','Run >25′']]],['Other',[['bcv','BCV'],['rad','Radio retrofit']]]];
 const EXNAME=k=>{for(const[,o]of EXTRAS)for(const x of o)if(x[0]===k)return ({pmin:'Minor plumbing',pnor:'Normal plumbing',cmin:'Minor carpentry',cnor:'Normal carpentry',wf4:'Wire fix <4′',wf12:'Wire fix 4–12′',wr:'Wire run <25′',wrl:'Wire run >25′',bcv:'BCV',rad:'Radio retrofit'})[k]||x[1];return k};
 function exApply(d,s,sign){for(const k of Object.keys(s.extra||{})){const n=(+s.extra[k]||0)*sign;d.c[k]=(+d.c[k]||0)+n;if(d.c[k]<=0)delete d.c[k]}}
+const TK={first:'[Customer name]',addr:'[Address]',min:'[Minutes away]',eta:'[Arrival time]',me:'[My name]'};
+const tplShow=t=>String(t||'').replace(/\{(first|addr|min|eta|me)\}/g,(m,k)=>TK[k]).replace(/Hi\[Customer name\]/,'Hi [Customer name]');
+const tplSave=t=>{let o=String(t||'');for(const k in TK)o=o.split(TK[k]).join('{'+k+'}');return o.replace(/Hi \{first\}/,'Hi{first}')};
+function tplPreview(){const el=$('tplPrev');if(!el)return;const n=new Date(Date.now()+12*60000);el.textContent=(S.settings.smsTpl||'').replace(/\{first\}/g,' John').replace(/\{me\}/g,S.settings.myName||'Your name').replace(/\{addr\}/g,'182 Harvest Dr').replace(/\{min\}/g,'12').replace(/\{eta\}/g,n.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}))}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-tk]');if(!b)return;const ta=$('sTpl'),ins=TK[b.dataset.tk],st=ta.selectionStart??ta.value.length,en=ta.selectionEnd??st;ta.value=ta.value.slice(0,st)+ins+ta.value.slice(en);ta.focus();ta.selectionStart=ta.selectionEnd=st+ins.length;ta.dispatchEvent(new Event('input',{bubbles:true}))});
 const DEF={hourly:0,target:1500,kmRate:0,rates:{},tag:'',homeAddr:'',homeCity:'',satStart:'09:00',shopAddr:'',shopCity:'',shopDays:'12345',shopMin:15,endHome:true,schoolAddr:'',schoolCity:'',schoolDays:'',classAt:'17:30',classLatest:'17:45',schoolBuf:10,taxPct:20,learn:true,useGps:true,voice:true,autoArrive:true,myName:'',smsTpl:'Hi{first}, this is {me} about your water meter appointment at {addr}. I\'m on my way and should be there in about {min} minutes.',dayStart:'08:00',minAppt:30,minRT:10,fix:{}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -704,10 +721,10 @@ function renderClock(){
   const on=S.clock&&S.clock.in;$('clock').classList.toggle('on',!!on);$('clockBtn').textContent=on?'Check out':'Check in';
   clearInterval(tick);
   if(on){const upd=()=>{const m=Math.max(0,Math.floor((Date.now()-new Date(S.clock.in))/60000));$('clockTime').textContent=Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m'};
-    $('clockLabel').textContent='On the clock since '+tm(S.clock.in);upd();tick=setInterval(upd,20000);
+    $('clockLabel').textContent='Since '+tm(S.clock.in);upd();tick=setInterval(upd,20000);
     $('odoLabel').textContent=S.clock.odo!=null?'Odometer at check out (started '+S.clock.odo+')':'Odometer at check out (optional)';}
   else{const d=S.days[TODAY];$('clockLabel').textContent=d&&d.out?'Checked out at '+tm(d.out):'Not checked in';
-    $('clockTime').textContent=d&&+d.h?(+d.h).toFixed(2)+' h today':'Start your day';$('odoLabel').textContent='Odometer at check in (optional)';}
+    $('clockTime').textContent=d&&+d.h?(+d.h).toFixed(2)+' h today':'';$('odoLabel').textContent='Odometer at check in (optional)';}
 }
 $('clockBtn').onclick=()=>{
   const now=new Date(),ov=$('odo').value.trim(),odo=ov===''?null:+ov;
@@ -1282,13 +1299,28 @@ async function refreshBiz(date){try{await loadMap()}catch(e){return}computeBizKm
 async function backfillBiz(){try{await loadMap()}catch(e){return}let n=0;for(const d in S.days){const x=S.days[d];if(x.stops&&x.stops.some(s=>s.doneAt||s.skipAt)&&x.bizKm==null){computeBizKm(d);n++}}if(n)renderAll()}
 
 /* ---------- truck stock ---------- */
+/* parts catalogue, grouped — you can add your own items */
+const PARTS=[['Meters & radios',[['radio','Radios'],['m15','Meters 15 mm · 5/8″'],['m20','Meters 20 mm · 3/4″'],['m25','Meters 25 mm · 1″'],['tp','Touch pads']]],
+  ['Fittings',[['tail','Tail pieces'],['comp34','Compression fittings 3/4″'],['comp1','Compression fittings 1″'],['nip','Nipples'],['coup','Couplings / unions'],['bv','Ball valves'],['bcv','BCVs'],['gask','Gaskets / washers']]],
+  ['Access & wire',[['panel','Access panels'],['wire','Wire (spools)'],['clips','Wire clips / staples']]],
+  ['Other',[]]];
+function partList(){const own=(S.settings.parts||[]);const out=PARTS.map(([c,l])=>[c,l.slice()]);own.forEach(p=>{const g=out.find(x=>x[0]===p.cat)||out[out.length-1];if(!g[1].some(x=>x[0]===p.k))g[1].push([p.k,p.name])});
+  const hide=new Set(S.settings.partsHide||[]);for(const k in (S.stock||{}))if(!out.some(([,l])=>l.some(x=>x[0]===k)))(out.find(x=>x[0]==='Meters & radios'))[1].push([k,null]);
+  return out.map(([c,l])=>[c,l.filter(x=>!hide.has(x[0])||+((S.stock||{})[x[0]])>0)])}
+function partName(k){for(const[,l]of partList())for(const x of l)if(x[0]===k&&x[1])return x[1];if(/^m\d/.test(k))return'Meters '+(SIZE_LBL[k.slice(1)]||k.slice(1)+' mm');return k}
 function stockKeys(){const ks=new Set(['radio','tail','m15','m20','m25']);for(const k in (S.stock||{}))ks.add(k);const o=k=>k==='radio'?-2:k==='tail'?-1:(+k.slice(1)||999);return [...ks].sort((a,b)=>o(a)-o(b))}
-function stockLabel(k){return k==='radio'?'Radios':k==='tail'?'Tail pieces':'Meters '+(SIZE_LBL[k.slice(1)]||k.slice(1)+' mm')}
+function stockLabel(k){return partName(k);return k==='radio'?'Radios':k==='tail'?'Tail pieces':'Meters '+(SIZE_LBL[k.slice(1)]||k.slice(1)+' mm')}
 function useStock(s,dir){const t=s.type||'';S.stock=S.stock||{};const sub=k=>{S.stock[k]=(+S.stock[k]||0)-dir};
   if(isPermit(s)){sub('radio');sub('m'+(String(s.size||'').trim()||'?'));sub('tail');sub('tail')}else if(/REPL_MRT/.test(t)){sub('radio');sub('m'+(String(s.size||'').trim()||'?'))}else if(/REPL_T/.test(t))sub('radio')}
-function renderStock(){const el=$('stockCard');if(!el)return;const st=S.stock||{};
-  el.innerHTML=`<details class="card" style="padding:12px 16px" ${Object.values(st).some(v=>+v)?'':'open'}><summary style="font-weight:800;min-height:40px;display:flex;align-items:center;justify-content:space-between">Truck stock <span class="note" style="font-weight:600">${stockKeys().filter(k=>+st[k]).map(k=>Math.max(0,+st[k])+' '+(k==='radio'?'radios':k==='tail'?'tail pieces':k.slice(1)+'mm')).join(' · ')||'empty'}</span></summary>
-  ${stockKeys().map(k=>`<div class="pk"><span></span><div><div class="pl">${esc(stockLabel(k))}</div>${+st[k]<0?'<div class="ps" style="color:#c62828">Below zero — fix the count</div>':''}</div><div class="pn"><button type="button" data-stk="${k}" data-v="-1">−</button><b>${+st[k]||0}</b><button type="button" data-stk="${k}" data-v="1">+</button></div></div>`).join('')}</details>`}
+function renderStock(){const el=$('stockCard');if(!el)return;const st=S.stock||{};const have=Object.keys(st).filter(k=>+st[k]>0);
+  el.innerHTML=`<div class="card" style="padding:12px 16px"><div style="display:flex;justify-content:space-between;align-items:center;min-height:40px"><b style="font-size:18px">Truck stock</b><span class="note">${have.length?have.reduce((a,k)=>a+(+st[k]),0)+' items':'empty'}</span></div>
+  ${partList().map(([cat,l],ci)=>l.length||cat==='Other'?`<details class="stg" ${ci===0||l.some(x=>+st[x[0]]>0)?'open':''}><summary><span>${esc(cat)}</span><span class="note">${l.filter(x=>+st[x[0]]>0).map(x=>(+st[x[0]])).reduce((a,b)=>a+b,0)||''}</span></summary>
+    ${l.map(([k])=>`<div class="pk"><div><div class="pl">${esc(partName(k))}</div>${+st[k]<0?'<div class="ps" style="color:#c62828">Below zero — fix the count</div>':''}</div><div class="pn"><button type="button" data-stk="${k}" data-v="-1">−</button><b>${+st[k]||0}</b><button type="button" data-stk="${k}" data-v="1">+</button></div></div>`).join('')}
+    ${cat==='Other'||true?`<button type="button" class="stadd" data-stnew="${esc(cat)}">+ Add item to ${esc(cat)}</button>`:''}</details>`:'').join('')}</div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-stnew]');if(!b)return;const cat=b.dataset.stnew;
+  $('sheetT').textContent='Add a part to '+cat;$('sheetB').innerHTML='<input id="stName" placeholder="e.g. 3/4″ PEX couplings" autocomplete="off"><button class="primary" id="stOk">Add</button>';$('sheet').hidden=false;setTimeout(()=>$('stName').focus(),50);
+  $('sheetB').onclick=null;$('stOk').onclick=()=>{const n=$('stName').value.trim();if(!n)return;S.settings.parts=S.settings.parts||[];const k='p_'+n.toLowerCase().replace(/[^a-z0-9]+/g,'_').slice(0,24);if(!S.settings.parts.some(x=>x.k===k))S.settings.parts.push({k,name:n,cat});
+    S.settings.partsHide=(S.settings.partsHide||[]).filter(x=>x!==k);cache();$('sheet').hidden=true;renderStock();toast('Added '+n)}});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-stk]');if(!b)return;S.stock=S.stock||{};S.stock[b.dataset.stk]=(+S.stock[b.dataset.stk]||0)+(+b.dataset.v);cache();renderStock()});
 
 /* ---------- pay sheet check ---------- */
@@ -1401,19 +1433,19 @@ async function sbPush(manual){if(!SBU||sbBusy)return;if(!navigator.onLine){retur
   catch(e){if(manual)toast('Sync failed: '+(e.message||e))}finally{sbBusy=false}}
 async function sbPull(force){if(!SBU)return;try{const{data,error}=await SB.from('user_data').select('data,updated_at').eq('user_id',SBU.id).maybeSingle();if(error)throw error;
     if(!data){await sbPush(false);return}
-    if(force||(data.updated_at!==SBS.remoteAt&&!SBS.dirty)){mergeCloud(data.data);SBS.remoteAt=data.updated_at;SBS.last=Date.now();sbSave();renderAll();acctUI();if(force)toast('Loaded from your account')}
+    if(force||!SBS.remoteAt||(data.updated_at!==SBS.remoteAt&&!SBS.dirty)){mergeCloud(data.data);SBS.remoteAt=data.updated_at;SBS.last=Date.now();sbSave();renderAll();acctUI();if(force)toast('Loaded from your account')}
     else if(SBS.dirty)sbPush(false)}
   catch(e){if(force)toast('Couldn\'t load: '+(e.message||e))}}
 const ghSched=scheduleSync;
 scheduleSync=()=>{ghSched();if(!SBU)return;SBS.dirty=Date.now();sbSave();clearTimeout(sbTimer);sbTimer=setTimeout(()=>sbPush(false),20000)};
 async function acctStart(){if(!SB_ON){acctUI();return}try{await loadSB()}catch(e){return}
-  const{data}=await SB.auth.getSession();SBU=data.session?data.session.user:null;acctUI();gateUI();if(SBU)teamPull();if(SBU){sbPull(false);chatInit().catch(()=>{})}
+  const{data}=await SB.auth.getSession();SBU=data.session?data.session.user:null;if(SBU&&!SBS.remoteAt)ONB_WAIT=true;acctUI();gateUI();if(SBU)teamPull();if(SBU){sbPull(false).finally(()=>{ONB_WAIT=false;onbUI()});chatInit().catch(()=>{})}
   SB.auth.onAuthStateChange((ev,sess)=>{if(sess)SBU=sess.user;else if(ev==='SIGNED_OUT')SBU=null;acctUI();gateUI()});
   document.addEventListener('visibilitychange',()=>{if(!SBU)return;if(document.visibilityState==='hidden'&&SBS.dirty)sbPush(false);if(document.visibilityState==='visible'){sbPull(false);teamPull()}})}
 async function signIn(em,pw,btn,errEl){em=String(em||'').trim();const err=t=>{if(errEl)errEl.textContent=t;else toast(t)};
   if(!/^\S+@\S+\.\S+$/.test(em)){err('Enter your email');return false}if(!pw){err('Enter your password');return false}
   const lbl=btn.textContent;btn.disabled=true;btn.textContent='Signing in…';if(errEl)errEl.textContent='';
-  try{await loadSB();const{data,error}=await SB.auth.signInWithPassword({email:em,password:pw});if(error)throw error;SBU=data.user;acctUI();gateUI();toast('Signed in');await teamPull();await sbPull(false);chatInit().catch(()=>{});renderAll();return true}
+  try{await loadSB();const{data,error}=await SB.auth.signInWithPassword({email:em,password:pw});if(error)throw error;ONB_WAIT=true;SBU=data.user;acctUI();gateUI();toast('Signed in');const first=!SBS.remoteAt;try{await sbPull(first)}catch(x){}await teamPull();ONB_WAIT=false;onbUI();chatInit().catch(()=>{});renderAll();return true}
   catch(e){const m=e.message||String(e);err(/invalid/i.test(m)?'Wrong email or password.':/fetch|network|load/i.test(m)?'No connection — you need internet to sign in the first time.':'Couldn\'t sign in: '+m);return false}
   finally{btn.disabled=false;btn.textContent=lbl}}
 $('acSend').onclick=async()=>{if(await signIn($('acEmail').value,$('acPass').value,$('acSend')))$('acPass').value=''};
@@ -1425,7 +1457,8 @@ function gateUI(){const g=$('gate');if(!g)return;const on=SB_ON&&!SBU&&!hasSessi
 gateUI();
 /* first-run: your name goes into texts, chat and finding your part of the schedule */
 const tagFrom=v=>{v=String(v||'').trim().toLowerCase().replace(/\s*\(.*\)\s*$/,'');const m=/^\d+h(_.+)$/.exec(v);if(m)return m[1];v=v.replace(/^_+/,'').replace(/\s+/g,'');return v?'_'+v:''};
-function onbUI(){const o=$('onb');if(!o)return;const need=(!SB_ON||SBU||hasSession())&&(!S.settings.myName||!S.settings.tag);
+let ONB_WAIT=false;
+function onbUI(){const o=$('onb');if(!o)return;if(ONB_WAIT){o.hidden=true;return}const need=(!SB_ON||SBU||hasSession())&&(!S.settings.myName||!S.settings.tag);
   if(need&&o.hidden){$('oName').value=S.settings.myName||'';$('oTag').value=S.settings.tag?S.settings.tag.replace(/^_/,''):'';$('oHome').value=S.settings.homeAddr||'';$('oCity').value=S.settings.homeCity||''}
   o.hidden=!need||!$('gate').hidden}
 $('oName').addEventListener('input',()=>{const t=$('oTag');if(!t.dataset.touched)t.value=$('oName').value.trim().split(/\s+/)[0].toLowerCase()});
@@ -1701,7 +1734,8 @@ function pickItems(date){
     else if(/REPL_T/.test(t))need.radio++}
   const items=[{k:'radio',label:'Radios',sub:'1 per REPL_MRT, REPL_T and permit',n:need.radio}];if(need.tail)items.push({k:'tail',label:'Tail pieces',sub:'2 per permit / new-home meter',n:need.tail});
   Object.keys(sizes).sort((a,b)=>(+a||999)-(+b||999)).forEach(z=>items.push({k:'m'+z,label:'Meters '+(SIZE_LBL[z]||(z==='?'?'— size not listed':z+' mm')),sub:'REPL_MRT',n:sizes[z]}));
-  for(const k in adj)if(!items.some(i=>i.k===k))items.push({k,label:k==='radio'?'Radios':k==='tail'?'Tail pieces':'Meters '+(SIZE_LBL[k.slice(1)]||k.slice(1)+' mm'),sub:'extra',n:0});
+  for(const k in adj)if(!items.some(i=>i.k===k))items.push({k,label:partName(k),sub:'extra',n:0});
+  if(0)items.push({k:'',label:k==='radio'?'Radios':k==='tail'?'Tail pieces':'Meters '+(SIZE_LBL[k.slice(1)]||k.slice(1)+' mm'),sub:'extra',n:0});
   const taken=pk.taken||{};
   return items.map(i=>{const want=Math.max(0,i.n+(+adj[i.k]||0)),onT=Math.max(0,+stk[i.k]||0);return Object.assign(i,{want,onTruck:got[i.k]?Math.max(0,onT-(+taken[i.k]||0)):onT,total:got[i.k]?(+taken[i.k]||0):Math.max(0,want-onT),adj:+adj[i.k]||0,got:!!got[i.k]})}).filter(i=>i.want>0||i.n>0||i.adj);
 }
@@ -1711,15 +1745,15 @@ function pickHtml(date,compact){
   return `<div class="card" data-pkdate="${date}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b style="font-size:18px">Shop pickup</b><span class="note">${left?left+' to load':'All loaded ✓'}</span></div>
   <div class="note" style="margin:2px 0 6px">${esc(S.settings.shopAddr)} · from ${longD(date)}'s schedule</div>
   ${it.map(i=>`<label class="pk${i.got?' got':''}"><input type="checkbox" data-pkgot="${i.k}" ${i.got?'checked':''}><div><div class="pl">${esc(i.label)}</div><div class="ps">${i.n} on schedule${i.adj?` · ${i.adj>0?'+':''}${i.adj} spare`:''}${i.onTruck?` · ${i.onTruck} already on truck`:''}</div></div><div class="pn"><button type="button" data-pkadj="${i.k}" data-v="-1" aria-label="One less">−</button><b>${i.total}</b><button type="button" data-pkadj="${i.k}" data-v="1" aria-label="One more">+</button></div></label>`).join('')}
-  <div class="grid2" style="margin-top:8px"><button type="button" data-pkadd="1">+ Other size</button><button type="button" data-pkall="1">All loaded</button></div></div>`;
+  <div class="grid2" style="margin-top:8px"><button type="button" data-pkadd="1">+ Add a part</button><button type="button" data-pkall="1">All loaded</button></div></div>`;
 }
 function pickState(date){const d=day(date);d.pick=d.pick||{};d.pick.adj=d.pick.adj||{};d.pick.got=d.pick.got||{};return d.pick}
 function rerenderPick(date){const html=pickHtml(date);document.querySelectorAll(`[data-pkdate="${date}"]`).forEach(el=>{const tmp=document.createElement('div');tmp.innerHTML=html;el.replaceWith(tmp.firstElementChild||tmp)})}
 document.addEventListener('click',e=>{const box=e.target.closest('[data-pkdate]');if(!box)return;const date=box.dataset.pkdate;
   const a=e.target.closest('[data-pkadj]');if(a){e.preventDefault();const P=pickState(date);P.adj[a.dataset.pkadj]=(+P.adj[a.dataset.pkadj]||0)+(+a.dataset.v);touch(date);rerenderPick(date);return}
   if(e.target.closest('[data-pkall]')){pickItems(date).forEach(i=>loadItem(date,i.k,true));renderStock();touch(date);rerenderPick(date);toast('All loaded — have a good day');if(date===TODAY)renderToday();return}
-  if(e.target.closest('[data-pkadd]')){$('sheetT').textContent='Add a meter size';$('sheetB').innerHTML=['15','20','25','40','50'].map(z=>`<button data-pksz="${z}">${SIZE_LBL[z]}</button>`).join('');$('sheet').hidden=false;
-    $('sheetB').onclick=ev=>{const b=ev.target.closest('[data-pksz]');if(!b)return;const P=pickState(date);P.adj['m'+b.dataset.pksz]=(+P.adj['m'+b.dataset.pksz]||0)+1;touch(date);$('sheet').hidden=true;rerenderPick(date)};$('sheetX').onclick=()=>{$('sheet').hidden=true};return}});
+  if(e.target.closest('[data-pkadd]')){$('sheetT').textContent='Add to the pickup list';$('sheetB').innerHTML=['40','50'].map(z=>`<button data-pksz="${z}">Meters ${SIZE_LBL[z]}</button>`).join('')+partList().map(([c,l])=>l.length?`<div class="note" style="font-weight:800;margin-top:6px">${esc(c)}</div>`+l.map(([k])=>`<button data-pkk="${k}">${esc(partName(k))}</button>`).join(''):'').join('');$('sheet').hidden=false;
+    $('sheetB').onclick=ev=>{const kb=ev.target.closest('[data-pkk]');if(kb){const P=pickState(date);P.adj[kb.dataset.pkk]=(+P.adj[kb.dataset.pkk]||0)+1;touch(date);$('sheet').hidden=true;rerenderPick(date);return}const b=ev.target.closest('[data-pksz]');if(!b)return;const P=pickState(date);P.adj['m'+b.dataset.pksz]=(+P.adj['m'+b.dataset.pksz]||0)+1;touch(date);$('sheet').hidden=true;rerenderPick(date)};$('sheetX').onclick=()=>{$('sheet').hidden=true};return}});
 function loadItem(date,k,on){const P=pickState(date);P.taken=P.taken||{};const it=pickItems(date).find(i=>i.k===k);if(!it)return;S.stock=S.stock||{};
   if(on&&!P.got[k]){P.taken[k]=it.total;S.stock[k]=(+S.stock[k]||0)+it.total;P.got[k]=true}else if(!on&&P.got[k]){S.stock[k]=(+S.stock[k]||0)-(+P.taken[k]||0);delete P.taken[k];P.got[k]=false}touch(date)}
 document.addEventListener('change',async e=>{if(e.target.id==='payFile'&&e.target.files[0]){try{showSheetResult(await readSheetFile(e.target.files[0]))}catch(err){$('payOut').innerHTML='<p class="msg err">Couldn\'t read that file.</p>'}e.target.value=''}});
@@ -1806,7 +1840,7 @@ function showBrief(date,auto){date=date||TODAY;if(!$('gate').hidden||!$('onb').h
   $('bBtns').innerHTML=gs.length?`<button class="primary" data-bgo="route">Let's go</button>${calls?`<button data-bgo="route">See the ${calls} to text first</button>`:''}<button data-bgo="close">Close</button>`:`<button class="primary" data-bgo="load">Load today's schedule</button><button data-bgo="close">Close</button>`;
   $('brief').hidden=false;ls.set('brief:'+date,'1');
   if(auto&&gs.length){const n=gs.filter(g=>!g.state).length,a=gs.filter(g=>!g.state&&stopFlags(g,date).some(f=>f.p===1)).length;speak(hello()+(S.settings.myName?' '+S.settings.myName.split(' ')[0]:'')+'. '+n+' stops today.'+(a?' '+a+' need your attention first.':''))}}
-$('tBriefBtn').onclick=()=>showBrief(TODAY,false);$('tWrapBtn').onclick=()=>showWrap(TODAY,false);
+$('tQuick').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const q=b.dataset.q;if(q==='brief')showBrief(TODAY,false);else if(q==='wrap')showWrap(TODAY,false);else if(q==='route'){show('route');pane('route','stops')}else if(q==='load'){show('route');pane('route','add')}else if(q==='follow'){show('route');pane('route','stops')}else if(q==='shop'){show('route');pane('route','stops');setTimeout(()=>{const p=document.querySelector('.pkwrap');if(p){p.open=true;p.scrollIntoView({behavior:'smooth'})}},200)}});
 $('bBtns').addEventListener('click',e=>{const b=e.target.closest('[data-bgo]');if(!b)return;$('brief').hidden=true;const g=b.dataset.bgo;if(g==='route'){show('route');pane('route','stops')}else if(g==='load'){show('route');pane('route','add')}else if(g==='log'){logDate=TODAY;show('log')}});
 function maybeBrief(){if(ls.get('brief:'+TODAY))return;const h=new Date().getHours();if(h<5||h>=13)return;if(!groupsOf(TODAY).length&&h>=11)return;setTimeout(()=>showBrief(TODAY,true),900)}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')maybeBrief()});
@@ -2141,13 +2175,21 @@ function renderToday(){
   {const it=shopDay(TODAY)?pickItems(TODAY):[];$('tShop').innerHTML=it.length&&it.some(i=>!i.got)&&!groupsOf(TODAY).some(g=>g.state)?pickHtml(TODAY):''}
   $('dateLine').textContent=longD(TODAY);startGPS();renderTomorrow();if(!MAP&&S.days[TODAY]&&S.days[TODAY].stops)loadMap().catch(()=>{});
   renderClock();
-  const c=calc(S.days[TODAY]);$('tPay').textContent=money(c.total);$('tGoal').innerHTML=goalHtml(TODAY);{const g=dayGoal(TODAY);$('tGoalShort').textContent=g?'of '+money(g).replace(/\.00$/,'')+' goal':'+ Add jobs'}
+  const c=calc(S.days[TODAY]);$('tPay').textContent=money(c.total);$('tGoal').innerHTML=goalHtml(TODAY);{const g=dayGoal(TODAY);$('tGoalShort').textContent=g?Math.min(999,Math.round(c.total/g*100))+'% of '+money(g).replace(/\.00$/,'')+' daily goal':'Tap to add jobs'}
   $('tSplit').innerHTML=`<span>${c.h.toFixed(2)} h</span><span>Reg ${money(c.reg)}</span><span>Piece ${money(c.piece)}</span><span>Bonus ${money(c.bonus)}</span>${(S.days[TODAY]&&S.days[TODAY].bizKm)?`<span>${S.days[TODAY].bizKm} business km</span>`:c.km?`<span>${c.km} km</span>`:''}`;
-  {const P=S.days[TODAY]&&S.days[TODAY].plan;$('tClass').innerHTML=isSchoolDay(TODAY)?`<button class="linkcard" data-go="route" style="background:${P&&P.school&&P.school.late?'#c62828':'var(--y)'};color:${P&&P.school&&P.school.late?'#fff':'#111'}"><div style="font-weight:800;font-size:18px">Class at ${hm(+S.settings.classAt.slice(0,2)*60+ +S.settings.classAt.slice(3))}${P&&P.school?' · leave by '+P.school.leaveBy:''}</div><div style="font-size:14px">${P&&P.school?'Last stop to class: '+dur(P.school.d)+' with traffic':'Tap here, then Best order, to get your leave-by time'}</div></button>`:''}
+  {const P=S.days[TODAY]&&S.days[TODAY].plan,nowM=new Date().getHours()*60+new Date().getMinutes(),clM=(+S.settings.classAt.slice(0,2))*60+ +S.settings.classAt.slice(3);$('tClass').innerHTML=isSchoolDay(TODAY)&&nowM<clM&&!(S.days[TODAY]&&S.days[TODAY].out)?`<button class="linkcard" data-go="route" style="background:${P&&P.school&&P.school.late?'#c62828':'var(--y)'};color:${P&&P.school&&P.school.late?'#fff':'#111'}"><div style="font-weight:800;font-size:18px">Class at ${hm(+S.settings.classAt.slice(0,2)*60+ +S.settings.classAt.slice(3))}${P&&P.school?' · leave by '+P.school.leaveBy:''}</div><div style="font-size:14px">${P&&P.school?'Last stop to class: '+dur(P.school.d)+' with traffic':'Tap here, then Best order, to get your leave-by time'}</div></button>`:''}
   const gs=groupsOf(TODAY),next=gs.find(g=>!g.state);
   if(!gs.length)$('tNext').innerHTML=`<button class="linkcard" data-go="route" data-p="add"><div style="font-weight:800">No route loaded for today</div><div class="note">Tap to load the schedule →</div></button>`;
-  else if(!next)$('tNext').innerHTML=`<div class="card"><b>All stops finished.</b> <span class="note">Don't forget to check out.</span></div>`;
+  else if(!next)$('tNext').innerHTML=`<div class="card"><b>All stops finished 🎉</b>${S.clock&&S.clock.in?'<div class="note">Don\'t forget to check out.</div>':''}</div>`;
   else{const i=gs.indexOf(next);$('tNext').innerHTML=`<div class="note" style="margin:4px 2px 6px;font-weight:700">Next stop · ${i+1} of ${gs.length}</div>`+stopCard(next,i+1,TODAY,true)+`<button class="wide" data-go="route" style="margin-bottom:12px">See full route</button>`}
+  {const h=new Date().getHours(),fu=followUps().length,done=gs.length&&!next,pk=shopDay(TODAY)?pickItems(TODAY).filter(i=>!i.got&&i.total>0).length:0,q=[];
+    if(gs.length&&!done)q.push(`<button class="${h<10&&!gs.some(g=>g.state)?'hot':''}" data-q="brief">☀️ Today's brief</button>`);
+    if(done||gs.some(g=>g.state))q.push(`<button class="${done?'hot':''}" data-q="wrap">📊 Day wrap-up</button>`);
+    if(pk&&!$('tShop').innerHTML)q.push(`<button data-q="shop">📦 Pickup list (${pk})</button>`);
+    if(fu)q.push(`<button data-q="follow">↺ ${fu} follow-up${fu>1?'s':''}</button>`);
+    if(gs.length)q.push(`<button data-q="route">🗺 Full route</button>`);
+    $('tQuick').innerHTML=q.join('');$('tQuick').hidden=!q.length}
+  {const sm=$('tWxSum'),w=$('tWxWrap');if(WX){const cc=WX.data.current,A=wxAlerts(TODAY),bad=A.filter(a=>a.bad);sm.innerHTML=`<span>${Math.round(cc.temperature_2m)}° ${esc(WMO[cc.weather_code]||'')}</span><span class="wsub">${bad.length?'⚠️ '+esc(bad[0].t):A.length?esc(A[0].t):'No warnings'}</span>`;if(bad.length&&!w.dataset.seen){w.open=true;w.dataset.seen=1}}else sm.textContent='Weather'}
   const ws=weekStart(TODAY),t=weekSum(ws),tg=+S.settings.target||0;
   $('tWeek').textContent=money(t.total);$('tWeekBar').style.width=Math.min(100,tg?t.total/tg*100:0)+'%';$('tWeekMsg').textContent='of '+money(tg).replace(/\.00$/,'');
 }
@@ -2217,7 +2259,7 @@ $('copy').onclick=async()=>{
 /* ---------- setup ---------- */
 function renderSetup(){renderGH();acctUI();
   if(document.activeElement&&document.activeElement.closest('#v-setup'))return;
-  $('sDay').value=S.settings.dayTarget||'';$('sTag').value=S.settings.tag||'';$('sHome').value=S.settings.homeAddr||'';$('sHomeCity').value=S.settings.homeCity||'';$('sShop').value=S.settings.shopAddr||'';$('sShopCity').value=S.settings.shopCity||'';$('sShopMin').value=S.settings.shopMin;$('sEndHome').checked=!!S.settings.endHome;$('sTax').value=S.settings.taxPct;$('sLearn').checked=!!S.settings.learn;$('sGps').checked=!!S.settings.useGps;$('sVoice').checked=!!S.settings.voice;$('sArrive').checked=!!S.settings.autoArrive;$('sMyPh').value=S.settings.myPhone||'';$('sMe').value=S.settings.myName||'';$('sTpl').value=S.settings.smsTpl||'';$('sSchool').value=S.settings.schoolAddr||'';$('sSchoolCity').value=S.settings.schoolCity||'';$('sClass').value=S.settings.classAt||'17:30';$('sClassLate').value=S.settings.classLatest||'17:45';$('sSchoolBuf').value=S.settings.schoolBuf;$('sSchoolDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-cd="${i+1}" class="${String(S.settings.schoolDays).includes(i+1)?'primary':''}">${n}</button>`).join('');$('sShopDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-sd="${i+1}" class="${String(S.settings.shopDays).includes(i+1)?'primary':''}">${n}</button>`).join('');const nf=Object.keys(S.settings.fix||{}).length;$('clearFix').textContent=nf?'Clear '+nf+' map pin fix'+(nf>1?'es':''):'No map pin fixes';$('clearFix').disabled=!nf;$('sDay').value=S.settings.dayStart||'08:00';$('sSat').value=S.settings.satStart||'09:00';$('sMinA').value=S.settings.minAppt;$('sMinR').value=S.settings.minRT;$('sTarget').value=S.settings.target;$('sHourly').value=S.settings.hourly;$('sKm').value=S.settings.kmRate;
+  $('sDay').value=S.settings.dayTarget||'';$('sTag').value=S.settings.tag||'';$('sHome').value=S.settings.homeAddr||'';$('sHomeCity').value=S.settings.homeCity||'';$('sShop').value=S.settings.shopAddr||'';$('sShopCity').value=S.settings.shopCity||'';$('sShopMin').value=S.settings.shopMin;$('sEndHome').checked=!!S.settings.endHome;$('sTax').value=S.settings.taxPct;$('sLearn').checked=!!S.settings.learn;$('sGps').checked=!!S.settings.useGps;$('sVoice').checked=!!S.settings.voice;$('sArrive').checked=!!S.settings.autoArrive;$('sMyPh').value=S.settings.myPhone||'';$('sMe').value=S.settings.myName||'';if(document.activeElement!==$('sTpl'))$('sTpl').value=tplShow(S.settings.smsTpl);tplPreview();$('sSchool').value=S.settings.schoolAddr||'';$('sSchoolCity').value=S.settings.schoolCity||'';$('sClass').value=S.settings.classAt||'17:30';$('sClassLate').value=S.settings.classLatest||'17:45';$('sSchoolBuf').value=S.settings.schoolBuf;$('sSchoolDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-cd="${i+1}" class="${String(S.settings.schoolDays).includes(i+1)?'primary':''}">${n}</button>`).join('');$('sShopDays').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat'].map((n,i)=>`<button data-sd="${i+1}" class="${String(S.settings.shopDays).includes(i+1)?'primary':''}">${n}</button>`).join('');const nf=Object.keys(S.settings.fix||{}).length;$('clearFix').textContent=nf?'Clear '+nf+' map pin fix'+(nf>1?'es':''):'No map pin fixes';$('clearFix').disabled=!nf;$('sDay').value=S.settings.dayStart||'08:00';$('sSat').value=S.settings.satStart||'09:00';$('sMinA').value=S.settings.minAppt;$('sMinR').value=S.settings.minRT;$('sTarget').value=S.settings.target;$('sHourly').value=S.settings.hourly;$('sKm').value=S.settings.kmRate;
   $('rateList').innerHTML=JOBS.map(([id,n])=>`<label class="f">${n}<input type="number" inputmode="decimal" step="0.01" data-r="${id}" value="${rate(id)}"></label>`).join('');
 }
 $('v-setup').addEventListener('click',e=>{const c=e.target.closest('[data-cd]');if(c){const d=c.dataset.cd;let v=String(S.settings.schoolDays||'');v=v.includes(d)?v.replace(d,''):(v+d).split('').sort().join('');S.settings.schoolDays=v;c.classList.toggle('primary',v.includes(d));touch('settings');return}
@@ -2227,7 +2269,7 @@ $('v-setup').addEventListener('change',e=>{const id=e.target.id;
   if(id==='sEndHome'||id==='sLearn'||id==='sGps'||id==='sVoice'||id==='sArrive'){S.settings[{sEndHome:'endHome',sLearn:'learn',sGps:'useGps',sVoice:'voice',sArrive:'autoArrive'}[id]]=e.target.checked;touch('settings');if(id==='sGps'&&e.target.checked)startGPS()}
   if(id==='bkFile'&&e.target.files[0]){e.target.files[0].text().then(restore);e.target.value=''}});
 $('v-setup').addEventListener('input',e=>{const t=e.target;
-  if(t.id==='sMyPh'){S.settings.myPhone=t.value.trim();profSoon()}else if(t.id==='sMe'){S.settings.myName=t.value.trim();profSoon()}else if(t.id==='sTpl')S.settings.smsTpl=t.value;else if(t.id==='sTax')S.settings.taxPct=Math.max(0,Math.min(60,+t.value||0));else if(t.id==='sSchool')S.settings.schoolAddr=t.value.trim();else if(t.id==='sSchoolCity')S.settings.schoolCity=t.value.trim();else if(t.id==='sClass')S.settings.classAt=t.value||'17:30';else if(t.id==='sClassLate')S.settings.classLatest=t.value||'17:45';else if(t.id==='sSchoolBuf')S.settings.schoolBuf=Math.max(0,+t.value||0);
+  if(t.id==='sMyPh'){S.settings.myPhone=t.value.trim();profSoon()}else if(t.id==='sMe'){S.settings.myName=t.value.trim();profSoon()}else if(t.id==='sTpl'){S.settings.smsTpl=tplSave(t.value);tplPreview()}else if(t.id==='sTax')S.settings.taxPct=Math.max(0,Math.min(60,+t.value||0));else if(t.id==='sSchool')S.settings.schoolAddr=t.value.trim();else if(t.id==='sSchoolCity')S.settings.schoolCity=t.value.trim();else if(t.id==='sClass')S.settings.classAt=t.value||'17:30';else if(t.id==='sClassLate')S.settings.classLatest=t.value||'17:45';else if(t.id==='sSchoolBuf')S.settings.schoolBuf=Math.max(0,+t.value||0);
   else if(t.id==='sHome')S.settings.homeAddr=t.value.trim();else if(t.id==='sHomeCity')S.settings.homeCity=t.value.trim();else if(t.id==='sShop')S.settings.shopAddr=t.value.trim();else if(t.id==='sShopCity')S.settings.shopCity=t.value.trim();else if(t.id==='sShopMin')S.settings.shopMin=Math.max(0,+t.value||0);else if(t.id==='sEndHome')S.settings.endHome=t.checked;else if(t.id==='sDay')S.settings.dayStart=t.value||'08:00';else if(t.id==='sSat')S.settings.satStart=t.value||'09:00';else if(t.id==='sMinA')S.settings.minAppt=Math.max(0,+t.value||0);else if(t.id==='sMinR')S.settings.minRT=Math.max(0,+t.value||0);
   else if(t.id==='sTag')S.settings.tag=t.value.trim();else if(t.id==='sTarget')S.settings.target=+t.value||0;else if(t.id==='sDay')S.settings.dayTarget=+t.value||0;else if(t.id==='sHourly')S.settings.hourly=+t.value||0;else if(t.id==='sKm')S.settings.kmRate=+t.value||0;else if(t.dataset.r)S.settings.rates[t.dataset.r]=+t.value||0;else return;
   touch('settings');});
