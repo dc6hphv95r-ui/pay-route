@@ -182,6 +182,11 @@ tr.go{cursor:pointer}
 .msg.err{color:var(--warn)}
 .rates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 /* REPL_T card */
+.exl{margin-top:6px;font-size:14px;font-weight:800;color:var(--ok,#2e7d32)}
+.exg{margin-bottom:10px}.exh{font-size:13px;font-weight:800;color:var(--mute);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.exo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.exb{display:flex;flex-direction:column;align-items:flex-start;gap:0;min-height:52px;padding:8px 12px;text-align:left;font-size:15px}
+.exb small{font-weight:500;font-size:12px;color:var(--mute)}.exb.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.exb.on small{color:inherit;opacity:.75}
 .rtg{display:grid;gap:4px;margin-top:8px}
 .rtr{display:grid;grid-template-columns:4.2em minmax(0,1fr);align-items:center;gap:8px;font-size:14px;color:var(--mute);font-weight:700}
 .rtv{justify-self:start;min-height:34px;padding:0 10px;border-radius:9px;background:var(--bg);font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em}
@@ -581,6 +586,10 @@ const JOBS=[
 ['tp','TP REPL repair investigation',0],['pmin','Minor plumbing (1–3 fittings)',0],['pnor','Normal plumbing (4–6 fittings)',0],
 ['cmin','Minor carpentry',0],['cnor','Normal carpentry',0]];
 const TYPE_JOB={REPL_MRT:'mrt',REPL_T:'tc',REPAIR:'tp'};
+/* extra work done at a stop (plumbing, carpentry, wire, BCV) — one choice per group */
+const EXTRAS=[['Plumbing',[['pmin','Minor','1–3 fittings'],['pnor','Normal','4–6 fittings']]],['Carpentry',[['cmin','Minor'],['cnor','Normal']]],['Wire',[['wf4','Fix <4′'],['wf12','Fix 4–12′'],['wr','Run <25′ / fix >12′'],['wrl','Run >25′']]],['Other',[['bcv','BCV'],['rad','Radio retrofit']]]];
+const EXNAME=k=>{for(const[,o]of EXTRAS)for(const x of o)if(x[0]===k)return ({pmin:'Minor plumbing',pnor:'Normal plumbing',cmin:'Minor carpentry',cnor:'Normal carpentry',wf4:'Wire fix <4′',wf12:'Wire fix 4–12′',wr:'Wire run <25′',wrl:'Wire run >25′',bcv:'BCV',rad:'Radio retrofit'})[k]||x[1];return k};
+function exApply(d,s,sign){for(const k of Object.keys(s.extra||{})){const n=(+s.extra[k]||0)*sign;d.c[k]=(+d.c[k]||0)+n;if(d.c[k]<=0)delete d.c[k]}}
 const DEF={hourly:0,target:1500,kmRate:0,rates:{},tag:'',homeAddr:'',homeCity:'',satStart:'09:00',shopAddr:'',shopCity:'',shopDays:'12345',shopMin:15,endHome:true,schoolAddr:'',schoolCity:'',schoolDays:'',classAt:'17:30',classLatest:'17:45',schoolBuf:10,taxPct:20,learn:true,useGps:true,voice:true,autoArrive:true,myName:'',smsTpl:'Hi{first}, this is {me} about your water meter appointment at {addr}. I\'m on my way and should be there in about {min} minutes.',dayStart:'08:00',minAppt:30,minRT:10,fix:{}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -704,9 +713,9 @@ function rtCard(g,n,date,isNext){
   <div class="sh"><div class="num">${done?'✓':n}</div><div style="min-width:0">
    <div class="addr">${esc(g.addr)}</div>
    <div class="rtg">${s.unit?row('Unit',s.unit,''):''}${row('WO',s.wo,'<span class="rtm">—</span>','copy')}${row('Serial',s.meter,done?'<span class="rtm">—</span>':`<button class="rta" data-a="serial" data-wo="${esc(s.wo)}">+ Add</button>`)}</div>
-   ${s.st==='skip'?`<div class="nb att">Not done — ${esc(s.why||'skipped')}</div>`:''}${myNote(g)?`<div class="nb mine">${esc(myNote(g))}</div>`:''}
+   ${s.extra?`<div class="exl">+ ${Object.keys(s.extra).map(k=>esc(EXNAME(k))).join(' · ')}</div>`:''}${s.st==='skip'?`<div class="nb att">Not done — ${esc(s.why||'skipped')}</div>`:''}${myNote(g)?`<div class="nb mine">${esc(myNote(g))}</div>`:''}
   </div></div>
-  <div class="acts"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a><button data-a="done">${done?'Undo':'Done'}</button><button data-a="skip" class="sm" aria-label="Can't do it">${g.state==='skip'?'↺':'✕'}</button><button data-a="up" class="sm" aria-label="Move earlier">↑</button><button data-a="slot" class="sm" aria-label="Move ${g.win<0?'after':'before'} appointments">${g.win<0?'PM':'AM'}</button></div>
+  <div class="acts"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a><button data-a="done">${done?'Undo':'Done'}</button>${done?`<button data-a="extra" data-wo="${esc(s.wo)}" class="sm" aria-label="Extras">+ Extra</button>`:''}<button data-a="skip" class="sm" aria-label="Can't do it">${g.state==='skip'?'↺':'✕'}</button><button data-a="up" class="sm" aria-label="Move earlier">↑</button><button data-a="slot" class="sm" aria-label="Move ${g.win<0?'after':'before'} appointments">${g.win<0?'PM':'AM'}</button></div>
  </div>`;
 }
 function stopCard(g,n,date,isNext){
@@ -726,10 +735,10 @@ function stopCard(g,n,date,isNext){
    ${ul||g.items.every(s=>s.type==='REPL_T')?'':`<div class="who">${esc(names.slice(0,3).join(' · '))}${names.length>3?' +'+(names.length-3):''}</div>`}
    <div class="who">${phones.map(p=>{const d=p.replace(/[^\d]/g,'').slice(0,11);return d.length>=10?`<a href="tel:${d}">${esc(p)}</a>`:esc(p)}).join(' · ')}</div>
    <div class="chips">${call&&g.state!=='done'?'<span class="chip call">Text before arriving</span>':''}${callOnArrival(g)&&g.state!=='done'?'<span class="chip call">Call when you arrive</span>':''}${arr&&g.state!=='done'?`<span class="chip here">On site since ${tm(new Date(arr.arriveAt).toISOString())}</span>`:''}${legChips(date,g)}${g.any?'<span class="chip any">Anytime</span>':''}${Object.entries(types).map(([t,c])=>`<span class="chip">${c>1?c+' × ':''}${esc(t||'—')}</span>`).join('')}${!ul&&g.items.some(s=>s.wo)?`<span class="chip">WO ${esc(g.items.map(s=>s.wo).filter(Boolean).join(', '))}</span>`:''}${!ul?g.items.filter(s=>s.meter).map(s=>`<button class="chip" data-copy="${esc(s.meter)}" style="min-height:0;cursor:pointer">Meter ${esc(s.meter)}</button>`).join(''):''}</div>
-   ${notes.map(t=>`<div class="nb${FLAG.test(t)?' flag':''}">${esc(t)}</div>`).join('')}${myNote(g)?`<div class="nb mine"><b>Your note:</b> ${esc(myNote(g))}</div>`:''}${attemptChip(g,date)}
+   ${g.items.filter(x=>x.extra).map(x=>`<div class="exl">+ ${ul&&x.unit?'Unit '+esc(x.unit)+': ':''}${Object.keys(x.extra).map(k=>esc(EXNAME(k))).join(' · ')}</div>`).join('')}${g.state==='done'?'':notes.map(t=>`<div class="nb${FLAG.test(t)?' flag':''}">${esc(t)}</div>`).join('')}${myNote(g)?`<div class="nb mine"><b>Your note:</b> ${esc(myNote(g))}</div>`:''}${attemptChip(g,date)}
   </div></div>${unitHtml}
   ${g.state==='done'?'':`<div class="acts2">${arr?'':`<button data-a="arrive">I'm here</button>`}<button data-a="note">${myNote(g)?'Edit note':'Add note'}</button>${smsLink(g,date)?`<a class="btn${call?' sms':''}" href="${smsLink(g,date)}" data-smsk="${esc(g.key)}">Text customer</a>`:''}</div>`}
-  <div class="acts${g.any?' any':''}"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a>${ul&&g.items.length>4&&g.state!=='done'?`<button disabled>${g.items.filter(s=>s.st==='done').length}/${g.items.length}</button>`:`<button data-a="done">${g.state==='done'?'Undo':ul?'✓ All':'Done'}</button>`}<button data-a="skip" class="sm" aria-label="No access / skip">${g.state==='skip'?'↺':'✕'}</button><button data-a="up" class="sm" aria-label="Move earlier">↑</button>${g.any?`<button data-a="slot" class="sm" aria-label="Move ${g.win<0?'after':'before'} appointments">${g.win<0?'PM':'AM'}</button>`:''}${g.items.every(s=>s.manual)?'<button data-a="del" class="sm" aria-label="Remove stop"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>':''}</div>
+  <div class="acts${g.any?' any':''}"><a class="btn primary" href="${navUrl(g)}" target="_blank" rel="noopener">Navigate</a>${ul&&g.items.length>4&&g.state!=='done'?`<button disabled>${g.items.filter(s=>s.st==='done').length}/${g.items.length}</button>`:`<button data-a="done">${g.state==='done'?'Undo':ul?'✓ All':'Done'}</button>`}<button data-a="skip" class="sm" aria-label="No access / skip">${g.state==='skip'?'↺':'✕'}</button><button data-a="up" class="sm" aria-label="Move earlier">↑</button>${g.any?`<button data-a="slot" class="sm" aria-label="Move ${g.win<0?'after':'before'} appointments">${g.win<0?'PM':'AM'}</button>`:''}${g.items.every(s=>s.manual)?'<button data-a="del" class="sm" aria-label="Remove stop"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>':''}${g.state==='done'&&!ul?`<button data-a="extra" data-wo="${esc(g.items[0].wo)}" class="sm">+ Extra</button>`:''}</div>
  </div>`;
 }
 function renderRoute(){
@@ -754,21 +763,22 @@ function stopAction(date,key,a,wo){if(['done','one','skip','del'].includes(a))se
   const d=day(date),gs=groupsOf(date),g=gs.find(x=>x.key===key);if(!g)return;
   if(a==='note'){editNote(g,date);return}
   if(a==='arrive'){arriveAt(g,date,false);toast('Arrived — timing this job');return}
+  if(a==='extra'){const s=g.items.find(x=>x.wo===wo)||g.items[0];if(s)askExtras(date,s);return}
   if(a==='serial'){const s=g.items.find(x=>x.wo===wo)||g.items[0];if(!s)return;
     $('sheetT').textContent='Meter serial'+(s.unit?' · unit '+s.unit:'')+' · WO '+(s.wo||'');$('sheetB').innerHTML=`<input id="serIn" inputmode="numeric" autocomplete="off" value="${esc(s.meter||'')}" placeholder="e.g. 54198485"><button class="primary" id="serOk">Save</button>`;$('sheet').hidden=false;$('sheetB').onclick=null;setTimeout(()=>$('serIn').focus(),50);
     const save=()=>{s.meter=$('serIn').value.replace(/\s+/g,'').trim();$('sheet').hidden=true;touch(date);renderAll()};$('serOk').onclick=save;$('serIn').onkeydown=e=>{if(e.key==='Enter')save()};return}
   if(a==='copy'){if(!wo)return;navigator.clipboard.writeText(wo).then(()=>toast('WO '+wo+' copied — paste it in Clevest'),()=>toast('WO '+wo));return}
   if(a==='skipone'){const s=g.items.find(x=>x.wo===wo);if(!s)return;if(s.st==='skip'){s.st='';delete s.why;delete s.skipAt;touch(date);renderAll();toast('Unit '+s.unit+' back on the list');return}askWhy(g,date,s);return}
   if(a==='one'){const s=g.items.find(x=>x.wo===wo);if(!s)return;const j=TYPE_JOB[s.type];
-    if(s.st==='done'){s.st='';useStock(s,-1);if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}
+    if(s.st==='done'){s.st='';useStock(s,-1);exApply(d,s,-1);if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}
     else{s.st='done';useStock(s,1);s.doneAt=Date.now();if(j)d.c[j]=(+d.c[j]||0)+1;const left=g.items.filter(x=>!x.st).sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9))[0];toast('Unit '+s.unit+' done'+(left?' · next: unit '+left.unit+', WO '+left.wo:' · building finished'))}
-    touch(date);renderAll();if(g.items.every(x=>x.st)){if(d.plan&&MAP)planRoute(date,false);if(date===TODAY)afterDone(date)}return}
+    touch(date);renderAll();const fin=()=>{if(g.items.every(x=>x.st)){if(d.plan&&MAP)planRoute(date,false);if(date===TODAY)afterDone(date)}};if(s.st==='done'&&s.type!=='REPL_T'){askExtras(date,s,fin);return}fin();return}
   if(a==='done'){
-    if(g.state==='done'){for(const s of g.items){if(s.st==='done'){useStock(s,-1);const j=TYPE_JOB[s.type];if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}s.st=''}toast('Marked not done')}
-    else{let add=0;for(const s of g.items){if(s.st!=='done'){const j=TYPE_JOB[s.type];if(j){d.c[j]=(+d.c[j]||0)+1;add++}s.st='done';useStock(s,1);s.doneAt=Date.now()}}toast(add?'Done — added '+add+' job'+(add>1?'s':'')+' to '+(date===TODAY?'today':fmtD(date)):'Done');if(date===TODAY)setTimeout(()=>afterDone(date),350)}
+    if(g.state==='done'){for(const s of g.items){if(s.st==='done'){useStock(s,-1);exApply(d,s,-1);const j=TYPE_JOB[s.type];if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}s.st=''}toast('Marked not done')}
+    else{let add=0;for(const s of g.items){if(s.st!=='done'){const j=TYPE_JOB[s.type];if(j){d.c[j]=(+d.c[j]||0)+1;add++}s.st='done';useStock(s,1);s.doneAt=Date.now()}}toast(add?'Done — added '+add+' job'+(add>1?'s':'')+' to '+(date===TODAY?'today':fmtD(date)):'Done');if(g.items.length===1){cache();renderAll();askExtras(date,g.items[0],()=>{if(date===TODAY)afterDone(date)});return}if(date===TODAY)setTimeout(()=>afterDone(date),350)}
   }else if(a==='skip'){if(g.state==='skip'){g.items.forEach(s=>{if(s.st==='skip'){s.st='';delete s.why}})}else{askWhy(g,date);return}}
   else if(a==='slot'){g.items.forEach(s=>s.slot=g.win<0?'pm':'am')}
-  else if(a==='del'){g.items.forEach(s=>{if(s.st==='done'){const j=TYPE_JOB[s.type];if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}});d.stops=d.stops.filter(s=>!g.items.includes(s))}
+  else if(a==='del'){g.items.forEach(s=>{if(s.st==='done'){exApply(d,s,-1);const j=TYPE_JOB[s.type];if(j&&d.c[j])d.c[j]--;if(j&&!d.c[j])delete d.c[j]}});d.stops=d.stops.filter(s=>!g.items.includes(s))}
   else if(a==='up'){const wg=gs.filter(x=>x.win===g.win),i=wg.indexOf(g);if(i>0){[wg[i-1],wg[i]]=[wg[i],wg[i-1]];wg.forEach((x,ix)=>x.items.forEach(s=>s.o=g.win*100+ix))}}
   touch(date);renderAll();
   if(['up','slot','del','skip','done'].includes(a)&&d.plan){if(MAP)planRoute(date,false);else{delete d.plan;touch(date)}}
@@ -1139,7 +1149,7 @@ function compareSheet(rows){const res=[];let diff=0;
   for(const r of rows){const d=S.days[r.date],a=calc(d),issues=[];
     if(!d){issues.push('not logged in the app');res.push({r,issues,money:0});continue}
     if(Math.abs((+d.h||0)-r.h)>0.05)issues.push('hours: you '+(+d.h||0).toFixed(2)+', sheet '+r.h.toFixed(2));
-    for(const k of SHEET_COLS){const mine=+(d.c||{})[k]||0,th=r.c[k]||0;if(mine!==th){const nm=JOBS.find(j=>j[0]===k)[1];issues.push(nm+': you '+mine+', sheet '+th+' ('+(mine>th?'short ':'extra ')+money(Math.abs(mine-th)*rate(k))+')')}}
+    for(const k of SHEET_COLS){const mine=+(d.c||{})[k]||0,th=r.c[k]||0;if(mine!==th){const nm=JOBS.find(j=>j[0]===k)[1];const wos=(d.stops||[]).filter(x=>x.extra&&x.extra[k]).map(x=>x.wo);issues.push(nm+': you '+mine+', sheet '+th+' ('+(mine>th?'short ':'extra ')+money(Math.abs(mine-th)*rate(k))+')'+(wos.length?' — WO '+wos.join(', '):''))}}
     const sheetPay=r.reg+r.bonus,myPay=a.total,m=myPay-sheetPay;if(Math.abs(m)>=0.5)diff+=m;
     res.push({r,issues,money:m})}
   return{res,diff}}
@@ -1583,6 +1593,18 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-smsk]');if
   g.items.forEach(s=>s.texted=Date.now());touch(date)},true);
 function speak(t){if(!S.settings.voice||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-CA';u.rate=1.02;speechSynthesis.speak(u)}catch(e){}}
 const sayAddr=a=>a.replace(/\bST\b/g,'Street').replace(/\bDR\b/g,'Drive').replace(/\bCRES\b/g,'Crescent').replace(/\bCRT\b/g,'Court').replace(/\bAVE\b/g,'Avenue').replace(/\bRD\b/g,'Road').replace(/\bPL\b/g,'Place').replace(/\bCIR\b/g,'Circle').replace(/\bBLVD\b/g,'Boulevard').replace(/\bLANDNG\b/g,'Landing').replace(/\bN\b/g,'North').replace(/\bS\b/g,'South').replace(/\bE\b/g,'East').replace(/\bW\b/g,'West').toLowerCase();
+function askExtras(date,s,then){const d=S.days[date];if(!d||!s){then&&then();return}const cur={...(s.extra||{})};
+  $('sheetT').textContent='Anything extra?'+(s.unit?' · unit '+s.unit:'')+' · WO '+(s.wo||'');
+  const draw=()=>{$('sheetB').innerHTML=EXTRAS.map(([grp,opts])=>`<div class="exg"><div class="exh">${grp}</div><div class="exo">${opts.map(([k,l,sub])=>`<button class="exb${cur[k]?' on':''}" data-ex="${k}">${esc(l)}${sub?`<small>${esc(sub)}</small>`:''}${rate(k)?`<small>${money(rate(k))}</small>`:''}</button>`).join('')}</div></div>`).join('')
+    +`<div class="grid2" style="margin-top:6px"><button data-exn="1">${Object.keys(s.extra||{}).length?'Clear all':'Nothing extra'}</button><button class="primary" data-exs="1">Save${Object.keys(cur).length?' · +'+money(Object.keys(cur).reduce((a,k)=>a+rate(k),0)):''}</button></div>`};
+  const close=()=>{$('sheet').hidden=true;$('sheetB').onclick=null;then&&then()};
+  draw();$('sheet').hidden=false;
+  $('sheetB').onclick=e=>{const b=e.target.closest('[data-ex]');
+    if(b){const k=b.dataset.ex,grp=EXTRAS.find(([,o])=>o.some(x=>x[0]===k))[1];if(cur[k])delete cur[k];else{if(k!=='bcv'&&k!=='rad')grp.forEach(x=>delete cur[x[0]]);cur[k]=1}draw();return}
+    if(e.target.closest('[data-exs]')||e.target.closest('[data-exn]')){const fin=e.target.closest('[data-exn]')?{}:cur;
+      if(s.st==='done'){exApply(d,s,-1);s.extra=fin;exApply(d,s,1)}else s.extra=fin;if(!Object.keys(s.extra).length)delete s.extra;
+      touch(date);renderAll();const n=Object.keys(fin).length;if(n)toast('Added '+Object.keys(fin).map(EXNAME).join(', '));close()}};
+}
 function afterDone(date){
   const gs=groupsOf(date),next=gs.find(g=>!g.state);
   if(!next){speak('That was the last stop.'+(isSchoolDay(date)?' Head to class.':' Nice work.'));return}
