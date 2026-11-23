@@ -36,7 +36,14 @@
             ".eml",
             "message/rfc822",
             "application/pdf",
-            ".pdf"
+            ".pdf",
+            "image/*",
+            "image/png",
+            "image/jpeg",
+            "image/webp",
+            ".png",
+            ".jpg",
+            ".jpeg"
           ]
         }
       ]

@@ -1254,6 +1254,8 @@ document.addEventListener('change',async e=>{if(e.target.id!=='shotFile')return;
 
 /* ---------- Android share target ---------- */
 async function takeShared(){try{if(!('caches' in window))return;const c=await caches.open('pr-share'),fb=new Date().getHours()>=12?nextWorkday():TODAY;
+  const ni=await c.match('./shared-imgs');if(ni){const n=+(await ni.text())||0,blobs=[];for(let i=0;i<n;i++){const r=await c.match('./shared-img-'+i);if(r){const b=await r.blob();blobs.push(new File([b],'shot'+i+'.png',{type:b.type||'image/png'}))}await c.delete('./shared-img-'+i)}await c.delete('./shared-imgs');
+    if(blobs.length){routeDate=fb;show('route');pane('route','add');await importShots(blobs,fb);return}}
   const pr=await c.match('./shared.pdf');if(pr){const b=await pr.blob();await c.delete('./shared.pdf');routeDate=fb;show('route');await importPdf(b,fb);return}
   const r=await c.match('./shared.txt');if(!r)return;const t=await r.text();await c.delete('./shared.txt');routeDate=fb;show('route');await smartImport(t,fb)}catch(e){}}
 
