@@ -216,6 +216,7 @@ tr.go{cursor:pointer}
 .stadd{width:100%;margin:6px 0 10px;min-height:40px;border-style:dashed;font-size:14px}
 .tplchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:13px;color:var(--mute);font-weight:700}.tplchips button{min-height:36px;padding:0 12px;border-radius:18px;font-size:13px}
 .tplprev{margin-top:12px;background:var(--plane);border-radius:14px;padding:10px 12px}.tplprev #tplPrev{margin-top:4px;font-size:15px;line-height:1.4}
+.pinb{display:block;width:100%;margin-top:8px;min-height:44px;font-size:14px}
 .exl{margin-top:6px;font-size:14px;font-weight:800;color:var(--ok,#2e7d32)}
 .exg{margin-bottom:10px}.exh{font-size:13px;font-weight:800;color:var(--mute);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
 .exo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
@@ -678,6 +679,7 @@ function cache(){ls.set('pt2',JSON.stringify(S));if(typeof scheduleSync==='funct
 let scheduleSync=()=>{};
 function write(){}
 function touch(key){
+  if(key!=='settings'&&key!=='clock'&&S.days[key])S.days[key].upd=Date.now();
   cache();
   clearTimeout(timers[key]);
   timers[key]=setTimeout(()=>{delete timers[key];
@@ -1422,14 +1424,25 @@ let SBS={};try{SBS=JSON.parse(ls.get('sbsync')||'{}')}catch(e){}const sbSave=()=
 function loadSB(){if(SB)return Promise.resolve(SB);return new Promise((ok,no)=>{const go=()=>{SB=supabase.createClient(CFG.supabaseUrl,CFG.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'pr-auth'}});ok(SB)};
   if(window.supabase&&window.supabase.createClient)return go();const sc=document.createElement('script');sc.src='supabase.js';sc.onload=go;sc.onerror=no;document.head.appendChild(sc)})}
 // what goes to the cloud: no stops, plans, address notes or pin fixes (those hold customer info)
-function cloudCopy(){const days={};for(const k in S.days){const d=S.days[k],o={};for(const f of ['h','km','bizKm','c','in','out','odoIn','odoOut','pick'])if(d[f]!=null)o[f]=d[f];if(Object.keys(o).length)days[k]=o}
-  const st=Object.assign({},S.settings);delete st.fix;return{settings:st,days,stock:S.stock||{},expenses:S.expenses||[]}}
-function mergeCloud(r){const days=Object.assign({},S.days);for(const k in r.days){const local=days[k]||{};days[k]=Object.assign({},local,r.days[k],{stops:local.stops,plan:local.plan})}
-  S.days=days;S.settings=Object.assign({},DEF,r.settings,{fix:S.settings.fix||{}});S.stock=r.stock||{};S.expenses=r.expenses||[];ls.set('pt2',JSON.stringify(S));GEO.clear()}
+/* the route syncs between your phones as jobs only: no customer names, phone numbers or notes leave the phone that loaded them */
+const JOBF=['wo','time','win','any','addr','unit','lot','ward','city','size','meter','type','problem','program','st','why','skipAt','doneAt','arriveAt','extra','slot','o','manual','guess','texted'];
+const jobOf=s=>{const o={};for(const f of JOBF)if(s[f]!=null&&s[f]!=='')o[f]=s[f];if(s.tries)o.tries=s.tries.map(t=>({why:t.why,at:t.at}));return o};
+function cloudCopy(){const days={};for(const k in S.days){const d=S.days[k],o={};for(const f of ['h','km','bizKm','c','in','out','odoIn','odoOut','pick'])if(d[f]!=null)o[f]=d[f];
+    if(d.stops&&d.stops.length&&k>=addDays(TODAY,-14)){o.jobs=d.stops.map(jobOf);o.jobsAt=d.upd||0}if(Object.keys(o).length){o.upd=d.upd||0;days[k]=o}}
+  const st=Object.assign({},S.settings);return{settings:st,days,stock:S.stock||{},expenses:S.expenses||[]}}
+function mergeCloud(r,daysOnly){const days=Object.assign({},S.days);for(const k in r.days){const local=days[k]||{},rd=Object.assign({},r.days[k]),jobs=rd.jobs,at=rd.jobsAt||0;delete rd.jobs;delete rd.jobsAt;
+    if((local.upd||0)>(rd.upd||0))continue; // this phone changed the day more recently
+    const m=Object.assign({},local,rd,{stops:local.stops,plan:local.plan});
+    if(jobs&&jobs.length&&(!local.stops||!local.stops.length||at>(local.upd||0))){const key=s=>s.wo||(s.addr+'#'+(s.unit||''));const mine=new Map((local.stops||[]).map(s=>[key(s),s]));
+      m.stops=jobs.map(j=>Object.assign({name:'',ph:'',ph2:'',notes:''},mine.get(key(j))||{},j));m.upd=at;
+      if(!local.stops||local.stops.length!==jobs.length||jobs.some(j=>!mine.has(key(j))))delete m.plan}
+    days[k]=m}
+  S.days=days;if(daysOnly){ls.set('pt2',JSON.stringify(S));return}S.settings=Object.assign({},DEF,r.settings,{fix:Object.assign({},(r.settings||{}).fix||{},S.settings.fix||{})});S.stock=r.stock||{};S.expenses=r.expenses||[];ls.set('pt2',JSON.stringify(S));GEO.clear()}
 function acctUI(){{const t=$('teamSave');if(t)t.hidden=!(SB_ON&&SBU)}const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;
   setSync(SBU?'cloud':'local',SBU?'Synced to your account':'Saved on this phone');$('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in with the email and password you were given to save your data and use Chat.'}
 async function sbPush(manual){if(!SBU||sbBusy)return;if(!navigator.onLine){return}sbBusy=true;
-  try{const at=new Date().toISOString();const{error}=await SB.from('user_data').upsert({user_id:SBU.id,data:cloudCopy(),updated_at:at});if(error)throw error;SBS.last=Date.now();SBS.dirty=0;SBS.remoteAt=at;sbSave();acctUI();if(manual)toast('Synced')}
+  try{{const{data:cur}=await SB.from('user_data').select('data,updated_at').eq('user_id',SBU.id).maybeSingle();if(cur&&cur.updated_at!==SBS.remoteAt&&cur.data){mergeCloud(cur.data,true);renderAll()}}
+    const at=new Date().toISOString();const{error}=await SB.from('user_data').upsert({user_id:SBU.id,data:cloudCopy(),updated_at:at});if(error)throw error;SBS.last=Date.now();SBS.dirty=0;SBS.remoteAt=at;sbSave();acctUI();if(manual)toast('Synced')}
   catch(e){if(manual)toast('Sync failed: '+(e.message||e))}finally{sbBusy=false}}
 async function sbPull(force){if(!SBU)return;try{const{data,error}=await SB.from('user_data').select('data,updated_at').eq('user_id',SBU.id).maybeSingle();if(error)throw error;
     if(!data){await sbPush(false);return}
@@ -1907,6 +1920,28 @@ function loadMap(){
     .catch(e=>{mapP=null;mapMsg('Couldn\'t load the map ('+(e.message||e)+'). Check your connection and try again.',true);throw e});
   return mapP;
 }
+/* new streets aren't in the offline map yet: set the spot once (from Google Maps or by standing there) and it's remembered on this phone */
+const inHalton=(lat,lon)=>lat>43.25&&lat<43.75&&lon>-80.25&&lon<-79.55;
+async function geoOnline(addr,city){if(!navigator.onLine)return null;
+  const q=String(addr).replace(/\b(\w)(\w*)/g,(x,a,b)=>a+b.toLowerCase())+', '+(city||'Milton')+', Ontario',num=(/^\d+/.exec(addr)||[''])[0];
+  try{const r=await fetch('https://photon.komoot.io/api/?limit=5&lat=43.5&lon=-79.85&q='+encodeURIComponent(q));const j=await r.json();
+    const f=(j.features||[]).filter(x=>{const c=x.geometry.coordinates;return inHalton(c[1],c[0])});const best=f.find(x=>x.properties.housenumber===num)||f.find(x=>x.properties.street||x.properties.name);
+    if(best){const c=best.geometry.coordinates;return{lon:c[0],lat:c[1]}}}catch(e){}
+  try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ca&q='+encodeURIComponent(q));const j=await r.json();if(j[0]&&inHalton(+j[0].lat,+j[0].lon))return{lon:+j[0].lon,lat:+j[0].lat}}catch(e){}
+  return null}
+async function fillPermitSpots(gs){const miss=gs.filter(g=>g.items.every(isPermit)&&!locate(g.addr,g.city));if(!miss.length||!navigator.onLine)return 0;
+  let tried={};try{tried=JSON.parse(ls.get('geomiss')||'{}')}catch(e){}let n=0;const seen=new Set();
+  for(const g of miss){const k=fixKey(g.addr,g.city);if(seen.has(k)||(tried[k]&&Date.now()-tried[k]<2*864e5))continue;seen.add(k);const r=await geoOnline(g.addr,g.city);
+    if(r){S.settings.fix=Object.assign({},S.settings.fix,{[k]:[+r.lon.toFixed(6),+r.lat.toFixed(6)]});GEO.delete(k);n++}else tried[k]=Date.now()}
+  ls.set('geomiss',JSON.stringify(tried));if(n)touch('settings');return n}
+function pinSheet(addr,city){const k=fixKey(addr,city);$('sheetT').textContent='Set the spot for '+addr;
+  $('sheetB').innerHTML=`<button class="primary" data-pin="here">📍 I'm there now — use my location</button><a class="btn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr+', '+(city||'')+', ON')}" target="_blank" rel="noopener">Open in Google Maps</a>
+    <div class="note">In Google Maps, press and hold on the house to drop a pin, copy the numbers it shows (like 43.4870, -79.8512) and paste them here:</div><input id="pinIn" placeholder="43.4870, -79.8512" autocomplete="off"><button data-pin="paste">Save this spot</button>`;
+  $('sheet').hidden=false;const save=(lat,lon)=>{if(!inHalton(lat,lon)){toast('That spot isn\'t in Halton — check the numbers');return}S.settings.fix=Object.assign({},S.settings.fix,{[k]:[+lon.toFixed(6),+lat.toFixed(6)]});GEO.delete(k);touch('settings');$('sheet').hidden=true;toast('Saved — '+addr+' is on the map now');if(routeDate&&S.days[routeDate]&&S.days[routeDate].plan)planRoute(routeDate,false)};
+  $('sheetB').onclick=async e=>{const b=e.target.closest('[data-pin]');if(!b)return;
+    if(b.dataset.pin==='here'){const p=await fixNow();if(p)save(p.lat,p.lon);else toast('Couldn\'t get your location')}
+    else{const v=$('pinIn').value,m=/(-?\d{1,2}\.\d{3,})\s*,\s*(-?\d{2,3}\.\d{3,})/.exec(v)||/@(-?\d+\.\d+),(-?\d+\.\d+)/.exec(v);if(m)save(+m[1],+m[2]);else toast('Paste the numbers from Google Maps, like 43.4870, -79.8512')}}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-setpin]');if(!b)return;const i=b.dataset.setpin.lastIndexOf('|');pinSheet(b.dataset.setpin.slice(0,i),b.dataset.setpin.slice(i+1))});
 const fixKey=(addr,city)=>String(addr||'').toUpperCase().trim()+'|'+String(city||'').toLowerCase().trim();
 function atPoint(x,y,how){const v=HaltonRouter.snap(MAP,x,y);return v>=0?{x,y,how,v}:null}
 function locate(addr,city){city=cityName(city);
@@ -1933,6 +1968,7 @@ async function planRoute(date,optimize){
   else if(doneGs.length){const ld=doneGs.slice().sort((a,b)=>Math.max(...b.items.map(s=>s.doneAt||0))-Math.max(...a.items.map(s=>s.doneAt||0)))[0];start=locate(ld.addr,ld.city);label=ld.addr;midDay=true}
   else{start=home;label=home?'home':'';if(st.homeAddr&&!home)mapMsg('Couldn\'t find your home address on the map — check it in Setup.',true);
     if(shopDay(date)&&st.shopAddr){shop=locate(st.shopAddr,st.shopCity);useShop=!!shop}}
+  if(pend.some(g=>g.items.every(isPermit)&&!locate(g.addr,g.city))){mapMsg('Looking up new-home / permit addresses…');await fillPermitSpots(pend)}
   const loc=pend.map(g=>locate(g.addr,g.city));
   const pts=[];const iStart=start?pts.push(start.v)-1:-1,iShop=useShop?pts.push(shop.v)-1:-1;
   const idxOf=new Map();pend.forEach((g,i)=>{if(loc[i]){idxOf.set(g,pts.length);pts.push(loc[i].v)}});
@@ -1981,12 +2017,12 @@ async function planRoute(date,optimize){
   for(const g of gs){if(g.state==='done')continue;const l=locate(g.addr,g.city);if(l)seq.push(l.v)}
   for(let i=1;i<seq.length;i++)if(seq[i-1]!==seq[i]){const{prev:pr}=R.dijkstra(MAP,seq[i-1],[seq[i]],true);ROUTE.segs.push(R.pathGeom(MAP,pr,seq[i-1],seq[i]))}
   if(ROUTE.home&&seq.length&&seq[seq.length-1]!==endPt.v){const a=seq[seq.length-1],{prev:pr}=R.dijkstra(MAP,a,[endPt.v],true);ROUTE.tail=R.pathGeom(MAP,pr,a,endPt.v)}
-  const off=pend.filter((g,i)=>!loc[i]).map(g=>g.addr);
-  if(off.length)mapMsg('Not found on the map: '+off.join(', ')+' — kept in the list without a drive time.',true);else if(!st.homeAddr)mapMsg('Tip: add your home address in Setup so plans start from home.');else mapMsg('');
+  const offG=pend.filter((g,i)=>!loc[i]),off=[...new Set(offG.map(g=>g.addr))];
+  if(off.length){mapMsg('Not on the offline map yet (new street): '+off.join(', ')+'. Navigate still works through Google Maps.',true);const mm=$('mapMsg');if(mm){const seen=new Set();mm.innerHTML=esc(mm.textContent)+offG.filter(g=>!seen.has(g.addr)&&seen.add(g.addr)).map(g=>`<button class="pinb" data-setpin="${esc(g.addr+'|'+(g.city||''))}">📍 Set spot for ${esc(g.addr)}</button>`).join('')}}else if(!st.homeAddr)mapMsg('Tip: add your home address in Setup so plans start from home.');else mapMsg('');
   renderAll();
 }
 function legChips(date,g){const P=S.days[date]&&S.days[date].plan;if(!P||!P.legs[g.key]||g.state==='done')return '';const L=P.legs[g.key];
-  return `${L.d!=null?`<span class="chip drive">${dur(L.d)} drive</span>`:''}<span class="chip">ETA ${L.eta}</span>${L.wait>4?`<span class="chip">wait ${Math.round(L.wait)} min</span>`:''}${L.late?'<span class="chip late">May miss window</span>':''}${L.cut?'<span class="chip late">Past class cutoff</span>':''}${L.off?'<span class="chip">Not on map</span>':''}`}
+  return `${L.d!=null?`<span class="chip drive">${dur(L.d)} drive</span>`:''}<span class="chip">ETA ${L.eta}</span>${L.wait>4?`<span class="chip">wait ${Math.round(L.wait)} min</span>`:''}${L.late?'<span class="chip late">May miss window</span>':''}${L.cut?'<span class="chip late">Past class cutoff</span>':''}${L.off?`<span class="chip" data-setpin="${esc(g.addr+'|'+(g.city||''))}" style="cursor:pointer">📍 Not on map — set spot</span>`:''}`}
 function planInfo(date){const P=S.days[date]&&S.days[date].plan;if(!P)return '<div class="note" style="margin-top:6px">Tap <b>Best order</b> to plan home → '+(shopDay(date)?'shop → ':'')+'stops'+(isSchoolDay(date)?' → class':S.settings.endHome?' → home':'')+'.</div>';
   const late=Object.values(P.legs).filter(l=>l.late).length;
   const parts=[P.from==='home'?'Leave home '+P.leave:P.from?'From '+esc(P.from)+' at '+P.leave:'Start '+P.leave];
