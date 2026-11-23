@@ -79,6 +79,10 @@ label.f input{margin-top:4px}
 .split{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:14px;color:var(--mute);font-weight:600}
 .bar{height:16px;background:var(--bg);border-radius:6px;overflow:hidden;border:1px solid var(--line);margin:10px 0 6px}
 .bar i{display:block;height:100%;background:var(--y);transition:width .4s}
+.trip{padding:14px}.tsteps{display:flex;gap:2px;margin:0 -4px 12px;overflow-x:auto}.ts{flex:1;min-width:0;text-align:center;font-size:11px;white-space:nowrap;color:var(--mute,#888);display:flex;flex-direction:column;align-items:center;gap:2px}
+.ts i{font-style:normal;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--plane);font-size:15px}.ts b{font-weight:700}.ts span{min-height:13px;font-size:10px;letter-spacing:-.2px}
+.ts.ok i{background:#2e7d32;color:#fff;font-weight:800}.ts.now i{background:var(--y,#ffd400);color:#111;box-shadow:0 0 0 3px rgba(255,212,0,.35)}.ts.now b{color:var(--ink)}
+.trip .wide{width:100%;margin-top:8px}.trip .big{min-height:56px;font-size:18px}.tsub{margin-top:8px;text-align:center}.tdone{font-weight:600;margin-bottom:4px}.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.tgrid span{background:var(--plane);border-radius:12px;padding:8px 10px;font-size:12px;display:flex;flex-direction:column}.tgrid b{font-size:17px}
 .linkcard{display:block;width:100%;text-align:left;border:0;font-weight:500;min-height:0;padding:16px;background:var(--plane);border-radius:18px;margin-bottom:12px}
 /* stops */
 .stop{background:var(--plane);border-radius:16px;padding:14px;margin-bottom:10px}
@@ -320,6 +324,7 @@ body.thr{overflow:hidden}
   <section class="view" id="v-today">
     <h2>Today</h2>
     <div id="tSetup"></div>
+    <div id="tTrip"></div>
     <div class="card hero" id="clock">
       <div class="hrow">
         <button class="hpay" data-go="log"><span class="hl">Today</span><span class="hbig money" id="tPay">$0.00</span><span class="hl" id="tGoalShort"></span></button>
@@ -728,20 +733,17 @@ function renderClock(){
   else{const d=S.days[TODAY];$('clockLabel').textContent=d&&d.out?'Checked out at '+tm(d.out):'Not checked in';
     $('clockTime').textContent=d&&+d.h?(+d.h).toFixed(2)+' h today':'';$('odoLabel').textContent='Odometer at check in (optional)';}
 }
-$('clockBtn').onclick=()=>{
-  const now=new Date(),ov=$('odo').value.trim(),odo=ov===''?null:+ov;
-  if(!(S.clock&&S.clock.in)){
-    S.clock={in:now.toISOString(),day:ymd(now),odo};const d=day(S.clock.day);d.in=S.clock.in;delete d.out;
-    touch('clock');touch(S.clock.day);toast('Checked in at '+tm(S.clock.in));
-  }else{
-    const k=S.clock.day,d=day(k);const h=Math.max(0,Math.round((now-new Date(S.clock.in))/36000)/100);
-    if(S.clock.odo!=null&&odo!=null){if(odo<S.clock.odo){toast('Odometer is lower than at check in ('+S.clock.odo+')');return}
-      d.km=Math.round((odo-S.clock.odo)*10)/10;d.odoIn=S.clock.odo;d.odoOut=odo;}
-    d.in=S.clock.in;d.out=now.toISOString();d.h=h;S.clock=null;touch('clock');touch(k);
-    toast('Checked out — '+h.toFixed(2)+' h'+(d.odoOut!=null?' · '+d.km+' km':''));
-  }
-  $('odo').value='';renderAll();
-};
+function clockIn(at,auto){const t=at?new Date(at):new Date(),ov=$('odo').value.trim(),odo=ov===''?null:+ov;if(S.clock&&S.clock.in)return;
+  S.clock={in:t.toISOString(),day:ymd(t),odo};const d=day(S.clock.day);d.in=S.clock.in;delete d.out;
+  touch('clock');touch(S.clock.day);toast((auto?'Clocked in automatically at ':'Checked in at ')+tm(S.clock.in));$('odo').value='';renderAll()}
+function clockOut(){const now=new Date(),ov=$('odo').value.trim(),odo=ov===''?null:+ov;if(!(S.clock&&S.clock.in))return;
+  const k=S.clock.day,d=day(k);const h=Math.max(0,Math.round((now-new Date(S.clock.in))/36000)/100);
+  if(S.clock.odo!=null&&odo!=null){if(odo<S.clock.odo){toast('Odometer is lower than at check in ('+S.clock.odo+')');return}
+    d.km=Math.round((odo-S.clock.odo)*10)/10;d.odoIn=S.clock.odo;d.odoOut=odo;}
+  d.in=S.clock.in;d.out=now.toISOString();d.h=h;S.clock=null;touch('clock');touch(k);
+  toast('Checked out — '+h.toFixed(2)+' h'+(d.odoOut!=null?' · '+d.km+' km':''));$('odo').value='';renderAll();
+  if(d.trip&&!d.trip.end){const nx=tripAfterDest(k);if(nx)speak('Work time '+Math.floor(h)+' hours '+Math.round((h%1)*60)+' minutes. '+(nx.kind==='school'?'Heading to class.':'Heading home.'))}}
+$('clockBtn').onclick=()=>{if(S.clock&&S.clock.in)clockOut();else clockIn()};
 
 /* ---------- route ---------- */
 const isAny=s=>s.win==null||s.win>=9999||s.win<0;
@@ -1779,6 +1781,64 @@ function checkShop(){
     $('sheetT').textContent='You\'re at the shop';$('sheetB').innerHTML=pickHtml(TODAY);$('sheet').hidden=false;$('sheetB').onclick=null;$('sheetX').textContent='Close';$('sheetX').onclick=()=>{$('sheet').hidden=true;$('sheetX').textContent='Cancel';renderAll()};
     speak('You\'re at the shop. Pick up '+pickSpeech(TODAY)+'.')}}
 
+/* ---------- start my day: home → shop/first stop (clock in) → stops → clock out → class → home ---------- */
+const tripOf=date=>(S.days[date]||{}).trip||null;
+function tripStage(date){const d=S.days[date]||{},t=d.trip;if(!t)return'';if(t.end)return'home';if(S.clock&&S.clock.in&&S.clock.day===date)return'work';if(d.out)return'after';return'commute'}
+const placeG=(addr,city)=>addr?{addr,city,key:'',items:[]}:null;
+function tripFirstDest(date){const st=S.settings,d=S.days[date]||{},P=d.pick;
+  if(shopDay(date)&&st.shopAddr&&!(d.trip&&d.trip.shopAt)&&!(P&&P.shown&&Object.keys(P.got||{}).length&&groupsOf(date).some(g=>g.state)))return{kind:'shop',g:placeG(st.shopAddr,st.shopCity),label:'the shop'};
+  const n=groupsOf(date).find(g=>!g.state);return n?{kind:'stop',g:n,label:n.addr}:null}
+function tripAfterDest(date){const st=S.settings,t=tripOf(date)||{},d=S.days[date]||{};
+  if(isSchoolDay(date)&&st.schoolAddr&&!t.schoolAt&&!t.skipSchool){const now=new Date(),clM=+st.classAt.slice(0,2)*60+ +st.classAt.slice(3);if(now.getHours()*60+now.getMinutes()<clM+90)return{kind:'school',g:placeG(st.schoolAddr,st.schoolCity),label:'class'}}
+  return st.homeAddr?{kind:'home',g:placeG(st.homeAddr,st.homeCity),label:'home'}:{kind:'home',g:null,label:'home'}}
+function distTo(addr,city){if(!MAP||!gpsFresh()||!addr)return null;const l=locate(addr,city);if(!l)return null;const q=MAP.ll2q(GPS.lon,GPS.lat);return Math.hypot((q[0]-l.x)*MAP.MX,(q[1]-l.y)*MAP.MY)}
+function tripStart(at){const d=day(TODAY);if(d.trip)return;d.trip={start:new Date(at||Date.now()).toISOString()};touch(TODAY);if(!S.settings.useGps){S.settings.useGps=true;touch('settings')}startGPS();
+  const f=tripFirstDest(TODAY);speak((hello()||'Good morning')+'. Day started.'+(f?' Heading to '+(f.kind==='shop'?'the shop':sayAddr(f.g.addr))+'.':''));renderAll()}
+function tripEnd(){const d=day(TODAY);if(!d.trip||d.trip.end)return;if(S.clock&&S.clock.in)clockOut();d.trip.end=new Date().toISOString();touch(TODAY);
+  const s=tripSum(TODAY);toast('Home — day finished');speak('You\'re home. Worked '+s.workTxt+', '+s.awayTxt+' away from home in total.');renderAll()}
+const hmm=m=>{m=Math.max(0,Math.round(m));return Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m'};
+function tripSum(date){const d=S.days[date]||{},t=d.trip||{},T=x=>x?new Date(x).getTime():null,st=T(t.start),i=T(d.in),o=T(d.out),e=T(t.end);
+  const work=i&&o?(o-i)/6e4:i?(Date.now()-i)/6e4:0,to=st&&i?(i-st)/6e4:null,back=o&&e?(e-o)/6e4:null,away=st?((e||Date.now())-st)/6e4:0;
+  return{work,to,back,away,workTxt:hmm(work).replace('h ',' hours ').replace('m',' minutes'),awayTxt:hmm(away).replace('h ',' hours ').replace('m',' minutes')}}
+function checkTrip(){const d=S.days[TODAY];if(!gpsFresh()||!MAP)return;const st=S.settings,stg=tripStage(TODAY);
+  if(!stg&&!(d&&(d.in||d.out))&&!(S.clock&&S.clock.in)&&st.homeAddr&&st.autoTrip!==false){const h=new Date().getHours(),dh=distTo(st.homeAddr,st.homeCity);if(dh==null||h<5||h>=12)return;
+    if(dh<150){ls.set('athome:'+TODAY,Date.now());return}
+    if(dh>500&&ls.get('athome:'+TODAY)&&((d&&(d.stops||[]).length)||shopDay(TODAY))){tripStart();toast('Day started — you left home at '+tm(new Date().toISOString()))}return}
+  if(stg==='commute'){const f=tripFirstDest(TODAY);if(!f||!f.g)return;const dm=distTo(f.g.addr,f.g.city);
+    if(dm!=null&&dm<(f.kind==='shop'?200:120)){if(f.kind==='shop'){d.trip.shopAt=new Date().toISOString();touch(TODAY)}clockIn(null,true);speak('Clocked in at '+(f.kind==='shop'?'the shop':'your first stop')+'.')}return}
+  if(stg==='after'){const a=tripAfterDest(TODAY);if(!a.g)return;const dm=distTo(a.g.addr,a.g.city);if(dm==null)return;
+    if(a.kind==='school'&&dm<250){d.trip.schoolAt=new Date().toISOString();touch(TODAY);toast('At class — tap Navigate home when you\'re done');renderAll()}
+    else if(a.kind==='home'&&dm<150&&Date.now()-new Date(d.out).getTime()>5*60000)tripEnd()}}
+function renderTrip(){const el=$('tTrip');if(!el)return;const d=S.days[TODAY]||{},t=d.trip,stg=tripStage(TODAY),st=S.settings,gs=groupsOf(TODAY),done=gs.filter(g=>g.state).length;
+  const shop=shopDay(TODAY)&&!!st.shopAddr,school=isSchoolDay(TODAY)&&!!st.schoolAddr,clocked=!!(d.in||(S.clock&&S.clock.in&&S.clock.day===TODAY));
+  if(!stg&&d.out){el.innerHTML='';return}
+  const steps=[['🏠','Start',t?'ok':stg?'':'now',t&&tm(t.start)]];
+  if(shop)steps.push(['📦','Shop',t&&t.shopAt||(clocked&&done)?'ok':stg==='commute'&&tripFirstDest(TODAY)?.kind==='shop'?'now':'',t&&t.shopAt&&tm(t.shopAt)]);
+  steps.push(['⏱','In',clocked?'ok':stg==='commute'?(shop?'':'now'):'',d.in&&tm(d.in)]);
+  steps.push(['📍','Stops',gs.length&&done===gs.length?'ok':stg==='work'?'now':'',gs.length?done+'/'+gs.length:'']);
+  steps.push(['⏹','Out',d.out?'ok':stg==='work'&&gs.length&&done===gs.length?'now':'',d.out&&tm(d.out)]);
+  if(school)steps.push(['🎓','Class',t&&t.schoolAt?'ok':stg==='after'&&tripAfterDest(TODAY).kind==='school'?'now':'',t&&t.schoolAt&&tm(t.schoolAt)]);
+  steps.push(['🏠','Home',t&&t.end?'ok':stg==='after'&&tripAfterDest(TODAY).kind==='home'?'now':'',t&&t.end&&tm(t.end)]);
+  const strip=`<div class="tsteps">${steps.map(x=>`<div class="ts ${x[2]}"><i>${x[2]==='ok'?'✓':x[0]}</i><b>${x[1]}</b><span>${x[3]||''}</span></div>`).join('')}</div>`;
+  const nav=(g,txt,cls)=>g?`<a class="btn ${cls||'primary'} wide" href="${navUrl(g)}" target="_blank" rel="noopener">${txt}</a>`:'';let body='';
+  if(!stg){const f=tripFirstDest(TODAY);body=`<a class="btn primary wide big" data-trip="start" ${f&&f.g?`href="${navUrl(f.g)}" target="_blank" rel="noopener"`:'href="#today"'}>▶ Start my day</a><div class="note tsub">${f?'Directions to '+esc(f.kind==='shop'?'the shop':f.label)+'. Work time starts when you get there.':'Work time starts at your first stop.'}</div>`}
+  else if(stg==='commute'){const f=tripFirstDest(TODAY);body=(f?nav(f.g,'Navigate to '+esc(f.kind==='shop'?'the shop':f.label)):'')+`<button class="wide" data-trip="in">I'm here — clock in</button><div class="note tsub">On the road since ${tm(t.start)} · ${hmm((Date.now()-new Date(t.start))/6e4)}</div>`}
+  else if(stg==='work'){const n=gs.find(g=>!g.state);body=n?nav(n,'Navigate to next · '+esc(n.addr)):`<button class="primary wide" data-trip="out">⏹ Clock out</button>`;
+    body+=`<div class="note tsub">Work time ${hmm(tripSum(TODAY).work)} since ${tm(d.in)} · <a href="#" data-trip="fixin">change</a></div>`}
+  else if(stg==='after'){const a=tripAfterDest(TODAY),s=tripSum(TODAY);body=`<div class="tdone">Worked <b>${hmm(s.work)}</b> · ${tm(d.in)}–${tm(d.out)}</div>`+(a.kind==='school'?nav(a.g,'🎓 Navigate to class')+`<button class="wide" data-trip="noschool">Skip class — head home</button>`:nav(a.g,'🏠 Navigate home')+`<button class="wide" data-trip="end">I'm home — end my day</button>`)}
+  else{const s=tripSum(TODAY);body=`<div class="tdone"><div>Day finished · home at ${tm(t.end)}</div><div class="tgrid"><span>Work<b>${hmm(s.work)}</b></span><span>Drive in<b>${s.to!=null?hmm(s.to):'—'}</b></span><span>After work<b>${s.back!=null?hmm(s.back):'—'}</b></span><span>Away total<b>${hmm(s.away)}</b></span></div></div>`}
+  el.innerHTML=`<div class="card trip">${strip}${body}</div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-trip]');if(!b)return;const k=b.dataset.trip;
+  if(k==='start'){if(b.getAttribute('href')==='#today')e.preventDefault();tripStart();return}
+  e.preventDefault();const d=day(TODAY);
+  if(k==='in'){const f=tripFirstDest(TODAY);if(f&&f.kind==='shop'&&d.trip){d.trip.shopAt=new Date().toISOString();touch(TODAY)}clockIn()}
+  else if(k==='out'){showWrap(TODAY)}
+  else if(k==='noschool'){d.trip.skipSchool=true;touch(TODAY);renderAll()}
+  else if(k==='end')tripEnd();
+  else if(k==='fixin'){$('sheetT').textContent='When did work start?';$('sheetB').innerHTML=`<input type="time" id="fixIn" value="${new Date(S.clock.in).toTimeString().slice(0,5)}"><button class="primary" data-fx="1">Save</button>`;$('sheet').hidden=false;
+    $('sheetB').onclick=ev=>{if(!ev.target.closest('[data-fx]'))return;const v=$('fixIn').value;if(!v)return;const n=parseD(TODAY);n.setHours(+v.slice(0,2),+v.slice(3),0,0);if(n>new Date()){toast('That time hasn\'t happened yet');return}
+      S.clock.in=n.toISOString();day(TODAY).in=S.clock.in;touch('clock');touch(TODAY);$('sheet').hidden=true;renderAll()}}});
+
 /* ---------- customer texts, arrival, voice ---------- */
 const CALLRX=/\b(call|text|phone|ring)\b[^.]*\b(before|prior|ahead|advance|arriv|min)|\b(before|prior to)\b[^.]*\b(arriv|coming|visit)|\bcall (ho|homeowner|customer|tenant|owner)\b/i;
 const ONARRIVE=/\b(when|upon|once|on)\s+(you\s+)?(have\s+)?(arriv|get there)/i;
@@ -1850,7 +1910,7 @@ function briefHtml(date){const d=S.days[date]||{},gs=groupsOf(date),st=S.setting
   return h}
 function showBrief(date,auto){date=date||TODAY;if(!$('gate').hidden||!$('onb').hidden)return;const gs=groupsOf(date);
   $('bBody').innerHTML=briefHtml(date);const calls=gs.filter(g=>!g.state&&needsCall(g)).length;
-  $('bBtns').innerHTML=gs.length?`<button class="primary" data-bgo="route">Let's go</button>${calls?`<button data-bgo="route">See the ${calls} to text first</button>`:''}<button data-bgo="close">Close</button>`:`<button class="primary" data-bgo="load">Load today's schedule</button><button data-bgo="close">Close</button>`;
+  $('bBtns').innerHTML=gs.length?(!tripOf(date)&&date===TODAY&&!(S.days[date]||{}).in?`<a class="btn primary" data-trip="start" data-bgo="close" ${(f=>f&&f.g?`href="${navUrl(f.g)}" target="_blank" rel="noopener"`:'href="#today"')(tripFirstDest(date))}>▶ Start my day</a><button data-bgo="route">See the route</button>`:`<button class="primary" data-bgo="route">Let's go</button>`)+`${calls?`<button data-bgo="route">See the ${calls} to text first</button>`:''}<button data-bgo="close">Close</button>`:`<button class="primary" data-bgo="load">Load today's schedule</button><button data-bgo="close">Close</button>`;
   $('brief').hidden=false;ls.set('brief:'+date,'1');
   if(auto&&gs.length){const n=gs.filter(g=>!g.state).length,a=gs.filter(g=>!g.state&&stopFlags(g,date).some(f=>f.p===1)).length;speak(hello()+(S.settings.myName?' '+S.settings.myName.split(' ')[0]:'')+'. '+n+' stops today.'+(a?' '+a+' need your attention first.':''))}}
 $('tQuick').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const q=b.dataset.q;if(q==='brief')showBrief(TODAY,false);else if(q==='wrap')showWrap(TODAY,false);else if(q==='route'){show('route');pane('route','stops')}else if(q==='load'){show('route');pane('route','add')}else if(q==='follow'){show('route');pane('route','stops')}else if(q==='shop'){show('route');pane('route','stops');setTimeout(()=>{const p=document.querySelector('.pkwrap');if(p){p.open=true;p.scrollIntoView({behavior:'smooth'})}},200)}});
@@ -1900,11 +1960,11 @@ function afterDone(date){
     $('sheet').hidden=false;$('sheetB').onclick=e=>{if(e.target.closest('a'))setTimeout(()=>{$('sheet').hidden=true},300)};$('sheetX').onclick=()=>{$('sheet').hidden=true};
   }
 }
-function arriveAt(g,date,auto){if(g.items.some(s=>s.arriveAt))return;const t=Date.now();g.items.forEach(s=>{if(!s.st)s.arriveAt=t});touch(date);renderAll();
+function arriveAt(g,date,auto){if(g.items.some(s=>s.arriveAt))return;const t=Date.now();g.items.forEach(s=>{if(!s.st)s.arriveAt=t});touch(date);if(date===TODAY&&tripStage(date)==='commute')clockIn(t,true);renderAll();
   if(auto){toast('Arrived at '+g.addr);speak('Arrived at '+sayAddr(g.addr)+'.'+(callOnArrival(g)?' The customer asked for a call when you arrive.':''))}
   if(callOnArrival(g)){const ph=custPhone(g);if(ph){$('sheetT').textContent='Call '+(firstName(g)||'the customer')+' — they asked for a call when you arrive.';$('sheetB').innerHTML=`<a class="btn primary" href="tel:+1${ph}">Call ${ph.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3')}</a>`;$('sheet').hidden=false;$('sheetB').onclick=e=>{if(e.target.closest('a'))setTimeout(()=>{$('sheet').hidden=true},300)};$('sheetX').onclick=()=>{$('sheet').hidden=true}}}}
 function checkArrival(){
-  checkShop();
+  checkShop();checkTrip();
   if(!S.settings.autoArrive||!MAP||!gpsFresh())return;const gs=groupsOf(TODAY),next=gs.find(g=>!g.state);if(!next||next.items.some(s=>s.arriveAt))return;
   const l=locate(next.addr,next.city);if(!l)return;const q=MAP.ll2q(GPS.lon,GPS.lat),dm=Math.hypot((q[0]-l.x)*MAP.MX,(q[1]-l.y)*MAP.MY);
   if(dm<120)arriveAt(next,TODAY,true)}
@@ -2210,7 +2270,7 @@ function renderToday(){
   renderWx();wxRefresh(false);
   {const it=shopDay(TODAY)?pickItems(TODAY):[];$('tShop').innerHTML=it.length&&it.some(i=>!i.got)&&!groupsOf(TODAY).some(g=>g.state)?pickHtml(TODAY):''}
   $('dateLine').textContent=longD(TODAY);startGPS();renderTomorrow();if(!MAP&&S.days[TODAY]&&S.days[TODAY].stops)loadMap().catch(()=>{});
-  renderClock();
+  renderClock();renderTrip();
   const c=calc(S.days[TODAY]);$('tPay').textContent=money(c.total);$('tGoal').innerHTML=goalHtml(TODAY);{const g=dayGoal(TODAY);$('tGoalShort').textContent=g?Math.min(999,Math.round(c.total/g*100))+'% of '+money(g).replace(/\.00$/,'')+' daily goal':'Tap to add jobs'}
   $('tSplit').innerHTML=`<span>${c.h.toFixed(2)} h</span><span>Reg ${money(c.reg)}</span><span>Piece ${money(c.piece)}</span><span>Bonus ${money(c.bonus)}</span>${(S.days[TODAY]&&S.days[TODAY].bizKm)?`<span>${S.days[TODAY].bizKm} business km</span>`:c.km?`<span>${c.km} km</span>`:''}`;
   {const P=S.days[TODAY]&&S.days[TODAY].plan,nowM=new Date().getHours()*60+new Date().getMinutes(),clM=(+S.settings.classAt.slice(0,2))*60+ +S.settings.classAt.slice(3);$('tClass').innerHTML=isSchoolDay(TODAY)&&nowM<clM&&!(S.days[TODAY]&&S.days[TODAY].out)?`<button class="linkcard" data-go="route" style="background:${P&&P.school&&P.school.late?'#c62828':'var(--y)'};color:${P&&P.school&&P.school.late?'#fff':'#111'}"><div style="font-weight:800;font-size:18px">Class at ${hm(+S.settings.classAt.slice(0,2)*60+ +S.settings.classAt.slice(3))}${P&&P.school?' · leave by '+P.school.leaveBy:''}</div><div style="font-size:14px">${P&&P.school?'Last stop to class: '+dur(P.school.d)+' with traffic':'Tap here, then Best order, to get your leave-by time'}</div></button>`:''}
