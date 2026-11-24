@@ -80,14 +80,18 @@ label.f input{margin-top:4px}
 .bar{height:16px;background:var(--bg);border-radius:6px;overflow:hidden;border:1px solid var(--line);margin:10px 0 6px}
 .bar i{display:block;height:100%;background:var(--y);transition:width .4s}
 .trip{padding:16px 16px 14px}
-.tsteps{display:flex;margin:2px 0 16px}.ts{flex:1;min-width:0;position:relative;text-align:center;font-size:11px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:5px;white-space:nowrap}
-.ts::before{content:"";position:absolute;top:8px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0}.ts:first-child::before{display:none}.ts.ok::before,.ts.now::before{background:var(--ink)}
-.ts i{position:relative;z-index:1;width:18px;height:18px;border-radius:50%;box-sizing:border-box;border:2px solid var(--line);background:var(--card,var(--plane));display:grid;place-items:center}
-.ts i svg{width:12px;height:12px}.ts.ok i{background:var(--ink);border-color:var(--ink);color:var(--bg)}.ts.now i{border-color:var(--ink);box-shadow:inset 0 0 0 3px var(--card,var(--plane)),inset 0 0 0 9px var(--ink)}
-.ts b{font-weight:600}.ts.now b{color:var(--ink)}.ts span{min-height:12px;font-size:10px;font-variant-numeric:tabular-nums}
+.tsteps{display:flex;margin:2px 0 16px}.tstep{flex:1;min-width:0;position:relative;text-align:center;font-size:11px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:5px;white-space:nowrap}
+.tstep::before{content:"";position:absolute;top:8px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0}.tstep:first-child::before{display:none}.tstep.ok::before,.tstep.now::before{background:var(--ink)}
+.tstep i{position:relative;z-index:1;width:18px;height:18px;border-radius:50%;box-sizing:border-box;border:2px solid var(--line);background:var(--card,var(--plane));display:grid;place-items:center}
+.tstep i svg{width:12px;height:12px}.tstep.ok i{background:var(--ink);border-color:var(--ink);color:var(--bg)}.tstep.now i{border-color:var(--ink);box-shadow:inset 0 0 0 3px var(--card,var(--plane)),inset 0 0 0 9px var(--ink)}
+.tstep b{font-weight:600}.tstep.now b{color:var(--ink)}.tstep span{min-height:12px;font-size:10px;font-variant-numeric:tabular-nums}
 .trip .wide{width:100%;margin-top:8px}.trip .big{min-height:54px;font-size:17px;border-radius:14px}.tsub{margin-top:10px;text-align:center}
 .trip .link{display:block;margin:4px auto 0;border:0;background:none;min-height:36px;color:var(--mute);font-weight:600;font-size:14px}
 .tdone{font-weight:600;margin-bottom:4px}.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.tgrid span{background:var(--bg);border-radius:12px;padding:10px 12px;font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:2px}.tgrid b{font-size:17px;color:var(--ink);font-variant-numeric:tabular-nums}
+.pushbar{display:flex;align-items:center;gap:8px;background:var(--plane);border-radius:14px;padding:10px 10px 10px 14px;margin-bottom:10px;font-size:14px;font-weight:600}.pushbar span{flex:1}.pushbar button{min-height:38px}.pushbar .x{border:0;background:none;font-size:20px;padding:0 6px}
+.pushline{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.pushline>span{flex:1;font-weight:700;min-width:0}.pushline small{display:block;font-weight:500;color:var(--mute);font-size:12px}.pushline .btn,.pushline button{min-height:38px;flex:none}
+#avMe{flex:none!important}
+.av.ph{background-size:cover;background-position:center;background-color:var(--plane)}#avMe .av{width:40px;height:40px;font-size:15px}
 .clsc{border-left:3px solid var(--ink);border-radius:14px}.clsc .clt{font-weight:700;font-size:16px}.clsc.late{border-left-color:#ff3b30}.clsc.late .clt{color:#ff3b30}
 .hclk .cl:empty,.hclk .ct:empty{display:none}
 .linkcard{display:block;width:100%;text-align:left;border:0;font-weight:500;min-height:0;padding:16px;background:var(--plane);border-radius:18px;margin-bottom:12px}
@@ -523,7 +527,7 @@ body.thr{overflow:hidden}
         <label class="f" style="margin-top:8px">Password<input id="acPass" type="password" autocomplete="current-password"></label>
         <button class="primary wide" id="acSend" style="margin-top:8px">Sign in</button>
       </div>
-      <div id="acctIn" hidden><div class="grid2"><button id="acSync">Sync now</button><button id="acOut">Sign out</button></div><button class="wide" id="acPw" style="margin-top:8px">Change my password</button><div class="pushrow" id="pushRow"></div></div>
+      <div id="acctIn" hidden><div class="grid2"><button id="acSync">Sync now</button><button id="acOut">Sign out</button></div><button class="wide" id="acPw" style="margin-top:8px">Change my password</button><div class="pushrow" id="pushRow"></div><div class="pushline" id="avRow"><span id="avMe"></span><span>Profile photo<small>Shows in chat and calls</small></span><label class="btn">Choose<input type="file" id="avFile" accept="image/*" hidden></label><button id="avDel" hidden>Remove</button></div></div>
     </div>
     <h3 style="margin-top:4px">Cloud backup (GitHub)</h3>
     <div class="card">
@@ -1447,7 +1451,7 @@ function mergeCloud(r,daysOnly){const days=Object.assign({},S.days);for(const k 
       if(!local.stops||local.stops.length!==jobs.length||jobs.some(j=>!mine.has(key(j))))delete m.plan}
     days[k]=m}
   S.days=days;if(daysOnly){ls.set('pt2',JSON.stringify(S));return}S.settings=Object.assign({},DEF,r.settings,{fix:Object.assign({},(r.settings||{}).fix||{},S.settings.fix||{})});S.stock=r.stock||{};S.expenses=r.expenses||[];ls.set('pt2',JSON.stringify(S));GEO.clear()}
-function acctUI(){{const t=$('teamSave');if(t)t.hidden=!(SB_ON&&SBU)}const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;if(typeof pushUI==='function')pushUI();
+function acctUI(){{const t=$('teamSave');if(t)t.hidden=!(SB_ON&&SBU)}const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;if(typeof pushUI==='function')pushUI();if(typeof avUI==='function')avUI();
   setSync(SBU?'cloud':'local',SBU?'Synced to your account':'Saved on this phone');$('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in with the email and password you were given to save your data and use Chat.'}
 async function sbPush(manual){if(!SBU||sbBusy)return;if(!navigator.onLine){return}sbBusy=true;
   try{{const{data:cur}=await SB.from('user_data').select('data,updated_at').eq('user_id',SBU.id).maybeSingle();if(cur&&cur.updated_at!==SBS.remoteAt&&cur.data){mergeCloud(cur.data,true);renderAll()}}
@@ -1494,7 +1498,7 @@ $('acPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('acSend').click(
 $('acPw').onclick=()=>{$('sheetT').textContent='Change your password';$('sheetB').innerHTML='<label class="f">New password (8+ characters)<input id="pwNew" type="password" autocomplete="new-password"></label><button class="primary" id="pwOk">Save new password</button>';$('sheet').hidden=false;$('sheetB').onclick=null;
   $('pwOk').onclick=async()=>{const v=$('pwNew').value;if(v.length<8){toast('Use at least 8 characters');return}try{const{error}=await SB.auth.updateUser({password:v});if(error)throw error;$('sheet').hidden=true;toast('Password changed')}catch(e){toast('Couldn\'t change it: '+(e.message||e))}}};
 $('acSync').onclick=async()=>{await sbPull(false);await sbPush(true)};
-$('acOut').onclick=async()=>{if(pushState()==='on')await pushOff();if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];try{if(CALL)callEnd(true);if(presCh){presCh.untrack();SB.removeChannel(presCh);presCh=null}if(sigIn){SB.removeChannel(sigIn);sigIn=null}}catch(e){}await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();closeThread(true);gateUI();toast('Signed out — your data stays on this phone')};
+$('acOut').onclick=async()=>{localStorage.removeItem('myAvatar');if(pushState()==='on')await pushOff();if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];try{if(CALL)callEnd(true);if(presCh){presCh.untrack();SB.removeChannel(presCh);presCh=null}if(sigIn){SB.removeChannel(sigIn);sigIn=null}}catch(e){}await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();closeThread(true);gateUI();toast('Signed out — your data stays on this phone')};
 
 
 /* ---------- team chat (Supabase, invited coworkers only) ---------- */
@@ -1530,6 +1534,14 @@ function pushUI(){const st=pushState(),bar=$('pushBar'),row=$('pushRow');
 document.addEventListener('click',e=>{const b=e.target.closest('[data-push]');if(!b)return;const k=b.dataset.push;if(k==='on')pushOn();else if(k==='off')pushOff();else{ls.set('pushBarX','1');pushUI()}});
 // keep this phone's address fresh (phones rotate it now and then)
 function pushRefresh(){if(pushState()==='on')pushSave().catch(()=>{})}
+function avUI(){const m=$('avMe');if(!m||!SBU)return;m.innerHTML=avHtml0(SBU.id,meName());$('avDel').hidden=!ls.get('myAvatar')}
+async function avSave(url){const{error}=await SB.from('profiles').update({avatar:url||null}).eq('user_id',SBU.id);
+  if(error){toast(/avatar|column/i.test(error.message||'')?'Run the profile photo SQL in Supabase first':'Couldn\'t save the photo');return false}
+  if(url)ls.set('myAvatar',url);else ls.del?ls.del('myAvatar'):localStorage.removeItem('myAvatar');avUI();toast(url?'Profile photo saved':'Photo removed');return true}
+$('avFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f||!SBU)return;
+  try{const bm=await createImageBitmap(f),z=Math.min(bm.width,bm.height),c=document.createElement('canvas');c.width=c.height=160;
+    c.getContext('2d').drawImage(bm,(bm.width-z)/2,(bm.height-z)/2,z,z,0,0,160,160);await avSave(c.toDataURL('image/jpeg',.82))}catch(x){toast('Couldn\'t read that photo')}});
+$('avDel').onclick=()=>avSave(null);
 let chatP=null;function chatInit(){if(!SBU||chatSub)return Promise.resolve();return chatP||(chatP=chatInit1().finally(()=>{chatP=null}))}
 /* who's online (live) + last seen + phone for calling */
 let ONLINE=new Set(),presCh=null,profT=null;
@@ -1537,7 +1549,7 @@ async function profPush(extra){if(!SBU||!SB)return;const row={user_id:SBU.id,nam
   let r=await SB.from('profiles').upsert({...row,phone:S.settings.myPhone||null});
   if(r.error&&/phone|last_seen|column/i.test(r.error.message||''))r=await SB.from('profiles').upsert({user_id:row.user_id,name:row.name,updated_at:row.updated_at});}
 function profSoon(){clearTimeout(profT);profT=setTimeout(()=>profPush(),1500)}
-async function loadPeople(){let r=await SB.from('profiles').select('user_id,name,phone,last_seen').order('name');if(r.error)r=await SB.from('profiles').select('user_id,name').order('name');PEOPLE=(r.data||[]).filter(x=>x.user_id!==SBU.id)}
+async function loadPeople(){let r=await SB.from('profiles').select('user_id,name,phone,last_seen,avatar').order('name');if(r.error)r=await SB.from('profiles').select('user_id,name,phone,last_seen').order('name');if(r.error)r=await SB.from('profiles').select('user_id,name').order('name');{const me=(r.data||[]).find(x=>x.user_id===SBU.id);if(me&&'avatar' in me){if(AVOK(me.avatar))ls.set('myAvatar',me.avatar);else localStorage.removeItem('myAvatar')}}PEOPLE=(r.data||[]).filter(x=>x.user_id!==SBU.id)}
 function presenceStart(){if(!SBU||presCh)return;presCh=SB.channel('online',{config:{presence:{key:SBU.id}}});
   presCh.on('presence',{event:'sync'},()=>{ONLINE=new Set(Object.keys(presCh.presenceState()));chatPresenceUI()})
     .subscribe(st=>{if(st==='SUBSCRIBED'&&document.visibilityState==='visible')presCh.track({at:Date.now()})})}
@@ -1561,7 +1573,9 @@ const AVC=['#00a884','#1f7aec','#e2662b','#a05fd6','#d63b5b','#0f8a8a','#c79100'
 const avColor=id=>{let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return AVC[h%AVC.length]};
 const initials=n=>String(n||'?').replace(/^_+/,'').split(/[\s._-]+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('')||'?';
 const avDot=(id,h)=>id!=='team'&&typeof ONLINE!=='undefined'&&ONLINE.has(id)?`<div class="avw">${h}<i class="on"></i></div>`:h;
-const avHtml0=(id,name)=>id==='team'?`<div class="av" style="background:#00a884"><svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.8"/><path d="M2 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5zM16.5 13.6c3 .2 5.5 2 5.5 5.4V20h-4.4c0-2.5-.4-4.6-1.1-6.4z"/></svg></div>`:`<div class="av" style="background:${avColor(id)}">${esc(initials(name))}</div>`;
+const AVOK=u=>typeof u==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(u)&&u.length<80000;
+function avatarOf(id){if(SBU&&id===SBU.id)return ls.get('myAvatar')||'';const p=(typeof PEOPLE!=='undefined'?PEOPLE:[]).find(x=>x.user_id===id);return p&&AVOK(p.avatar)?p.avatar:''}
+const avHtml0=(id,name)=>id!=='team'&&avatarOf(id)?`<div class="av ph" style="background-image:url('${avatarOf(id)}')"></div>`:id==='team'?`<div class="av" style="background:#00a884"><svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.8"/><path d="M2 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5zM16.5 13.6c3 .2 5.5 2 5.5 5.4V20h-4.4c0-2.5-.4-4.6-1.1-6.4z"/></svg></div>`:`<div class="av" style="background:${avColor(id)}">${esc(initials(name))}</div>`;
 const avHtml=(id,name)=>avDot(id,avHtml0(id,name));
 let THREAD=null;
 function msgsOf(room){return MSGS.filter(m=>room==='team'?!m.to_user:((m.sender===SBU.id&&m.to_user===room)||(m.sender===room&&m.to_user===SBU.id)))}
@@ -1846,7 +1860,7 @@ function renderTrip(){const el=$('tTrip');if(!el)return;const d=S.days[TODAY]||{
   steps.push(['','Out',d.out?'ok':stg==='work'&&gs.length&&done===gs.length?'now':'',d.out&&tm(d.out)]);
   if(school)steps.push(['','Class',t&&t.schoolAt?'ok':stg==='after'&&tripAfterDest(TODAY).kind==='school'?'now':'',t&&t.schoolAt&&tm(t.schoolAt)]);
   steps.push(['','Home',t&&t.end?'ok':stg==='after'&&tripAfterDest(TODAY).kind==='home'?'now':'',t&&t.end&&tm(t.end)]);
-  const st5=v=>v?v.replace(/\s*[ap]\.?m\.?$/i,''):'';const strip=`<div class="tsteps">${steps.map(x=>`<div class="ts ${x[2]}"><i>${x[2]==='ok'?'<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</i><b>${x[1]}</b><span>${st5(x[3])}</span></div>`).join('')}</div>`;
+  const st5=v=>v?v.replace(/\s*[ap]\.?m\.?$/i,''):'';const strip=`<div class="tsteps">${steps.map(x=>`<div class="tstep ${x[2]}"><i>${x[2]==='ok'?'<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</i><b>${x[1]}</b><span>${st5(x[3])}</span></div>`).join('')}</div>`;
   const nav=(g,txt,cls)=>g?`<a class="btn ${cls||'primary'} wide" href="${navUrl(g)}" target="_blank" rel="noopener">${txt}</a>`:'';let body='';
   if(!stg){const f=tripFirstDest(TODAY);body=`<a class="btn primary wide big" data-trip="start" ${f&&f.g?`href="${navUrl(f.g)}" target="_blank" rel="noopener"`:'href="#today"'}>Start my day</a><div class="note tsub">${f?'Directions to '+esc(f.kind==='shop'?'the shop':f.label)+'. Work time starts when you get there.':'Work time starts at your first stop.'}</div><button class="link" data-trip="in">Check in now instead</button>`}
   else if(stg==='commute'){const f=tripFirstDest(TODAY);body=(f?nav(f.g,'Navigate to '+esc(f.kind==='shop'?'the shop':f.label)):'')+`<button class="link" data-trip="in">I'm here, check in</button><div class="note tsub">On the road since ${tm(t.start)} · ${hmm((Date.now()-new Date(t.start))/6e4)}</div>`}
