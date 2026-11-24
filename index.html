@@ -1522,7 +1522,7 @@ async function pushSave(){const reg=await navigator.serviceWorker.ready;let sub=
 async function pushOn(){try{const p=await Notification.requestPermission();if(p!=='granted'){toast('Notifications are blocked — allow them in your phone settings');pushUI();return}
     await pushSave();ls.set('push','on');toast('Message notifications on')}catch(e){toast('Couldn\'t turn on notifications'+(e&&e.message?': '+e.message:''))}pushUI()}
 async function pushOff(){ls.set('push','off');try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub){await SB.from('push_subs').delete().eq('endpoint',sub.endpoint);await sub.unsubscribe()}}catch(e){}pushUI()}
-function pushNotify(id){if(!SB||!VAPID||!id)return;try{SB.functions.invoke('notify',{body:{id}}).catch(()=>{})}catch(e){}}
+function pushNotify(id){if(!SB||!VAPID||!id)return;try{SB.functions.invoke((window.PR_CONFIG||{}).notifyFn||'dynamic-endpoint',{body:{id}}).catch(()=>{})}catch(e){}}
 function pushUI(){const st=pushState(),bar=$('pushBar'),row=$('pushRow');
   if(bar)bar.innerHTML=st==='off'&&ls.get('pushBarX')!=='1'?`<div class="pushbar"><span>Get notified when the team messages you</span><button class="primary" data-push="on">Turn on</button><button class="x" data-push="x" aria-label="Hide">×</button></div>`
     :st==='install'?`<div class="pushbar"><span>To get message notifications, open Pay &amp; Route from its home-screen icon</span></div>`:'';
