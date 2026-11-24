@@ -91,6 +91,7 @@ label.f input{margin-top:4px}
 .pushbar{display:flex;align-items:center;gap:8px;background:var(--plane);border-radius:14px;padding:10px 10px 10px 14px;margin-bottom:10px;font-size:14px;font-weight:600}.pushbar span{flex:1}.pushbar button{min-height:38px}.pushbar .x{border:0;background:none;font-size:20px;padding:0 6px}
 .pushline{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.pushline>span{flex:1;font-weight:700;min-width:0}.pushline small{display:block;font-weight:500;color:var(--mute);font-size:12px}.pushline .btn,.pushline button{min-height:38px;flex:none}
 #avMe{flex:none!important}
+.adv{padding:0}.adv>summary{padding:16px;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between}.adv>summary::after{content:'›';transform:rotate(90deg);color:var(--mute);font-size:20px;line-height:1}.adv[open]>summary::after{transform:rotate(-90deg)}.adv[open]{padding:0 16px 16px}.adv[open]>summary{padding:16px 0 4px}.adv h3{font-size:15px}
 .av.ph{background-size:cover;background-position:center;background-color:var(--plane)}#avMe .av{width:40px;height:40px;font-size:15px}
 .clsc{border-left:3px solid var(--ink);border-radius:14px}.clsc .clt{font-weight:700;font-size:16px}.clsc.late{border-left-color:#ff3b30}.clsc.late .clt{color:#ff3b30}
 .hclk .cl:empty,.hclk .ct:empty{display:none}
@@ -529,8 +530,9 @@ body.thr{overflow:hidden}
       </div>
       <div id="acctIn" hidden><div class="grid2"><button id="acSync">Sync now</button><button id="acOut">Sign out</button></div><button class="wide" id="acPw" style="margin-top:8px">Change my password</button><div class="pushrow" id="pushRow"></div><div class="pushline" id="avRow"><span id="avMe"></span><span>Profile photo<small>Shows in chat and calls</small></span><label class="btn">Choose<input type="file" id="avFile" accept="image/*" hidden></label><button id="avDel" hidden>Remove</button></div></div>
     </div>
-    <h3 style="margin-top:4px">Cloud backup (GitHub)</h3>
-    <div class="card">
+    <details class="card adv" id="advBox" hidden><summary>Backups &amp; restore</summary>
+    <h3 style="margin-top:14px">Cloud backup (GitHub)</h3>
+    <div>
       <p class="note" style="margin-top:0" id="ghStatus">Not connected.</p>
       <div class="grid2"><label class="f">GitHub username<input id="ghOwner" autocomplete="off" autocapitalize="off"></label><label class="f">Private repo name<input id="ghRepo" autocomplete="off" autocapitalize="off" placeholder="pay-route-data"></label></div>
       <label class="f" style="margin-top:8px">Access token<input id="ghToken" type="password" autocomplete="off" placeholder="github_pat_…"></label>
@@ -543,6 +545,7 @@ body.thr{overflow:hidden}
     <label class="btn wide" style="margin-top:8px">Restore from file<input type="file" id="bkFile" accept=".json,application/json,text/plain" hidden></label>
     <textarea id="bkText" placeholder="…or paste a backup here" style="margin-top:8px;min-height:80px"></textarea>
     <button id="bkPaste" class="wide" style="margin-top:6px">Restore from pasted text</button>
+    </details>
     <p class="note" style="text-align:center;margin-top:28px">© 2026 Yonas Yohans. All rights reserved.<br>Map data © OpenStreetMap contributors.</p>
     </div>
   </section>
@@ -1451,7 +1454,11 @@ function mergeCloud(r,daysOnly){const days=Object.assign({},S.days);for(const k 
       if(!local.stops||local.stops.length!==jobs.length||jobs.some(j=>!mine.has(key(j))))delete m.plan}
     days[k]=m}
   S.days=days;if(daysOnly){ls.set('pt2',JSON.stringify(S));return}S.settings=Object.assign({},DEF,r.settings,{fix:Object.assign({},(r.settings||{}).fix||{},S.settings.fix||{})});S.stock=r.stock||{};S.expenses=r.expenses||[];ls.set('pt2',JSON.stringify(S));GEO.clear()}
-function acctUI(){{const t=$('teamSave');if(t)t.hidden=!(SB_ON&&SBU)}const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;if(typeof pushUI==='function')pushUI();if(typeof avUI==='function')avUI();
+/* backups & GitHub are only for the owner (or anyone not using an account / already set up with GitHub) */
+const OWNER_H='8379b7d321f5ae0e0e596793d551d648e407f99eae950e1e769c53202c3af2fd';let isOwner=false;
+async function ownerCheck(){isOwner=false;try{if(SBU&&SBU.email&&crypto.subtle){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(SBU.email.trim().toLowerCase()));isOwner=[...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('')===OWNER_H}}catch(e){}const b=$('advBox');if(b)b.hidden=!(isOwner||!SB_ON||!SBU||GH.token);const t=$('teamSave');if(t)t.hidden=!(SB_ON&&SBU&&isOwner)}
+function advUI(){ownerCheck()}
+function acctUI(){{const t=$('teamSave');if(t)t.hidden=!(SB_ON&&SBU)}const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;if(typeof pushUI==='function')pushUI();if(typeof avUI==='function')avUI();advUI();
   setSync(SBU?'cloud':'local',SBU?'Synced to your account':'Saved on this phone');$('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in with the email and password you were given to save your data and use Chat.'}
 async function sbPush(manual){if(!SBU||sbBusy)return;if(!navigator.onLine){return}sbBusy=true;
   try{{const{data:cur}=await SB.from('user_data').select('data,updated_at').eq('user_id',SBU.id).maybeSingle();if(cur&&cur.updated_at!==SBS.remoteAt&&cur.data){mergeCloud(cur.data,true);renderAll()}}
