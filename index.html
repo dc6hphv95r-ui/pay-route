@@ -64,7 +64,7 @@ label.f input{margin-top:4px}
 .clock.on .hweek{border-color:rgba(0,0,0,.2)}
 .qa{display:flex;gap:8px;overflow-x:auto;margin:0 -2px 12px;padding:2px;scrollbar-width:none}.qa::-webkit-scrollbar{display:none}
 .qa button{flex:none;min-height:44px;padding:0 14px;border-radius:22px;font-size:14px;white-space:nowrap}
-.qa button.hot{background:var(--y);color:#111;border-color:var(--y)}
+.qa button{font-weight:600}.qa button.hot{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .wxd{padding:0}.wxd>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;font-weight:800;cursor:pointer}.wxd>summary::-webkit-details-marker{display:none}
 .wxd>summary:after{content:'▾';opacity:.5}.wxd[open]>summary:after{content:'▴'}.wxd #tWx .card{margin:0;border-radius:0 0 18px 18px;box-shadow:none;background:transparent;padding-top:0}
 .wxd .wsub{font-weight:600;font-size:13px;opacity:.7;margin-left:auto}
@@ -79,10 +79,17 @@ label.f input{margin-top:4px}
 .split{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:14px;color:var(--mute);font-weight:600}
 .bar{height:16px;background:var(--bg);border-radius:6px;overflow:hidden;border:1px solid var(--line);margin:10px 0 6px}
 .bar i{display:block;height:100%;background:var(--y);transition:width .4s}
-.trip{padding:14px}.tsteps{display:flex;gap:2px;margin:0 -4px 12px;overflow-x:auto}.ts{flex:1;min-width:0;text-align:center;font-size:11px;white-space:nowrap;color:var(--mute,#888);display:flex;flex-direction:column;align-items:center;gap:2px}
-.ts i{font-style:normal;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--plane);font-size:15px}.ts b{font-weight:700}.ts span{min-height:13px;font-size:10px;letter-spacing:-.2px}
-.ts.ok i{background:#2e7d32;color:#fff;font-weight:800}.ts.now i{background:var(--y,#ffd400);color:#111;box-shadow:0 0 0 3px rgba(255,212,0,.35)}.ts.now b{color:var(--ink)}
-.trip .wide{width:100%;margin-top:8px}.trip .big{min-height:56px;font-size:18px}.tsub{margin-top:8px;text-align:center}.tdone{font-weight:600;margin-bottom:4px}.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.tgrid span{background:var(--plane);border-radius:12px;padding:8px 10px;font-size:12px;display:flex;flex-direction:column}.tgrid b{font-size:17px}
+.trip{padding:16px 16px 14px}
+.tsteps{display:flex;margin:2px 0 16px}.ts{flex:1;min-width:0;position:relative;text-align:center;font-size:11px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:5px;white-space:nowrap}
+.ts::before{content:"";position:absolute;top:8px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0}.ts:first-child::before{display:none}.ts.ok::before,.ts.now::before{background:var(--ink)}
+.ts i{position:relative;z-index:1;width:18px;height:18px;border-radius:50%;box-sizing:border-box;border:2px solid var(--line);background:var(--card,var(--plane));display:grid;place-items:center}
+.ts i svg{width:12px;height:12px}.ts.ok i{background:var(--ink);border-color:var(--ink);color:var(--bg)}.ts.now i{border-color:var(--ink);box-shadow:inset 0 0 0 3px var(--card,var(--plane)),inset 0 0 0 9px var(--ink)}
+.ts b{font-weight:600}.ts.now b{color:var(--ink)}.ts span{min-height:12px;font-size:10px;font-variant-numeric:tabular-nums}
+.trip .wide{width:100%;margin-top:8px}.trip .big{min-height:54px;font-size:17px;border-radius:14px}.tsub{margin-top:10px;text-align:center}
+.trip .link{display:block;margin:4px auto 0;border:0;background:none;min-height:36px;color:var(--mute);font-weight:600;font-size:14px}
+.tdone{font-weight:600;margin-bottom:4px}.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.tgrid span{background:var(--bg);border-radius:12px;padding:10px 12px;font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:2px}.tgrid b{font-size:17px;color:var(--ink);font-variant-numeric:tabular-nums}
+.clsc{border-left:3px solid var(--ink);border-radius:14px}.clsc .clt{font-weight:700;font-size:16px}.clsc.late{border-left-color:#ff3b30}.clsc.late .clt{color:#ff3b30}
+.hclk .cl:empty,.hclk .ct:empty{display:none}
 .linkcard{display:block;width:100%;text-align:left;border:0;font-weight:500;min-height:0;padding:16px;background:var(--plane);border-radius:18px;margin-bottom:12px}
 /* stops */
 .stop{background:var(--plane);border-radius:16px;padding:14px;margin-bottom:10px}
@@ -160,7 +167,7 @@ label.f input{margin-top:4px}
 .nb.att{background:#fdecea;color:#7a1c14;font-weight:700}
 .fu{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .fu:last-child{border-bottom:0}
-#mic{position:fixed;right:14px;bottom:calc(78px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;background:#111;color:#ffe600;border:3px solid #ffe600;z-index:6;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#mic{position:fixed;right:16px;bottom:calc(80px + env(safe-area-inset-bottom));width:50px;height:50px;border-radius:50%;background:var(--plane);color:var(--ink);border:1px solid var(--line);z-index:6;padding:0;box-shadow:0 6px 20px rgba(0,0,0,.18)}
 #mic.on{background:#c62828;color:#fff;border-color:#fff;animation:pulse 1s infinite}
 @keyframes pulse{50%{transform:scale(1.08)}}@media(prefers-reduced-motion:reduce){#mic.on{animation:none}}
 .chip.any{background:var(--y);color:#111;border-color:var(--y)}
@@ -210,8 +217,8 @@ tr.go{cursor:pointer}
 #brief .bstat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 14px}
 #brief .bstat div{background:var(--plane);border-radius:14px;padding:10px 12px}#brief .bstat b{display:block;font-size:22px;font-weight:800;line-height:1.15}#brief .bstat span{font-size:12px;color:var(--mute);font-weight:700}
 #brief h3{margin:16px 0 8px;font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute)}
-#brief .bi{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;padding:10px 0;border-top:1px solid var(--line)}
-#brief .bi .ic{font-size:20px;line-height:1.2}#brief .bi b{display:block}#brief .bi .note{margin-top:2px}
+#brief .bi{display:grid;grid-template-columns:10px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+#brief .bi .ic{width:7px;height:7px;border-radius:50%;margin-top:7px;background:var(--line)}#brief .bi .ic.p1{background:#ff3b30}#brief .bi .ic.p2{background:#ff9500}#brief .bi b{display:block}#brief .bi .note{margin-top:2px}
 #brief .focus{background:var(--y);color:#111;border-radius:16px;padding:12px 14px;font-weight:700;margin:6px 0 4px}
 #brief .bbtns{display:grid;gap:8px;margin-top:18px}#brief .bbtns button{min-height:52px}
 .chip.kind{background:rgba(31,122,236,.14);color:light-dark(#1557b0,#8ab4f8);border-color:transparent;font-weight:700}
@@ -328,7 +335,7 @@ body.thr{overflow:hidden}
     <div class="card hero" id="clock">
       <div class="hrow">
         <button class="hpay" data-go="log"><span class="hl">Today</span><span class="hbig money" id="tPay">$0.00</span><span class="hl" id="tGoalShort"></span></button>
-        <div class="hclk"><button class="go primary" id="clockBtn">Check in</button><span class="cl" id="clockLabel">Not checked in</span><span class="ct" id="clockTime"></span></div>
+        <div class="hclk"><button class="go primary" id="clockBtn" hidden>Check in</button><span class="cl" id="clockLabel">Not checked in</span><span class="ct" id="clockTime"></span></div>
       </div>
       <div id="tGoal"></div>
       <button class="hweek" data-go="week"><span>This week</span><b id="tWeek"></b><span id="tWeekMsg"></span><i class="bar" hidden><i id="tWeekBar"></i></i></button>
@@ -365,7 +372,7 @@ body.thr{overflow:hidden}
       <div class="card">
         <b>Schedule email</b>
         <label class="btn primary wide">Open schedule PDF<input type="file" id="pdfFile" accept="application/pdf,.pdf,text/plain,.txt,.eml" hidden></label>
-        <label class="btn wide" style="margin-top:8px">📷 Read screenshots<input type="file" id="shotFile" accept="image/*" multiple hidden></label>
+        <label class="btn wide" style="margin-top:8px">Read screenshots<input type="file" id="shotFile" accept="image/*" multiple hidden></label>
         <div class="grid2" style="margin-top:8px"><button id="clipBtn">Paste from clipboard</button><button id="pasteBtn">Type / paste here</button></div>
         <div class="mails" id="mails"></div>
         <div id="pasteBox" hidden style="margin-top:8px">
@@ -446,7 +453,7 @@ body.thr{overflow:hidden}
   <section class="view" id="v-chat">
     <h2 style="margin-bottom:8px">Chats</h2>
     <div id="chatGate" class="card" hidden></div>
-    <div id="chatMain" hidden><div class="clist" id="rooms"></div></div>
+    <div id="chatMain" hidden><div id="pushBar"></div><div class="clist" id="rooms"></div></div>
   </section>
 
   <!-- SETUP -->
@@ -516,7 +523,7 @@ body.thr{overflow:hidden}
         <label class="f" style="margin-top:8px">Password<input id="acPass" type="password" autocomplete="current-password"></label>
         <button class="primary wide" id="acSend" style="margin-top:8px">Sign in</button>
       </div>
-      <div id="acctIn" hidden><div class="grid2"><button id="acSync">Sync now</button><button id="acOut">Sign out</button></div><button class="wide" id="acPw" style="margin-top:8px">Change my password</button></div>
+      <div id="acctIn" hidden><div class="grid2"><button id="acSync">Sync now</button><button id="acOut">Sign out</button></div><button class="wide" id="acPw" style="margin-top:8px">Change my password</button><div class="pushrow" id="pushRow"></div></div>
     </div>
     <h3 style="margin-top:4px">Cloud backup (GitHub)</h3>
     <div class="card">
@@ -574,7 +581,7 @@ body.thr{overflow:hidden}
   <p class="gerr" id="oErr" role="alert"></p>
 </div></div>
 <div id="call" hidden role="dialog" aria-label="Call">
-  <div class="cl-top"><div class="cl-sec">🔒 Pay &amp; Route call</div><div id="clAv"></div><div class="cl-name" id="clName"></div><div class="cl-st" id="clSt"></div></div>
+  <div class="cl-top"><div class="cl-sec">Pay &amp; Route call</div><div id="clAv"></div><div class="cl-name" id="clName"></div><div class="cl-st" id="clSt"></div></div>
   <div class="cl-btns" id="clIn"><button class="cl-b no" id="clDecline" aria-label="Decline"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M12 9c-1.6 0-3.2.25-4.7.73v3.1a1 1 0 0 1-.56.9 11.5 11.5 0 0 0-2.66 1.85 1 1 0 0 1-1.41 0L.29 13.2a1 1 0 0 1 0-1.41A16.9 16.9 0 0 1 12 7a16.9 16.9 0 0 1 11.71 4.79 1 1 0 0 1 0 1.41l-2.38 2.38a1 1 0 0 1-1.41 0 11.3 11.3 0 0 0-2.66-1.85 1 1 0 0 1-.56-.9v-3.1A15 15 0 0 0 12 9z"/></svg><span>Decline</span></button><button class="cl-b yes" id="clAccept" aria-label="Accept"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>Accept</span></button></div>
   <div class="cl-btns" id="clOn" hidden><button class="cl-b sm" id="clMute" aria-label="Mute"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg><span>Mute</span></button><button class="cl-b no" id="clEnd" aria-label="End call"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M12 9c-1.6 0-3.2.25-4.7.73v3.1a1 1 0 0 1-.56.9 11.5 11.5 0 0 0-2.66 1.85 1 1 0 0 1-1.41 0L.29 13.2a1 1 0 0 1 0-1.41A16.9 16.9 0 0 1 12 7a16.9 16.9 0 0 1 11.71 4.79 1 1 0 0 1 0 1.41l-2.38 2.38a1 1 0 0 1-1.41 0 11.3 11.3 0 0 0-2.66-1.85 1 1 0 0 1-.56-.9v-3.1A15 15 0 0 0 12 9z"/></svg><span>End</span></button></div>
   <audio id="clAudio" autoplay playsinline></audio>
@@ -725,12 +732,12 @@ let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('sho
 /* ---------- clock ---------- */
 let tick=null;
 function renderClock(){
-  const on=S.clock&&S.clock.in;$('clock').classList.toggle('on',!!on);$('clockBtn').textContent=on?'Check out':'Check in';
+  const on=S.clock&&S.clock.in;$('clock').classList.toggle('on',!!on);$('clockBtn').textContent=on?'Check out':'Check in';$('clockLabel').closest('.hclk').classList.toggle('on',!!on);
   clearInterval(tick);
   if(on){const upd=()=>{const m=Math.max(0,Math.floor((Date.now()-new Date(S.clock.in))/60000));$('clockTime').textContent=Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m'};
     $('clockLabel').textContent='Since '+tm(S.clock.in);upd();tick=setInterval(upd,20000);
     $('odoLabel').textContent=S.clock.odo!=null?'Odometer at check out (started '+S.clock.odo+')':'Odometer at check out (optional)';}
-  else{const d=S.days[TODAY];$('clockLabel').textContent=d&&d.out?'Checked out at '+tm(d.out):'Not checked in';
+  else{const d=S.days[TODAY];$('clockLabel').textContent=d&&d.out?'Checked out '+tm(d.out):'';
     $('clockTime').textContent=d&&+d.h?(+d.h).toFixed(2)+' h today':'';$('odoLabel').textContent='Odometer at check in (optional)';}
 }
 function clockIn(at,auto){const t=at?new Date(at):new Date(),ov=$('odo').value.trim(),odo=ov===''?null:+ov;if(S.clock&&S.clock.in)return;
@@ -1440,7 +1447,7 @@ function mergeCloud(r,daysOnly){const days=Object.assign({},S.days);for(const k 
       if(!local.stops||local.stops.length!==jobs.length||jobs.some(j=>!mine.has(key(j))))delete m.plan}
     days[k]=m}
   S.days=days;if(daysOnly){ls.set('pt2',JSON.stringify(S));return}S.settings=Object.assign({},DEF,r.settings,{fix:Object.assign({},(r.settings||{}).fix||{},S.settings.fix||{})});S.stock=r.stock||{};S.expenses=r.expenses||[];ls.set('pt2',JSON.stringify(S));GEO.clear()}
-function acctUI(){{const t=$('teamSave');if(t)t.hidden=!(SB_ON&&SBU)}const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;
+function acctUI(){{const t=$('teamSave');if(t)t.hidden=!(SB_ON&&SBU)}const c=$('acctCard');if(!c)return;c.hidden=!SB_ON;if(!SB_ON)return;$('acctOut').hidden=!!SBU;$('acctIn').hidden=!SBU;if(typeof pushUI==='function')pushUI();
   setSync(SBU?'cloud':'local',SBU?'Synced to your account':'Saved on this phone');$('acctStatus').textContent=SBU?'Signed in as '+SBU.email+(SBS.last?' · synced '+new Date(SBS.last).toLocaleString('en-CA',{weekday:'short',hour:'numeric',minute:'2-digit'}):''):'Sign in with the email and password you were given to save your data and use Chat.'}
 async function sbPush(manual){if(!SBU||sbBusy)return;if(!navigator.onLine){return}sbBusy=true;
   try{{const{data:cur}=await SB.from('user_data').select('data,updated_at').eq('user_id',SBU.id).maybeSingle();if(cur&&cur.updated_at!==SBS.remoteAt&&cur.data){mergeCloud(cur.data,true);renderAll()}}
@@ -1487,7 +1494,7 @@ $('acPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('acSend').click(
 $('acPw').onclick=()=>{$('sheetT').textContent='Change your password';$('sheetB').innerHTML='<label class="f">New password (8+ characters)<input id="pwNew" type="password" autocomplete="new-password"></label><button class="primary" id="pwOk">Save new password</button>';$('sheet').hidden=false;$('sheetB').onclick=null;
   $('pwOk').onclick=async()=>{const v=$('pwNew').value;if(v.length<8){toast('Use at least 8 characters');return}try{const{error}=await SB.auth.updateUser({password:v});if(error)throw error;$('sheet').hidden=true;toast('Password changed')}catch(e){toast('Couldn\'t change it: '+(e.message||e))}}};
 $('acSync').onclick=async()=>{await sbPull(false);await sbPush(true)};
-$('acOut').onclick=async()=>{if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];try{if(CALL)callEnd(true);if(presCh){presCh.untrack();SB.removeChannel(presCh);presCh=null}if(sigIn){SB.removeChannel(sigIn);sigIn=null}}catch(e){}await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();closeThread(true);gateUI();toast('Signed out — your data stays on this phone')};
+$('acOut').onclick=async()=>{if(pushState()==='on')await pushOff();if(SBS.dirty)await sbPush(false);if(chatSub){SB.removeChannel(chatSub);chatSub=null}MSGS=[];try{if(CALL)callEnd(true);if(presCh){presCh.untrack();SB.removeChannel(presCh);presCh=null}if(sigIn){SB.removeChannel(sigIn);sigIn=null}}catch(e){}await SB.auth.signOut();SBU=null;SBS={};sbSave();acctUI();closeThread(true);gateUI();toast('Signed out — your data stays on this phone')};
 
 
 /* ---------- team chat (Supabase, invited coworkers only) ---------- */
@@ -1503,6 +1510,26 @@ async function teamPush(){if(!SBU)return;const st=S.settings,d={};for(const k of
   const{error}=await SB.from('team_settings').upsert({id:1,data:d,updated_at:new Date().toISOString()});
   toast(error?(/row-level|permission|denied/i.test(error.message)?'Only the app admin can change team rates':'Couldn\'t save: '+error.message):'Saved — everyone gets these rates next time they open the app')}
 $('teamSave').onclick=teamPush;
+/* ---------- message notifications (Web Push) ---------- */
+const VAPID=(window.PR_CONFIG||{}).vapidPublic||'';
+const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+function pushState(){if(!VAPID||!SBU)return'none';if(isIOS&&!isStandalone())return'install';if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))return'unsupported';
+  if(Notification.permission==='denied')return'denied';return Notification.permission==='granted'&&ls.get('push')==='on'?'on':'off'}
+const u8=b=>{b=b.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return Uint8Array.from(atob(b),c=>c.charCodeAt(0))};
+async function pushSave(){const reg=await navigator.serviceWorker.ready;let sub=await reg.pushManager.getSubscription();
+  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(VAPID)});
+  const j=sub.toJSON();const{error}=await SB.from('push_subs').upsert({endpoint:j.endpoint,user_id:SBU.id,sub:j,updated_at:new Date().toISOString()},{onConflict:'endpoint'});if(error)throw error}
+async function pushOn(){try{const p=await Notification.requestPermission();if(p!=='granted'){toast('Notifications are blocked — allow them in your phone settings');pushUI();return}
+    await pushSave();ls.set('push','on');toast('Message notifications on')}catch(e){toast('Couldn\'t turn on notifications'+(e&&e.message?': '+e.message:''))}pushUI()}
+async function pushOff(){ls.set('push','off');try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub){await SB.from('push_subs').delete().eq('endpoint',sub.endpoint);await sub.unsubscribe()}}catch(e){}pushUI()}
+function pushNotify(id){if(!SB||!VAPID||!id)return;try{SB.functions.invoke('notify',{body:{id}}).catch(()=>{})}catch(e){}}
+function pushUI(){const st=pushState(),bar=$('pushBar'),row=$('pushRow');
+  if(bar)bar.innerHTML=st==='off'&&ls.get('pushBarX')!=='1'?`<div class="pushbar"><span>Get notified when the team messages you</span><button class="primary" data-push="on">Turn on</button><button class="x" data-push="x" aria-label="Hide">×</button></div>`
+    :st==='install'?`<div class="pushbar"><span>To get message notifications, open Pay &amp; Route from its home-screen icon</span></div>`:'';
+  if(row)row.innerHTML=st==='none'?'':`<div class="pushline"><span>Message notifications<small>${st==='on'?'On for this phone':st==='denied'?'Blocked — allow notifications for Pay &amp; Route in your phone settings':st==='install'?'Open from the home-screen icon first':st==='unsupported'?'Not supported on this phone':'Off'}</small></span>${st==='on'?'<button data-push="off">Turn off</button>':st==='off'?'<button class="primary" data-push="on">Turn on</button>':''}</div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-push]');if(!b)return;const k=b.dataset.push;if(k==='on')pushOn();else if(k==='off')pushOff();else{ls.set('pushBarX','1');pushUI()}});
+// keep this phone's address fresh (phones rotate it now and then)
+function pushRefresh(){if(pushState()==='on')pushSave().catch(()=>{})}
 let chatP=null;function chatInit(){if(!SBU||chatSub)return Promise.resolve();return chatP||(chatP=chatInit1().finally(()=>{chatP=null}))}
 /* who's online (live) + last seen + phone for calling */
 let ONLINE=new Set(),presCh=null,profT=null;
@@ -1521,7 +1548,7 @@ const isOn=id=>ONLINE.has(id);
 function lastSeen(p){if(isOn(p.user_id))return'online';if(!p.last_seen)return'offline';const t=new Date(p.last_seen),n=new Date(),y=new Date();y.setDate(n.getDate()-1);const tm=t.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'});
   return 'last seen '+(sameDay(t,n)?'today at '+tm:sameDay(t,y)?'yesterday at '+tm:t.toLocaleDateString('en-CA',{month:'short',day:'numeric'}))}
 function chatPresenceUI(){if(THREAD)renderThreadHead();else if(location.hash==='#chat')renderChat()}
-async function chatInit1(){if(!SBU||chatSub)return;
+async function chatInit1(){if(!SBU||chatSub)return;pushRefresh();
   await profPush({last_seen:new Date().toISOString()});await loadPeople();presenceStart();sigListen();
   await chatLoad();
   chatSub=SB.channel('msgs').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},pl=>{const m=pl.new;if(!m)return;
@@ -1550,7 +1577,7 @@ function roomName(room){return room==='team'?'Team':((PEOPLE.find(p=>p.user_id==
 function renderChat(){const gate=$('chatGate'),main=$('chatMain');
   if(!SB_ON){gate.hidden=false;main.hidden=true;gate.innerHTML='<b>Chat needs accounts turned on.</b>';return}
   if(!SBU){gate.hidden=false;main.hidden=true;gate.innerHTML='<b>Sign in to chat</b><button class="primary" data-go="setup" data-p="acct">Go to sign in</button>';return}
-  gate.hidden=true;main.hidden=false;if(!chatSub){chatInit().then(renderChat);}
+  gate.hidden=true;main.hidden=false;if(!chatSub){chatInit().then(renderChat);}pushUI();
   const rooms=['team',...PEOPLE.map(p=>p.user_id)].map(r=>{const l=msgsOf(r),last=l[l.length-1];return{r,last,un:unreadOf(r)}});
   rooms.sort((a,b)=>(a.r==='team'?-1:b.r==='team'?1:0)||((b.last?+new Date(b.last.created_at):0)-(a.last?+new Date(a.last.created_at):0))||roomName(a.r).localeCompare(roomName(b.r)));
   $('rooms').innerHTML=rooms.map(({r,last,un})=>{const t=last?new Date(last.created_at):null;
@@ -1637,8 +1664,8 @@ async function onSig(m){if(!m||!m.t)return;
 function callEnd(tell,why){if(!CALL)return;const c=CALL;CALL=null;stopRing();clearTimeout(c.noAns);clearInterval(c.tick);
   if(tell)sigSend(c.peer,{t:'end',cid:c.cid});try{c.mic&&c.mic.getTracks().forEach(t=>t.stop())}catch(e){}try{c.pc&&c.pc.close()}catch(e){}
   $('clAudio').srcObject=null;$('call').hidden=true;
-  if(c.dir==='out'&&SB&&SBU){const body=c.startAt?'📞 Voice call · '+cdur(Date.now()-c.startAt):'📞 Missed call';
-    SB.from('messages').insert({sender:SBU.id,sender_name:meName(),body,to_user:c.peer}).select().single().then(({data})=>{if(data&&!MSGS.some(x=>x.id===data.id)){MSGS.push(data);if(THREAD)renderThread(true)}},()=>{})}}
+  if(c.dir==='out'&&SB&&SBU){const body=c.startAt?'Voice call · '+cdur(Date.now()-c.startAt):'Missed call';
+    SB.from('messages').insert({sender:SBU.id,sender_name:meName(),body,to_user:c.peer}).select().single().then(({data})=>{if(data)pushNotify(data.id);if(data&&!MSGS.some(x=>x.id===data.id)){MSGS.push(data);if(THREAD)renderThread(true)}},()=>{})}}
 $('clAccept').onclick=callAccept;
 $('clDecline').onclick=()=>{if(CALL){sigSend(CALL.peer,{t:'decline',cid:CALL.cid});callEnd(false)}};
 $('clEnd').onclick=()=>callEnd(true);
@@ -1651,7 +1678,7 @@ $('composer').addEventListener('submit',async e=>{e.preventDefault();const body=
   if(/\b\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/.test(body)&&!confirm2()){return}
   $('chatIn').value='';$('chatIn').style.height='auto';$('chatIn').focus();const row={sender:SBU.id,sender_name:meName(),body:body.slice(0,2000),to_user:THREAD==='team'?null:THREAD};
   const{data,error}=await SB.from('messages').insert(row).select().single();if(error){toast('Not sent: '+error.message);$('chatIn').value=body;return}
-  if(data&&!MSGS.some(x=>x.id===data.id))MSGS.push(data);renderThread()});
+  if(data){pushNotify(data.id);if(!MSGS.some(x=>x.id===data.id))MSGS.push(data)}renderThread()});
 function confirm2(){toast('That looks like a phone number — remove customer details before sending');return false}
 
 /* ---------- voice commands ---------- */
@@ -1783,7 +1810,7 @@ function checkShop(){
 
 /* ---------- start my day: home → shop/first stop (clock in) → stops → clock out → class → home ---------- */
 const tripOf=date=>(S.days[date]||{}).trip||null;
-function tripStage(date){const d=S.days[date]||{},t=d.trip;if(!t)return'';if(t.end)return'home';if(S.clock&&S.clock.in&&S.clock.day===date)return'work';if(d.out)return'after';return'commute'}
+function tripStage(date){const d=S.days[date]||{},t=d.trip;if(!t){if(date===TODAY&&S.clock&&S.clock.in&&S.clock.day===date)return'work';if(d.out&&d.in)return'after';return''}if(t.end)return'home';if(S.clock&&S.clock.in&&S.clock.day===date)return'work';if(d.out)return'after';return'commute'}
 const placeG=(addr,city)=>addr?{addr,city,key:'',items:[]}:null;
 function tripFirstDest(date){const st=S.settings,d=S.days[date]||{},P=d.pick;
   if(shopDay(date)&&st.shopAddr&&!(d.trip&&d.trip.shopAt)&&!(P&&P.shown&&Object.keys(P.got||{}).length&&groupsOf(date).some(g=>g.state)))return{kind:'shop',g:placeG(st.shopAddr,st.shopCity),label:'the shop'};
@@ -1794,7 +1821,7 @@ function tripAfterDest(date){const st=S.settings,t=tripOf(date)||{},d=S.days[dat
 function distTo(addr,city){if(!MAP||!gpsFresh()||!addr)return null;const l=locate(addr,city);if(!l)return null;const q=MAP.ll2q(GPS.lon,GPS.lat);return Math.hypot((q[0]-l.x)*MAP.MX,(q[1]-l.y)*MAP.MY)}
 function tripStart(at){const d=day(TODAY);if(d.trip)return;d.trip={start:new Date(at||Date.now()).toISOString()};touch(TODAY);if(!S.settings.useGps){S.settings.useGps=true;touch('settings')}startGPS();
   const f=tripFirstDest(TODAY);speak((hello()||'Good morning')+'. Day started.'+(f?' Heading to '+(f.kind==='shop'?'the shop':sayAddr(f.g.addr))+'.':''));renderAll()}
-function tripEnd(){const d=day(TODAY);if(!d.trip||d.trip.end)return;if(S.clock&&S.clock.in)clockOut();d.trip.end=new Date().toISOString();touch(TODAY);
+function tripEnd(){const d=day(TODAY);if(!d.trip)d.trip={start:d.in||new Date().toISOString()};if(d.trip.end)return;if(S.clock&&S.clock.in)clockOut();d.trip.end=new Date().toISOString();touch(TODAY);
   const s=tripSum(TODAY);toast('Home — day finished');speak('You\'re home. Worked '+s.workTxt+', '+s.awayTxt+' away from home in total.');renderAll()}
 const hmm=m=>{m=Math.max(0,Math.round(m));return Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m'};
 function tripSum(date){const d=S.days[date]||{},t=d.trip||{},T=x=>x?new Date(x).getTime():null,st=T(t.start),i=T(d.in),o=T(d.out),e=T(t.end);
@@ -1807,33 +1834,33 @@ function checkTrip(){const d=S.days[TODAY];if(!gpsFresh()||!MAP)return;const st=
   if(stg==='commute'){const f=tripFirstDest(TODAY);if(!f||!f.g)return;const dm=distTo(f.g.addr,f.g.city);
     if(dm!=null&&dm<(f.kind==='shop'?200:120)){if(f.kind==='shop'){d.trip.shopAt=new Date().toISOString();touch(TODAY)}clockIn(null,true);speak('Clocked in at '+(f.kind==='shop'?'the shop':'your first stop')+'.')}return}
   if(stg==='after'){const a=tripAfterDest(TODAY);if(!a.g)return;const dm=distTo(a.g.addr,a.g.city);if(dm==null)return;
-    if(a.kind==='school'&&dm<250){d.trip.schoolAt=new Date().toISOString();touch(TODAY);toast('At class — tap Navigate home when you\'re done');renderAll()}
+    if(a.kind==='school'&&dm<250){d.trip=d.trip||{start:d.in};d.trip.schoolAt=new Date().toISOString();touch(TODAY);toast('At class — tap Navigate home when you\'re done');renderAll()}
     else if(a.kind==='home'&&dm<150&&Date.now()-new Date(d.out).getTime()>5*60000)tripEnd()}}
 function renderTrip(){const el=$('tTrip');if(!el)return;const d=S.days[TODAY]||{},t=d.trip,stg=tripStage(TODAY),st=S.settings,gs=groupsOf(TODAY),done=gs.filter(g=>g.state).length;
   const shop=shopDay(TODAY)&&!!st.shopAddr,school=isSchoolDay(TODAY)&&!!st.schoolAddr,clocked=!!(d.in||(S.clock&&S.clock.in&&S.clock.day===TODAY));
-  if(!stg&&d.out){el.innerHTML='';return}
-  const steps=[['🏠','Start',t?'ok':stg?'':'now',t&&tm(t.start)]];
-  if(shop)steps.push(['📦','Shop',t&&t.shopAt||(clocked&&done)?'ok':stg==='commute'&&tripFirstDest(TODAY)?.kind==='shop'?'now':'',t&&t.shopAt&&tm(t.shopAt)]);
-  steps.push(['⏱','In',clocked?'ok':stg==='commute'?(shop?'':'now'):'',d.in&&tm(d.in)]);
-  steps.push(['📍','Stops',gs.length&&done===gs.length?'ok':stg==='work'?'now':'',gs.length?done+'/'+gs.length:'']);
-  steps.push(['⏹','Out',d.out?'ok':stg==='work'&&gs.length&&done===gs.length?'now':'',d.out&&tm(d.out)]);
-  if(school)steps.push(['🎓','Class',t&&t.schoolAt?'ok':stg==='after'&&tripAfterDest(TODAY).kind==='school'?'now':'',t&&t.schoolAt&&tm(t.schoolAt)]);
-  steps.push(['🏠','Home',t&&t.end?'ok':stg==='after'&&tripAfterDest(TODAY).kind==='home'?'now':'',t&&t.end&&tm(t.end)]);
-  const strip=`<div class="tsteps">${steps.map(x=>`<div class="ts ${x[2]}"><i>${x[2]==='ok'?'✓':x[0]}</i><b>${x[1]}</b><span>${x[3]||''}</span></div>`).join('')}</div>`;
+  if(!stg&&(d.out||(gs.length&&done===gs.length))){el.innerHTML='';return}
+  const steps=[['','Start',t?'ok':stg?'':'now',t&&tm(t.start)]];
+  if(shop)steps.push(['','Shop',t&&t.shopAt||(clocked&&done)?'ok':stg==='commute'&&tripFirstDest(TODAY)?.kind==='shop'?'now':'',t&&t.shopAt&&tm(t.shopAt)]);
+  steps.push(['','In',clocked?'ok':stg==='commute'?(shop?'':'now'):'',d.in&&tm(d.in)]);
+  steps.push(['','Stops',gs.length&&done===gs.length?'ok':stg==='work'?'now':'',gs.length?done+'/'+gs.length:'']);
+  steps.push(['','Out',d.out?'ok':stg==='work'&&gs.length&&done===gs.length?'now':'',d.out&&tm(d.out)]);
+  if(school)steps.push(['','Class',t&&t.schoolAt?'ok':stg==='after'&&tripAfterDest(TODAY).kind==='school'?'now':'',t&&t.schoolAt&&tm(t.schoolAt)]);
+  steps.push(['','Home',t&&t.end?'ok':stg==='after'&&tripAfterDest(TODAY).kind==='home'?'now':'',t&&t.end&&tm(t.end)]);
+  const st5=v=>v?v.replace(/\s*[ap]\.?m\.?$/i,''):'';const strip=`<div class="tsteps">${steps.map(x=>`<div class="ts ${x[2]}"><i>${x[2]==='ok'?'<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</i><b>${x[1]}</b><span>${st5(x[3])}</span></div>`).join('')}</div>`;
   const nav=(g,txt,cls)=>g?`<a class="btn ${cls||'primary'} wide" href="${navUrl(g)}" target="_blank" rel="noopener">${txt}</a>`:'';let body='';
-  if(!stg){const f=tripFirstDest(TODAY);body=`<a class="btn primary wide big" data-trip="start" ${f&&f.g?`href="${navUrl(f.g)}" target="_blank" rel="noopener"`:'href="#today"'}>▶ Start my day</a><div class="note tsub">${f?'Directions to '+esc(f.kind==='shop'?'the shop':f.label)+'. Work time starts when you get there.':'Work time starts at your first stop.'}</div>`}
-  else if(stg==='commute'){const f=tripFirstDest(TODAY);body=(f?nav(f.g,'Navigate to '+esc(f.kind==='shop'?'the shop':f.label)):'')+`<button class="wide" data-trip="in">I'm here — clock in</button><div class="note tsub">On the road since ${tm(t.start)} · ${hmm((Date.now()-new Date(t.start))/6e4)}</div>`}
-  else if(stg==='work'){const n=gs.find(g=>!g.state);body=n?nav(n,'Navigate to next · '+esc(n.addr)):`<button class="primary wide" data-trip="out">⏹ Clock out</button>`;
-    body+=`<div class="note tsub">Work time ${hmm(tripSum(TODAY).work)} since ${tm(d.in)} · <a href="#" data-trip="fixin">change</a></div>`}
-  else if(stg==='after'){const a=tripAfterDest(TODAY),s=tripSum(TODAY);body=`<div class="tdone">Worked <b>${hmm(s.work)}</b> · ${tm(d.in)}–${tm(d.out)}</div>`+(a.kind==='school'?nav(a.g,'🎓 Navigate to class')+`<button class="wide" data-trip="noschool">Skip class — head home</button>`:nav(a.g,'🏠 Navigate home')+`<button class="wide" data-trip="end">I'm home — end my day</button>`)}
+  if(!stg){const f=tripFirstDest(TODAY);body=`<a class="btn primary wide big" data-trip="start" ${f&&f.g?`href="${navUrl(f.g)}" target="_blank" rel="noopener"`:'href="#today"'}>Start my day</a><div class="note tsub">${f?'Directions to '+esc(f.kind==='shop'?'the shop':f.label)+'. Work time starts when you get there.':'Work time starts at your first stop.'}</div><button class="link" data-trip="in">Check in now instead</button>`}
+  else if(stg==='commute'){const f=tripFirstDest(TODAY);body=(f?nav(f.g,'Navigate to '+esc(f.kind==='shop'?'the shop':f.label)):'')+`<button class="link" data-trip="in">I'm here, check in</button><div class="note tsub">On the road since ${tm(t.start)} · ${hmm((Date.now()-new Date(t.start))/6e4)}</div>`}
+  else if(stg==='work'){const n=gs.find(g=>!g.state);body=n?nav(n,'Navigate to next · '+esc(n.addr)):`<button class="primary wide" data-trip="out">Clock out</button>`;
+    body+=`<div class="note tsub">Work time ${hmm(tripSum(TODAY).work)} since ${tm(S.clock?S.clock.in:d.in)} · <a href="#" data-trip="fixin">change</a></div>`+(n?`<button class="link" data-trip="out">Check out</button>`:'')}
+  else if(stg==='after'){const a=tripAfterDest(TODAY),s=tripSum(TODAY);body=`<div class="tdone">Worked <b>${hmm(s.work)}</b> · ${tm(d.in)}–${tm(d.out)}</div>`+(a.kind==='school'?nav(a.g,'Navigate to class')+`<button class="link" data-trip="noschool">Skip class, head home</button>`:nav(a.g,'Navigate home')+`<button class="link" data-trip="end">I'm home, end my day</button>`)}
   else{const s=tripSum(TODAY);body=`<div class="tdone"><div>Day finished · home at ${tm(t.end)}</div><div class="tgrid"><span>Work<b>${hmm(s.work)}</b></span><span>Drive in<b>${s.to!=null?hmm(s.to):'—'}</b></span><span>After work<b>${s.back!=null?hmm(s.back):'—'}</b></span><span>Away total<b>${hmm(s.away)}</b></span></div></div>`}
   el.innerHTML=`<div class="card trip">${strip}${body}</div>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-trip]');if(!b)return;const k=b.dataset.trip;
   if(k==='start'){if(b.getAttribute('href')==='#today')e.preventDefault();tripStart();return}
   e.preventDefault();const d=day(TODAY);
-  if(k==='in'){const f=tripFirstDest(TODAY);if(f&&f.kind==='shop'&&d.trip){d.trip.shopAt=new Date().toISOString();touch(TODAY)}clockIn()}
+  if(k==='in'){const f=tripFirstDest(TODAY);if(f&&f.kind==='shop'&&d.trip&&!S.clock){d.trip.shopAt=new Date().toISOString();touch(TODAY)}clockIn()}
   else if(k==='out'){showWrap(TODAY)}
-  else if(k==='noschool'){d.trip.skipSchool=true;touch(TODAY);renderAll()}
+  else if(k==='noschool'){d.trip=d.trip||{start:d.in};d.trip.skipSchool=true;touch(TODAY);renderAll()}
   else if(k==='end')tripEnd();
   else if(k==='fixin'){$('sheetT').textContent='When did work start?';$('sheetB').innerHTML=`<input type="time" id="fixIn" value="${new Date(S.clock.in).toTimeString().slice(0,5)}"><button class="primary" data-fx="1">Save</button>`;$('sheet').hidden=false;
     $('sheetB').onclick=ev=>{if(!ev.target.closest('[data-fx]'))return;const v=$('fixIn').value;if(!v)return;const n=parseD(TODAY);n.setHours(+v.slice(0,2),+v.slice(3),0,0);if(n>new Date()){toast('That time hasn\'t happened yet');return}
@@ -1875,19 +1902,19 @@ function askExtras(date,s,then){const d=S.days[date];if(!d||!s){then&&then();ret
 /* ---------- morning brief ---------- */
 const hello=()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'};
 function stopFlags(g,date){const out=[],txt=g.items.map(s=>(s.notes||'')).join(' ');
-  if(needsCall(g))out.push({p:1,ic:'📱',t:'Text/call before arriving'});
-  if(/after \d|before \d|between|must come|come after|arrive after|early as possible/i.test(txt))out.push({p:1,ic:'⏰',t:'Time request: '+(txt.match(/[^.\n]*(after \d|before \d|between|must come|come after|arrive after|early as possible)[^.\n]*/i)||[''])[0].trim().slice(0,80)});
-  if(/supervisor|inspector/i.test(txt))out.push({p:1,ic:'👷',t:'Needs a supervisor / inspector'});
-  if(/wire run|difficult|access panel|cut hole|drywall/i.test(txt))out.push({p:2,ic:'🔧',t:'Hard job — wire run or wall access'});
-  if(/bcv|curb ?box|\bcb\b/i.test(txt))out.push({p:2,ic:'🚰',t:'BCV / curb box work'});
-  if(/illegal|dog|pep|shoe cover|bell is not/i.test(txt))out.push({p:2,ic:'⚠️',t:(txt.match(/[^.\n]*(illegal|dog|pep|shoe cover|bell is not)[^.\n]*/i)||[''])[0].trim().slice(0,80)});
-  if(g.items.some(s=>(+s.size||0)>=25))out.push({p:2,ic:'📏',t:'Large meter ('+g.items.map(s=>s.size).filter(z=>+z>=25).join(', ')+' mm) — check stock'});
-  if(false&&g.items.some(s=>/REPAIR|INVESTIG/.test(s.type||'')))out.push({p:2,ic:'🔍',t:(g.items.find(s=>/REPAIR|INVESTIG/.test(s.type))||{}).problem?'Repair: '+(g.items.find(s=>/REPAIR|INVESTIG/.test(s.type))).problem.toLowerCase():'Repair / investigation'});
-  if(g.items.some(s=>s.unit&&s.unit!=='0')||/unit|commercial|tenant/i.test(txt))out.push({p:3,ic:'🏢',t:'Unit / commercial — find the meter location'});
-  if(g.items.some(isPermit))out.push({p:2,ic:'🏗',t:(g.items.some(s=>s.time==='NH')?'New home':'Permit install')+' — bring tail pieces (2 per meter)'+(g.items.some(s=>s.lot)?' · lot '+g.items.map(s=>s.lot).filter(Boolean).join(', '):'')});
-  {const k=[...new Set(g.items.map(kindOf))].filter(k=>/Touch pad|Noisy|Stopped|Zero|Not reporting|Warranty|Demolition/.test(k));if(k.length)out.push({p:2,ic:'🔍',t:k.join(', ')})}
+  if(needsCall(g))out.push({p:1,ic:'',t:'Text/call before arriving'});
+  if(/after \d|before \d|between|must come|come after|arrive after|early as possible/i.test(txt))out.push({p:1,ic:'',t:'Time request: '+(txt.match(/[^.\n]*(after \d|before \d|between|must come|come after|arrive after|early as possible)[^.\n]*/i)||[''])[0].trim().slice(0,80)});
+  if(/supervisor|inspector/i.test(txt))out.push({p:1,ic:'',t:'Needs a supervisor / inspector'});
+  if(/wire run|difficult|access panel|cut hole|drywall/i.test(txt))out.push({p:2,ic:'',t:'Hard job — wire run or wall access'});
+  if(/bcv|curb ?box|\bcb\b/i.test(txt))out.push({p:2,ic:'',t:'BCV / curb box work'});
+  if(/illegal|dog|pep|shoe cover|bell is not/i.test(txt))out.push({p:2,ic:'',t:(txt.match(/[^.\n]*(illegal|dog|pep|shoe cover|bell is not)[^.\n]*/i)||[''])[0].trim().slice(0,80)});
+  if(g.items.some(s=>(+s.size||0)>=25))out.push({p:2,ic:'',t:'Large meter ('+g.items.map(s=>s.size).filter(z=>+z>=25).join(', ')+' mm) — check stock'});
+  if(false&&g.items.some(s=>/REPAIR|INVESTIG/.test(s.type||'')))out.push({p:2,ic:'',t:(g.items.find(s=>/REPAIR|INVESTIG/.test(s.type))||{}).problem?'Repair: '+(g.items.find(s=>/REPAIR|INVESTIG/.test(s.type))).problem.toLowerCase():'Repair / investigation'});
+  if(g.items.some(s=>s.unit&&s.unit!=='0')||/unit|commercial|tenant/i.test(txt))out.push({p:3,ic:'',t:'Unit / commercial — find the meter location'});
+  if(g.items.some(isPermit))out.push({p:2,ic:'',t:(g.items.some(s=>s.time==='NH')?'New home':'Permit install')+' — bring tail pieces (2 per meter)'+(g.items.some(s=>s.lot)?' · lot '+g.items.map(s=>s.lot).filter(Boolean).join(', '):'')});
+  {const k=[...new Set(g.items.map(kindOf))].filter(k=>/Touch pad|Noisy|Stopped|Zero|Not reporting|Warranty|Demolition/.test(k));if(k.length)out.push({p:2,ic:'',t:k.join(', ')})}
   const past=g.items.flatMap(s=>pastAttempts(s.wo,s.addr,date));if(past.length)out.push({p:1,ic:'↺',t:'Tried before ('+past.length+'×) — last: '+past[past.length-1].why});
-  if(!out.length&&txt.trim())out.push({p:3,ic:'📝',t:txt.trim().slice(0,90)});
+  if(!out.length&&txt.trim())out.push({p:3,ic:'',t:txt.trim().slice(0,90)});
   return out.sort((a,b)=>a.p-b.p)}
 function briefHtml(date){const d=S.days[date]||{},gs=groupsOf(date),st=S.settings,first=(st.myName||'').split(' ')[0];
   const all=gs.flatMap(g=>g.items).filter(s=>s.st!=='done'),types={};all.forEach(s=>{const k=kindOf(s)||s.type||'Other';types[k]=(types[k]||0)+1});
@@ -1897,20 +1924,20 @@ function briefHtml(date){const d=S.days[date]||{},gs=groupsOf(date),st=S.setting
   h+=`<div class="bsub">${Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([t,n])=>n+' × '+esc(t)).join(' · ')}${P&&P.finish?' · done about '+P.finish:''}</div>`;
   h+=`<div class="bstat"><div><b>${gs.filter(g=>!g.state).length}</b><span>stops</span></div><div><b>${money(pot).replace(/\.\d\d$/,'')}</b><span>in jobs</span></div><div><b>${goal?money(goal).replace(/\.\d\d$/,''):'—'}</b><span>daily goal</span></div></div>`;
   // weather
-  if(WX){const c=WX.data.current,A=wxAlerts(date);h+=`<div class="bi"><div class="ic">🌤</div><div><b>${Math.round(c.temperature_2m)}° ${esc(WMO[c.weather_code]||'')}</b><div class="note">${A.length?A.map(a=>esc(a.t)).join(' · '):'Nothing to worry about'}</div></div></div>`}
-  if(shopDay(date)&&st.shopAddr){const it=pickItems(date).filter(i=>i.total>0);if(it.length)h+=`<div class="bi"><div class="ic">📦</div><div><b>Shop pickup${P&&P.shop?' · '+P.shop.eta:''}</b><div class="note">${it.map(i=>i.total+' × '+esc(i.label)).join(' · ')}</div></div></div>`}
-  if(isSchoolDay(date))h+=`<div class="bi"><div class="ic">🎓</div><div><b>Class at ${hm(+st.classAt.slice(0,2)*60+ +st.classAt.slice(3))}${P&&P.school&&P.school.leave?' · leave by '+P.school.leave:''}</b><div class="note">Plan ends at school today.</div></div></div>`;
+  if(WX){const c=WX.data.current,A=wxAlerts(date);h+=`<div class="bi"><div class="ic"></div><div><b>${Math.round(c.temperature_2m)}° ${esc(WMO[c.weather_code]||'')}</b><div class="note">${A.length?A.map(a=>esc(a.t)).join(' · '):'Nothing to worry about'}</div></div></div>`}
+  if(shopDay(date)&&st.shopAddr){const it=pickItems(date).filter(i=>i.total>0);if(it.length)h+=`<div class="bi"><div class="ic"></div><div><b>Shop pickup${P&&P.shop?' · '+P.shop.eta:''}</b><div class="note">${it.map(i=>i.total+' × '+esc(i.label)).join(' · ')}</div></div></div>`}
+  if(isSchoolDay(date))h+=`<div class="bi"><div class="ic"></div><div><b>Class at ${hm(+st.classAt.slice(0,2)*60+ +st.classAt.slice(3))}${P&&P.school&&P.school.leave?' · leave by '+P.school.leave:''}</b><div class="note">Plan ends at school today.</div></div></div>`;
   // attention
   const att=[];gs.filter(g=>!g.state).forEach((g,i)=>{const f=stopFlags(g,date);if(f.length)att.push({g,f,n:gs.indexOf(g)+1})});
   att.sort((a,b)=>a.f[0].p-b.f[0].p||a.n-b.n);
   const next=gs.find(g=>!g.state);
   if(next){const f=stopFlags(next,date),call=needsCall(next);h+=`<div class="focus">Start with ${esc(next.addr)} · ${next.any?'any time':esc(next.time)+' window'}${call?' — text them first':''}${f.length&&!call?' — '+esc(f[0].t.toLowerCase()):''}</div>`}
-  if(att.length)h+=`<h3>Needs your attention (${att.length})</h3>`+att.slice(0,8).map(a=>`<div class="bi"><div class="ic">${a.f[0].ic}</div><div><b>${a.n}. ${esc(a.g.addr)}${a.g.items[0].unit&&a.g.items[0].unit!=='0'?' · unit '+esc(a.g.items[0].unit):''}</b><div class="note">${a.g.any?'Any time':esc(a.g.time)} · WO ${esc(a.g.items.map(s=>s.wo).join(', '))}</div>${a.f.map(x=>`<div class="note">${x.ic} ${esc(x.t)}</div>`).join('')}</div></div>`).join('')+(att.length>8?`<div class="note">+${att.length-8} more on the route</div>`:'');
+  if(att.length)h+=`<h3>Needs your attention (${att.length})</h3>`+att.slice(0,8).map(a=>`<div class="bi"><div class="ic p${a.f[0].p}"></div><div><b>${a.n}. ${esc(a.g.addr)}${a.g.items[0].unit&&a.g.items[0].unit!=='0'?' · unit '+esc(a.g.items[0].unit):''}</b><div class="note">${a.g.any?'Any time':esc(a.g.time)} · WO ${esc(a.g.items.map(s=>s.wo).join(', '))}</div>${a.f.map(x=>`<div class="note">${x.ic} ${esc(x.t)}</div>`).join('')}</div></div>`).join('')+(att.length>8?`<div class="note">+${att.length-8} more on the route</div>`:'');
   else h+=`<h3>Needs your attention</h3><div class="note">No notes or special requests on today's jobs.</div>`;
   return h}
 function showBrief(date,auto){date=date||TODAY;if(!$('gate').hidden||!$('onb').hidden)return;const gs=groupsOf(date);
   $('bBody').innerHTML=briefHtml(date);const calls=gs.filter(g=>!g.state&&needsCall(g)).length;
-  $('bBtns').innerHTML=gs.length?(!tripOf(date)&&date===TODAY&&!(S.days[date]||{}).in?`<a class="btn primary" data-trip="start" data-bgo="close" ${(f=>f&&f.g?`href="${navUrl(f.g)}" target="_blank" rel="noopener"`:'href="#today"')(tripFirstDest(date))}>▶ Start my day</a><button data-bgo="route">See the route</button>`:`<button class="primary" data-bgo="route">Let's go</button>`)+`${calls?`<button data-bgo="route">See the ${calls} to text first</button>`:''}<button data-bgo="close">Close</button>`:`<button class="primary" data-bgo="load">Load today's schedule</button><button data-bgo="close">Close</button>`;
+  $('bBtns').innerHTML=gs.length?(!tripOf(date)&&date===TODAY&&!(S.days[date]||{}).in?`<a class="btn primary" data-trip="start" data-bgo="close" ${(f=>f&&f.g?`href="${navUrl(f.g)}" target="_blank" rel="noopener"`:'href="#today"')(tripFirstDest(date))}>Start my day</a><button data-bgo="route">See the route</button>`:`<button class="primary" data-bgo="route">Let's go</button>`)+`${calls?`<button data-bgo="route">See the ${calls} to text first</button>`:''}<button data-bgo="close">Close</button>`:`<button class="primary" data-bgo="load">Load today's schedule</button><button data-bgo="close">Close</button>`;
   $('brief').hidden=false;ls.set('brief:'+date,'1');
   if(auto&&gs.length){const n=gs.filter(g=>!g.state).length,a=gs.filter(g=>!g.state&&stopFlags(g,date).some(f=>f.p===1)).length;speak(hello()+(S.settings.myName?' '+S.settings.myName.split(' ')[0]:'')+'. '+n+' stops today.'+(a?' '+a+' need your attention first.':''))}}
 $('tQuick').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const q=b.dataset.q;if(q==='brief')showBrief(TODAY,false);else if(q==='wrap')showWrap(TODAY,false);else if(q==='route'){show('route');pane('route','stops')}else if(q==='load'){show('route');pane('route','add')}else if(q==='follow'){show('route');pane('route','stops')}else if(q==='shop'){show('route');pane('route','stops');setTimeout(()=>{const p=document.querySelector('.pkwrap');if(p){p.open=true;p.scrollIntoView({behavior:'smooth'})}},200)}});
@@ -1930,16 +1957,16 @@ function wrapHtml(date){const d=S.days[date]||{},st=d.stops||[],c=calc(d),goal=d
   const pastPer=[];past.forEach(x=>{const z=(S.days[x].stops||[]).filter(s=>s.st==='done'&&s.doneAt).map(s=>s.doneAt).sort((a,b)=>a-b);if(z.length>1)pastPer.push((z[z.length-1]-z[0])/60000/(z.length-1))});
   const avgPer=pastPer.length?pastPer.reduce((a,b)=>a+b,0)/pastPer.length:0;
   const ws=weekStart(date),wk=weekSum(ws),tg=+S.settings.target||0,nd=(()=>{let x=addDays(date,1);for(let i=0;i<7&&!(isWorkDay(x)&&parseD(x).getDay()!==6);i++)x=addDays(x,1);return x})();
-  let h=`<div class="note" style="font-weight:700">${longD(date)} · day wrap-up</div><h1>${goal&&c.total>=goal?'Goal hit':'Nice work'}${first?', '+esc(first):''}${goal&&c.total>=goal?' 🎯':''}</h1>`;
+  let h=`<div class="note" style="font-weight:700">${longD(date)} · day wrap-up</div><h1>${goal&&c.total>=goal?'Goal hit':'Nice work'}${first?', '+esc(first):''}</h1>`;
   h+=`<div class="bsub">${done.length} job${done.length===1?'':'s'} done${skip.length?' · '+skip.length+' not done':''}${span?' · '+Math.floor(span/60)+'h '+Math.round(span%60)+'m on the road':''}</div>`;
   h+=`<div class="bstat"><div><b>${money(c.total).replace(/\.\d\d$/,'')}</b><span>made today</span></div><div><b>${goal?Math.round(c.total/goal*100)+'%':'—'}</b><span>of daily goal</span></div><div><b>${per?Math.round(per)+'m':'—'}</b><span>per job</span></div></div>`;
-  h+=`<h3>Money</h3><div class="bi"><div class="ic">💵</div><div><b>${money(c.total)}${goal?' · goal '+money(goal):''}</b><div class="note">Piece ${money(c.piece)} · Reg ${money(c.reg)} · Bonus ${money(c.bonus)}${avg?' · your recent average '+money(avg)+' ('+(c.total>=avg?'+':'')+money(c.total-avg)+')':''}</div></div></div>`;
+  h+=`<h3>Money</h3><div class="bi"><div class="ic"></div><div><b>${money(c.total)}${goal?' · goal '+money(goal):''}</b><div class="note">Piece ${money(c.piece)} · Reg ${money(c.reg)} · Bonus ${money(c.bonus)}${avg?' · your recent average '+money(avg)+' ('+(c.total>=avg?'+':'')+money(c.total-avg)+')':''}</div></div></div>`;
   const jobs=Object.entries(d.c||{}).filter(([k,n])=>n>0).map(([k,n])=>n+' × '+(JOBS.find(j=>j[0]===k)||[,k])[1]);
-  if(jobs.length)h+=`<div class="bi"><div class="ic">🧾</div><div><b>Jobs</b><div class="note">${jobs.map(esc).join('<br>')}</div></div></div>`;
-  h+=`<h3>Pace</h3><div class="bi"><div class="ic">⏱</div><div><b>${per?Math.round(per)+' min per job':'Not enough timing data'}${avgPer?' · usually '+Math.round(avgPer)+' min':''}</b><div class="note">${gaps.length?'Fastest '+Math.round(Math.min(...gaps))+' min · slowest '+Math.round(Math.max(...gaps))+' min between jobs':''}${per&&avgPer?(per<avgPer-2?' · faster than usual 💪':per>avgPer+5?' · slower than usual':' · about your normal pace'):''}</div></div></div>`;
-  if(d.bizKm)h+=`<div class="bi"><div class="ic">🚗</div><div><b>${d.bizKm} business km</b><div class="note">${S.settings.kmRate?money(d.bizKm*S.settings.kmRate)+' mileage':'Shop to last stop'}</div></div></div>`;
+  if(jobs.length)h+=`<div class="bi"><div class="ic"></div><div><b>Jobs</b><div class="note">${jobs.map(esc).join('<br>')}</div></div></div>`;
+  h+=`<h3>Pace</h3><div class="bi"><div class="ic"></div><div><b>${per?Math.round(per)+' min per job':'Not enough timing data'}${avgPer?' · usually '+Math.round(avgPer)+' min':''}</b><div class="note">${gaps.length?'Fastest '+Math.round(Math.min(...gaps))+' min · slowest '+Math.round(Math.max(...gaps))+' min between jobs':''}${per&&avgPer?(per<avgPer-2?' · faster than usual':per>avgPer+5?' · slower than usual':' · about your normal pace'):''}</div></div></div>`;
+  if(d.bizKm)h+=`<div class="bi"><div class="ic"></div><div><b>${d.bizKm} business km</b><div class="note">${S.settings.kmRate?money(d.bizKm*S.settings.kmRate)+' mileage':'Shop to last stop'}</div></div></div>`;
   if(skip.length)h+=`<h3>Not done (${skip.length})</h3>`+skip.map(s=>`<div class="bi"><div class="ic">✕</div><div><b>${esc(s.addr)}${s.unit?' · unit '+esc(s.unit):''}</b><div class="note">WO ${esc(s.wo||'—')} · ${esc(s.why||'skipped')}</div></div></div>`).join('');
-  h+=`<h3>The week</h3><div class="bi"><div class="ic">📈</div><div><b>${money(wk.total)} of ${money(tg)}</b><div class="note">${esc(weekMsg(ws,wk))}${dayGoal(nd)&&wk.total<tg?' · '+DN[parseD(nd).getDay()]+' goal '+money(dayGoal(nd)):''}</div></div></div>`;
+  h+=`<h3>The week</h3><div class="bi"><div class="ic"></div><div><b>${money(wk.total)} of ${money(tg)}</b><div class="note">${esc(weekMsg(ws,wk))}${dayGoal(nd)&&wk.total<tg?' · '+DN[parseD(nd).getDay()]+' goal '+money(dayGoal(nd)):''}</div></div></div>`;
   return h}
 function showWrap(date,auto){date=date||TODAY;$('bBody').innerHTML=wrapHtml(date);const d=S.days[date]||{};
   $('bBtns').innerHTML=`${!d.out&&date===TODAY&&d.in?'<button class="primary" data-wgo="out">Check out</button>':''}<button data-wgo="report">Copy day report</button><button data-wgo="close"${d.out||!d.in?' class="primary"':''}>Close</button>`;
@@ -1947,7 +1974,7 @@ function showWrap(date,auto){date=date||TODAY;$('bBody').innerHTML=wrapHtml(date
   if(auto){const c=calc(d),g=dayGoal(date);speak('That was the last stop'+(isSchoolDay(date)?'. Head to class':'')+'. You made '+Math.round(c.total)+' dollars today'+(g?(c.total>=g?', goal hit.':', '+Math.round(g-c.total)+' short of your goal.'):'.'))}}
 $('bBtns').addEventListener('click',async e=>{const b=e.target.closest('[data-wgo]');if(!b)return;const g=b.dataset.wgo;
   if(g==='report'){try{await navigator.clipboard.writeText(dayReport(TODAY));toast('Day report copied')}catch(x){toast('Couldn\'t copy')}return}
-  $('brief').hidden=true;if(g==='out'){show('today');setTimeout(()=>{const cb=$('clockBtn');if(cb)cb.click()},200)}});
+  $('brief').hidden=true;if(g==='out'){show('today');clockOut()}});
 function afterDone(date){
   const gs=groupsOf(date),next=gs.find(g=>!g.state);
   if(!next){if(date===TODAY)setTimeout(()=>showWrap(date,true),600);else speak('That was the last stop.');return}
@@ -1995,7 +2022,7 @@ async function fillPermitSpots(gs){const miss=gs.filter(g=>g.items.every(isPermi
     if(r){S.settings.fix=Object.assign({},S.settings.fix,{[k]:[+r.lon.toFixed(6),+r.lat.toFixed(6)]});GEO.delete(k);n++}else tried[k]=Date.now()}
   ls.set('geomiss',JSON.stringify(tried));if(n)touch('settings');return n}
 function pinSheet(addr,city){const k=fixKey(addr,city);$('sheetT').textContent='Set the spot for '+addr;
-  $('sheetB').innerHTML=`<button class="primary" data-pin="here">📍 I'm there now — use my location</button><a class="btn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr+', '+(city||'')+', ON')}" target="_blank" rel="noopener">Open in Google Maps</a>
+  $('sheetB').innerHTML=`<button class="primary" data-pin="here">I'm there now — use my location</button><a class="btn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr+', '+(city||'')+', ON')}" target="_blank" rel="noopener">Open in Google Maps</a>
     <div class="note">In Google Maps, press and hold on the house to drop a pin, copy the numbers it shows (like 43.4870, -79.8512) and paste them here:</div><input id="pinIn" placeholder="43.4870, -79.8512" autocomplete="off"><button data-pin="paste">Save this spot</button>`;
   $('sheet').hidden=false;const save=(lat,lon)=>{if(!inHalton(lat,lon)){toast('That spot isn\'t in Halton — check the numbers');return}S.settings.fix=Object.assign({},S.settings.fix,{[k]:[+lon.toFixed(6),+lat.toFixed(6)]});GEO.delete(k);touch('settings');$('sheet').hidden=true;toast('Saved — '+addr+' is on the map now');if(routeDate&&S.days[routeDate]&&S.days[routeDate].plan)planRoute(routeDate,false)};
   $('sheetB').onclick=async e=>{const b=e.target.closest('[data-pin]');if(!b)return;
@@ -2078,11 +2105,11 @@ async function planRoute(date,optimize){
   for(let i=1;i<seq.length;i++)if(seq[i-1]!==seq[i]){const{prev:pr}=R.dijkstra(MAP,seq[i-1],[seq[i]],true);ROUTE.segs.push(R.pathGeom(MAP,pr,seq[i-1],seq[i]))}
   if(ROUTE.home&&seq.length&&seq[seq.length-1]!==endPt.v){const a=seq[seq.length-1],{prev:pr}=R.dijkstra(MAP,a,[endPt.v],true);ROUTE.tail=R.pathGeom(MAP,pr,a,endPt.v)}
   const offG=pend.filter((g,i)=>!loc[i]),off=[...new Set(offG.map(g=>g.addr))];
-  if(off.length){mapMsg('Not on the offline map yet (new street): '+off.join(', ')+'. Navigate still works through Google Maps.',true);const mm=$('mapMsg');if(mm){const seen=new Set();mm.innerHTML=esc(mm.textContent)+offG.filter(g=>!seen.has(g.addr)&&seen.add(g.addr)).map(g=>`<button class="pinb" data-setpin="${esc(g.addr+'|'+(g.city||''))}">📍 Set spot for ${esc(g.addr)}</button>`).join('')}}else if(!st.homeAddr)mapMsg('Tip: add your home address in Setup so plans start from home.');else mapMsg('');
+  if(off.length){mapMsg('Not on the offline map yet (new street): '+off.join(', ')+'. Navigate still works through Google Maps.',true);const mm=$('mapMsg');if(mm){const seen=new Set();mm.innerHTML=esc(mm.textContent)+offG.filter(g=>!seen.has(g.addr)&&seen.add(g.addr)).map(g=>`<button class="pinb" data-setpin="${esc(g.addr+'|'+(g.city||''))}">Set spot for ${esc(g.addr)}</button>`).join('')}}else if(!st.homeAddr)mapMsg('Tip: add your home address in Setup so plans start from home.');else mapMsg('');
   renderAll();
 }
 function legChips(date,g){const P=S.days[date]&&S.days[date].plan;if(!P||!P.legs[g.key]||g.state==='done')return '';const L=P.legs[g.key];
-  return `${L.d!=null?`<span class="chip drive">${dur(L.d)} drive</span>`:''}<span class="chip">ETA ${L.eta}</span>${L.wait>4?`<span class="chip">wait ${Math.round(L.wait)} min</span>`:''}${L.late?'<span class="chip late">May miss window</span>':''}${L.cut?'<span class="chip late">Past class cutoff</span>':''}${L.off?`<span class="chip" data-setpin="${esc(g.addr+'|'+(g.city||''))}" style="cursor:pointer">📍 Not on map — set spot</span>`:''}`}
+  return `${L.d!=null?`<span class="chip drive">${dur(L.d)} drive</span>`:''}<span class="chip">ETA ${L.eta}</span>${L.wait>4?`<span class="chip">wait ${Math.round(L.wait)} min</span>`:''}${L.late?'<span class="chip late">May miss window</span>':''}${L.cut?'<span class="chip late">Past class cutoff</span>':''}${L.off?`<span class="chip" data-setpin="${esc(g.addr+'|'+(g.city||''))}" style="cursor:pointer">Not on map — set spot</span>`:''}`}
 function planInfo(date){const P=S.days[date]&&S.days[date].plan;if(!P)return '<div class="note" style="margin-top:6px">Tap <b>Best order</b> to plan home → '+(shopDay(date)?'shop → ':'')+'stops'+(isSchoolDay(date)?' → class':S.settings.endHome?' → home':'')+'.</div>';
   const late=Object.values(P.legs).filter(l=>l.late).length;
   const parts=[P.from==='home'?'Leave home '+P.leave:P.from?'From '+esc(P.from)+' at '+P.leave:'Start '+P.leave];
@@ -2273,19 +2300,19 @@ function renderToday(){
   renderClock();renderTrip();
   const c=calc(S.days[TODAY]);$('tPay').textContent=money(c.total);$('tGoal').innerHTML=goalHtml(TODAY);{const g=dayGoal(TODAY);$('tGoalShort').textContent=g?Math.min(999,Math.round(c.total/g*100))+'% of '+money(g).replace(/\.00$/,'')+' daily goal':'Tap to add jobs'}
   $('tSplit').innerHTML=`<span>${c.h.toFixed(2)} h</span><span>Reg ${money(c.reg)}</span><span>Piece ${money(c.piece)}</span><span>Bonus ${money(c.bonus)}</span>${(S.days[TODAY]&&S.days[TODAY].bizKm)?`<span>${S.days[TODAY].bizKm} business km</span>`:c.km?`<span>${c.km} km</span>`:''}`;
-  {const P=S.days[TODAY]&&S.days[TODAY].plan,nowM=new Date().getHours()*60+new Date().getMinutes(),clM=(+S.settings.classAt.slice(0,2))*60+ +S.settings.classAt.slice(3);$('tClass').innerHTML=isSchoolDay(TODAY)&&nowM<clM&&!(S.days[TODAY]&&S.days[TODAY].out)?`<button class="linkcard" data-go="route" style="background:${P&&P.school&&P.school.late?'#c62828':'var(--y)'};color:${P&&P.school&&P.school.late?'#fff':'#111'}"><div style="font-weight:800;font-size:18px">Class at ${hm(+S.settings.classAt.slice(0,2)*60+ +S.settings.classAt.slice(3))}${P&&P.school?' · leave by '+P.school.leaveBy:''}</div><div style="font-size:14px">${P&&P.school?'Last stop to class: '+dur(P.school.d)+' with traffic':'Tap here, then Best order, to get your leave-by time'}</div></button>`:''}
+  {const P=S.days[TODAY]&&S.days[TODAY].plan,nowM=new Date().getHours()*60+new Date().getMinutes(),clM=(+S.settings.classAt.slice(0,2))*60+ +S.settings.classAt.slice(3);$('tClass').innerHTML=isSchoolDay(TODAY)&&nowM<clM&&!(S.days[TODAY]&&S.days[TODAY].out)?`<button class="linkcard clsc${P&&P.school&&P.school.late?' late':''}" data-go="route"><div class="clt">Class at ${hm(+S.settings.classAt.slice(0,2)*60+ +S.settings.classAt.slice(3))}${P&&P.school?' · leave by '+P.school.leaveBy:''}</div><div class="note">${P&&P.school&&P.school.late?'You may be late — check the route':P&&P.school?'Last stop to class: '+dur(P.school.d)+' with traffic':'Tap here, then Best order, to get your leave-by time'}</div></button>`:''}
   const gs=groupsOf(TODAY),next=gs.find(g=>!g.state);
   if(!gs.length)$('tNext').innerHTML=`<button class="linkcard" data-go="route" data-p="add"><div style="font-weight:800">No route loaded for today</div><div class="note">Tap to load the schedule →</div></button>`;
-  else if(!next)$('tNext').innerHTML=`<div class="card"><b>All stops finished 🎉</b>${S.clock&&S.clock.in?'<div class="note">Don\'t forget to check out.</div>':''}</div>`;
+  else if(!next)$('tNext').innerHTML='';
   else{const i=gs.indexOf(next);$('tNext').innerHTML=`<div class="note" style="margin:4px 2px 6px;font-weight:700">Next stop · ${i+1} of ${gs.length}</div>`+stopCard(next,i+1,TODAY,true)+`<button class="wide" data-go="route" style="margin-bottom:12px">See full route</button>`}
   {const h=new Date().getHours(),fu=followUps().length,done=gs.length&&!next,pk=shopDay(TODAY)?pickItems(TODAY).filter(i=>!i.got&&i.total>0).length:0,q=[];
-    if(gs.length&&!done)q.push(`<button class="${h<10&&!gs.some(g=>g.state)?'hot':''}" data-q="brief">☀️ Today's brief</button>`);
-    if(done||gs.some(g=>g.state))q.push(`<button class="${done?'hot':''}" data-q="wrap">📊 Day wrap-up</button>`);
-    if(pk&&!$('tShop').innerHTML)q.push(`<button data-q="shop">📦 Pickup list (${pk})</button>`);
-    if(fu)q.push(`<button data-q="follow">↺ ${fu} follow-up${fu>1?'s':''}</button>`);
-    if(gs.length)q.push(`<button data-q="route">🗺 Full route</button>`);
+    if(gs.length&&!done)q.push(`<button class="${h<10&&!gs.some(g=>g.state)?'hot':''}" data-q="brief">Today's brief</button>`);
+    if(done||gs.some(g=>g.state))q.push(`<button class="${done?'hot':''}" data-q="wrap">Day wrap-up</button>`);
+    if(pk&&!$('tShop').innerHTML)q.push(`<button data-q="shop">Pickup list (${pk})</button>`);
+    if(fu)q.push(`<button data-q="follow">${fu} follow-up${fu>1?'s':''}</button>`);
+    if(gs.length)q.push(`<button data-q="route">Full route</button>`);
     $('tQuick').innerHTML=q.join('');$('tQuick').hidden=!q.length}
-  {const sm=$('tWxSum'),w=$('tWxWrap');if(WX){const cc=WX.data.current,A=wxAlerts(TODAY),bad=A.filter(a=>a.bad);sm.innerHTML=`<span>${Math.round(cc.temperature_2m)}° ${esc(WMO[cc.weather_code]||'')}</span><span class="wsub">${bad.length?'⚠️ '+esc(bad[0].t):A.length?esc(A[0].t):'No warnings'}</span>`;if(bad.length&&!w.dataset.seen){w.open=true;w.dataset.seen=1}}else sm.textContent='Weather'}
+  {const sm=$('tWxSum'),w=$('tWxWrap');if(WX){const cc=WX.data.current,A=wxAlerts(TODAY),bad=A.filter(a=>a.bad);sm.innerHTML=`<span>${Math.round(cc.temperature_2m)}° ${esc(WMO[cc.weather_code]||'')}</span><span class="wsub">${bad.length?''+esc(bad[0].t):A.length?esc(A[0].t):'No warnings'}</span>`;if(bad.length&&!w.dataset.seen){w.open=true;w.dataset.seen=1}}else sm.textContent='Weather'}
   const ws=weekStart(TODAY),t=weekSum(ws),tg=+S.settings.target||0;
   $('tWeek').textContent=money(t.total);$('tWeekBar').style.width=Math.min(100,tg?t.total/tg*100:0)+'%';$('tWeekMsg').textContent='of '+money(tg).replace(/\.00$/,'');
 }

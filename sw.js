@@ -1,5 +1,5 @@
 // Pay & Route offline cache. Bump VERSION when app files change.
-const VERSION = 'pr-v34';
+const VERSION = 'pr-v35';
 const SHELL = ['./', './index.html', './router.js', './config.js', './supabase.js', './manifest.json', './maplibre-gl.js', './maplibre-gl.css', './icon-180.png', './icon-192.png', './icon-512.png', './pdf.min.js', './pdf.worker.min.js'];
 const MAP = './halton-map.txt';
 const TILES = 'pr-tiles';
@@ -49,4 +49,27 @@ self.addEventListener('fetch', e => {
   // always ask the server first (skip the browser's 10-minute cache) so uploads show up right away
   e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(r => { if (r.ok) { const cl = r.clone(); caches.open(VERSION).then(c => c.put(e.request, cl)); } return r; })
     .catch(() => caches.match(e.request).then(r => r || caches.match('./index.html'))));
+});
+
+// Team chat notifications (sent by the "notify" Supabase function)
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data && e.data.text() }; }
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
+    // the app is open on screen: the chat already shows it live
+    if (cs.some(c => c.visibilityState === 'visible' && c.focused)) return;
+    return self.registration.showNotification(d.title || 'Pay & Route', {
+      body: d.body || 'New message', tag: d.tag || 'chat', renotify: true,
+      icon: './icon-192.png', badge: './icon-192.png', data: { url: d.url || './index.html#chat' },
+    });
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || './index.html#chat', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
+    const c = cs.find(x => x.url.startsWith(self.registration.scope));
+    if (c) return c.focus().then(w => (w || c).navigate ? (w || c).navigate(url).catch(() => null) : null);
+    return self.clients.openWindow(url);
+  }));
 });
