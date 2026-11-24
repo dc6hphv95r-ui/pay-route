@@ -103,6 +103,11 @@ label.f input{margin-top:4px}
 .lk-pad .lk-fn{background:none}.lk-pad .lk-fn[hidden]{display:flex!important;visibility:hidden}
 .lk-bot{display:flex;justify-content:center;gap:24px}.lk-link{border:0;background:none;color:var(--mute);font-weight:500;font-size:15px;min-height:40px}
 .lk-reset{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;justify-content:center;gap:10px;padding:28px;max-width:380px;margin:0 auto}
+body.no-chat .tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+body.no-chat .tabs [data-go="chat"],body.no-stock #v-log .seg [data-p="stock"],body.no-stock .pkwrap,body.no-stock #tShop,body.no-stock [data-q="shop"],body.no-stock [data-a="extra"],body.no-voice #mic,body.no-tax #v-week .seg [data-p="tax"]{display:none!important}
+.sw input{width:auto;flex:none;appearance:none;-webkit-appearance:none;width:51px;height:31px;border-radius:16px;background:var(--line);position:relative;margin:0;cursor:pointer;transition:background .2s;min-height:0;padding:0;border:0}
+.sw input::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transition:transform .2s}
+.sw input:checked{background:#34c759}.sw input:checked::after{transform:translateX(20px)}
 .adv{padding:0}.adv>summary{padding:16px;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between}.adv>summary::after{content:'›';transform:rotate(90deg);color:var(--mute);font-size:20px;line-height:1}.adv[open]>summary::after{transform:rotate(-90deg)}.adv[open]{padding:0 16px 16px}.adv[open]>summary{padding:16px 0 4px}.adv h3{font-size:15px}
 .av.ph{background-size:cover;background-position:center;background-color:var(--plane)}#avMe .av{width:40px;height:40px;font-size:15px}
 .clsc{border-left:3px solid var(--ink);border-radius:14px}.clsc .clt{font-weight:700;font-size:16px}.clsc.late{border-left-color:#ff3b30}.clsc.late .clt{color:#ff3b30}
@@ -559,6 +564,12 @@ body.thr{overflow:hidden}
       <div class="pushline" id="lcBioRow" hidden><span id="lcBioName">Face ID<small>Unlock with your face instead of typing</small></span><button id="lcBio">Turn on</button></div>
       <label class="pushline" id="lcAfterRow" hidden><span>Ask again after<small>When you come back to the app</small></span><select id="lcAfter" style="width:auto;min-height:38px"><option value="0">Right away</option><option value="60">1 minute</option><option value="300">5 minutes</option><option value="900">15 minutes</option></select></label>
     </div>
+    <div class="card" id="featCard"><div style="font-weight:800;font-size:18px">Features</div><p class="note" style="margin:2px 0 4px">Turn on only what you use. Nothing is deleted when a feature is off.</p>
+      <label class="pushline sw"><span>Team chat &amp; calls<small>Chat tab, notifications, in-app calls</small></span><input type="checkbox" data-feat="chat"></label>
+      <label class="pushline sw"><span>Truck stock &amp; pickup<small>Stock counts, shop pickup list, extras after Done</small></span><input type="checkbox" data-feat="stock"></label>
+      <label class="pushline sw"><span>Voice<small>Mic button and spoken updates</small></span><input type="checkbox" data-feat="voice"></label>
+      <label class="pushline sw"><span>Tax<small>Tax page under Week</small></span><input type="checkbox" data-feat="tax"></label>
+    </div>
     <details class="card adv" id="advBox" hidden><summary>Backups &amp; restore</summary>
     <h3 style="margin-top:14px">Cloud backup (GitHub)</h3>
     <div>
@@ -747,7 +758,7 @@ async function connect(){
 
 /* ---------- tabs ---------- */
 const VIEWS=['today','route','log','week','chat','setup'];
-function show(v){if(!VIEWS.includes(v))v='today';if(v!=='chat'&&typeof THREAD!=='undefined'&&THREAD)closeThread(true);{const m=$('mic');if(m)m.hidden=!(SR&&(v==='today'||v==='route'))}
+function show(v){if(!VIEWS.includes(v)||(v==='chat'&&!featOn('chat')))v='today';if(v!=='chat'&&typeof THREAD!=='undefined'&&THREAD)closeThread(true);{const m=$('mic');if(m)m.hidden=!(SR&&(v==='today'||v==='route'))}
   for(const x of VIEWS){$('v-'+x).classList.toggle('on',x===v)}
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.go===v));
   if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);
@@ -1553,6 +1564,14 @@ async function teamPush(){if(!SBU)return;const st=S.settings,d={};for(const k of
   toast(error?(/row-level|permission|denied/i.test(error.message)?'Only the app admin can change team rates':'Couldn\'t save: '+error.message):'Saved — everyone gets these rates next time they open the app')}
 $('teamSave').onclick=teamPush;
 
+/* ---------- optional features (off = hidden, never deleted) ---------- */
+function featOn(k){return !!(S.settings.feat||{})[k]}
+function applyFeat(){for(const k of ['chat','stock','voice','tax'])document.body.classList.toggle('no-'+k,!featOn(k));
+  document.querySelectorAll('[data-feat]').forEach(c=>c.checked=featOn(c.dataset.feat))}
+document.addEventListener('change',async e=>{const c=e.target.closest('[data-feat]');if(!c)return;const k=c.dataset.feat;S.settings.feat=Object.assign({},S.settings.feat,{[k]:c.checked});
+  if(k==='voice')S.settings.voice=c.checked;touch('settings');applyFeat();
+  if(k==='chat'){if(c.checked)chatInit().catch(()=>{});else{try{if(pushState()==='on')await pushOff()}catch(x){}}}renderAll()});
+applyFeat();
 /* ---------- app lock: passcode, with Face ID / fingerprint ---------- */
 const LK={cfg:null,mode:'',buf:'',first:'',fails:0,until:0,done:null,hiddenAt:0};
 try{LK.cfg=JSON.parse(ls.get('lockCfg')||'null')}catch(e){}
@@ -1640,7 +1659,7 @@ $('avFile').addEventListener('change',async e=>{const f=e.target.files[0];e.targ
   try{const bm=await createImageBitmap(f),z=Math.min(bm.width,bm.height),c=document.createElement('canvas');c.width=c.height=160;
     c.getContext('2d').drawImage(bm,(bm.width-z)/2,(bm.height-z)/2,z,z,0,0,160,160);await avSave(c.toDataURL('image/jpeg',.82))}catch(x){toast('Couldn\'t read that photo')}});
 $('avDel').onclick=()=>avSave(null);
-let chatP=null;function chatInit(){if(!SBU||chatSub)return Promise.resolve();return chatP||(chatP=chatInit1().finally(()=>{chatP=null}))}
+let chatP=null;function chatInit(){if(!SBU||chatSub||!featOn('chat'))return Promise.resolve();return chatP||(chatP=chatInit1().finally(()=>{chatP=null}))}
 /* who's online (live) + last seen + phone for calling */
 let ONLINE=new Set(),presCh=null,profT=null;
 async function profPush(extra){if(!SBU||!SB)return;const row={user_id:SBU.id,name:meName(),updated_at:new Date().toISOString(),...(extra||{})};
@@ -1914,7 +1933,7 @@ document.addEventListener('change',async e=>{if(e.target.id==='payFile'&&e.targe
 document.addEventListener('change',e=>{const c=e.target.closest('[data-pkgot]');if(!c)return;const date=c.closest('[data-pkdate]').dataset.pkdate;loadItem(date,c.dataset.pkgot,c.checked);rerenderPick(date);renderStock()});
 function pickSpeech(date){const it=pickItems(date).filter(i=>i.total>0);return it.map(i=>i.total+' '+(i.k==='radio'?'radios':(i.k==='m?'?'meters with no size listed':i.label.replace(/^Meters /,'').replace(/ ·.*$/,'').replace('mm','millimetre')+' meters'))).join(', ')}
 function checkShop(){
-  if(!MAP||!gpsFresh()||!shopDay(TODAY)||!S.settings.shopAddr)return;const d=S.days[TODAY];if(!d||!d.stops||(d.pick&&d.pick.shown))return;
+  if(!featOn('stock')||!MAP||!gpsFresh()||!shopDay(TODAY)||!S.settings.shopAddr)return;const d=S.days[TODAY];if(!d||!d.stops||(d.pick&&d.pick.shown))return;
   const l=locate(S.settings.shopAddr,S.settings.shopCity);if(!l)return;const q=MAP.ll2q(GPS.lon,GPS.lat);
   if(Math.hypot((q[0]-l.x)*MAP.MX,(q[1]-l.y)*MAP.MY)<200){const P=pickState(TODAY);P.shown=Date.now();touch(TODAY);
     $('sheetT').textContent='You\'re at the shop';$('sheetB').innerHTML=pickHtml(TODAY);$('sheet').hidden=false;$('sheetB').onclick=null;$('sheetX').textContent='Close';$('sheetX').onclick=()=>{$('sheet').hidden=true;$('sheetX').textContent='Cancel';renderAll()};
@@ -1997,9 +2016,9 @@ function smsLink(g,date){const ph=custPhone(g);if(!ph)return null;return 'sms:+1
 // refresh the message right when tapped (minutes may have changed)
 document.addEventListener('click',e=>{const a=e.target.closest('[data-smsk]');if(!a)return;const date=(a.closest('[data-date]')||{}).dataset?.date||routeDate;const g=groupsOf(date).find(x=>x.key===a.dataset.smsk);if(!g)return;const u=smsLink(g,date);if(u)a.href=u;
   g.items.forEach(s=>s.texted=Date.now());touch(date)},true);
-function speak(t){if(!S.settings.voice||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-CA';u.rate=1.02;speechSynthesis.speak(u)}catch(e){}}
+function speak(t){if(!S.settings.voice||!featOn('voice')||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-CA';u.rate=1.02;speechSynthesis.speak(u)}catch(e){}}
 const sayAddr=a=>a.replace(/\bST\b/g,'Street').replace(/\bDR\b/g,'Drive').replace(/\bCRES\b/g,'Crescent').replace(/\bCRT\b/g,'Court').replace(/\bAVE\b/g,'Avenue').replace(/\bRD\b/g,'Road').replace(/\bPL\b/g,'Place').replace(/\bCIR\b/g,'Circle').replace(/\bBLVD\b/g,'Boulevard').replace(/\bLANDNG\b/g,'Landing').replace(/\bN\b/g,'North').replace(/\bS\b/g,'South').replace(/\bE\b/g,'East').replace(/\bW\b/g,'West').toLowerCase();
-function askExtras(date,s,then){const d=S.days[date];if(!d||!s){then&&then();return}const cur={...(s.extra||{})};
+function askExtras(date,s,then){const d=S.days[date];if(!d||!s||!featOn('stock')){then&&then();return}const cur={...(s.extra||{})};
   $('sheetT').textContent='Anything extra?'+(s.unit?' · unit '+s.unit:'')+' · WO '+(s.wo||'');
   const draw=()=>{$('sheetB').innerHTML=EXTRAS.map(([grp,opts])=>`<div class="exg"><div class="exh">${grp}</div><div class="exo">${opts.map(([k,l,sub])=>`<button class="exb${cur[k]?' on':''}" data-ex="${k}">${esc(l)}${sub?`<small>${esc(sub)}</small>`:''}${rate(k)?`<small>${money(rate(k))}</small>`:''}</button>`).join('')}</div></div>`).join('')
     +`<div class="grid2" style="margin-top:6px"><button data-exn="1">${Object.keys(s.extra||{}).length?'Clear all':'Nothing extra'}</button><button class="primary" data-exs="1">Save${Object.keys(cur).length?' · +'+money(Object.keys(cur).reduce((a,k)=>a+rate(k),0)):''}</button></div>`};
@@ -2037,7 +2056,7 @@ function briefHtml(date){const d=S.days[date]||{},gs=groupsOf(date),st=S.setting
   h+=`<div class="bstat"><div><b>${gs.filter(g=>!g.state).length}</b><span>stops</span></div><div><b>${money(pot).replace(/\.\d\d$/,'')}</b><span>in jobs</span></div><div><b>${goal?money(goal).replace(/\.\d\d$/,''):'—'}</b><span>daily goal</span></div></div>`;
   // weather
   if(WX){const c=WX.data.current,A=wxAlerts(date);h+=`<div class="bi"><div class="ic"></div><div><b>${Math.round(c.temperature_2m)}° ${esc(WMO[c.weather_code]||'')}</b><div class="note">${A.length?A.map(a=>esc(a.t)).join(' · '):'Nothing to worry about'}</div></div></div>`}
-  if(shopDay(date)&&st.shopAddr){const it=pickItems(date).filter(i=>i.total>0);if(it.length)h+=`<div class="bi"><div class="ic"></div><div><b>Shop pickup${P&&P.shop?' · '+P.shop.eta:''}</b><div class="note">${it.map(i=>i.total+' × '+esc(i.label)).join(' · ')}</div></div></div>`}
+  if(featOn('stock')&&shopDay(date)&&st.shopAddr){const it=pickItems(date).filter(i=>i.total>0);if(it.length)h+=`<div class="bi"><div class="ic"></div><div><b>Shop pickup${P&&P.shop?' · '+P.shop.eta:''}</b><div class="note">${it.map(i=>i.total+' × '+esc(i.label)).join(' · ')}</div></div></div>`}
   if(isSchoolDay(date))h+=`<div class="bi"><div class="ic"></div><div><b>Class at ${hm(+st.classAt.slice(0,2)*60+ +st.classAt.slice(3))}${P&&P.school&&P.school.leave?' · leave by '+P.school.leave:''}</b><div class="note">Plan ends at school today.</div></div></div>`;
   // attention
   const att=[];gs.filter(g=>!g.state).forEach((g,i)=>{const f=stopFlags(g,date);if(f.length)att.push({g,f,n:gs.indexOf(g)+1})});
@@ -2401,7 +2420,7 @@ function renderTomorrow(){
   if(!has){el.innerHTML=`<div class="card" style="border:2px solid var(--ink)"><div style="font-weight:800;font-size:18px">Set up ${longD(nd)}</div><div class="grid2" style="margin-top:10px"><button class="primary" data-tmr="${nd}" data-act="load">Load schedule</button><button data-tmr="${nd}" data-act="clip">Paste</button></div></div>`;return}
   if(!P){el.innerHTML=`<div class="card"><b>${longD(nd)}: ${D.stops.length} work orders loaded.</b><div style="margin-top:8px" class="grid2"><button class="primary" data-tmr="${nd}" data-act="plan">Plan it</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;return}
   const pk=shopDay(nd)?pickItems(nd).filter(i=>i.total):[],TW=wxDay(nd),TA=wxAlerts(nd);
-  el.innerHTML=`<div class="card"><div style="font-weight:800">${longD(nd)} is planned</div>${TW?`<div class="note" style="margin-top:4px">Weather: ${WMO[TW.code]||''}, ${Math.round(TW.min)}° to ${Math.round(TW.max)}°${TW.pp?', rain '+TW.pp+'%':''}${TA.length?' — <b>'+esc(TA[0].t)+'</b>':''}</div>`:''}${pk.length?`<div class="note" style="margin-top:4px">Shop: ${pk.map(i=>i.total+' '+(i.k==='radio'?'radios':i.label.replace(/^Meters /,'').replace(/ ·.*$/,'')+' meters')).join(' · ')}</div>`:''}<div class="note" style="color:var(--ink);margin-top:4px">${P.from==='home'?'Leave home '+P.leave:'Start '+P.leave}${P.shop?' · shop '+P.shop.eta:''}${P.school?' · leave for class by '+P.school.leaveBy:P.home?' · home ~'+P.home.eta:''} · ${D.stops.length} WOs</div><div class="grid2" style="margin-top:10px"><button data-ics="${nd}">Add alarms to calendar</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;
+  el.innerHTML=`<div class="card"><div style="font-weight:800">${longD(nd)} is planned</div>${TW?`<div class="note" style="margin-top:4px">Weather: ${WMO[TW.code]||''}, ${Math.round(TW.min)}° to ${Math.round(TW.max)}°${TW.pp?', rain '+TW.pp+'%':''}${TA.length?' — <b>'+esc(TA[0].t)+'</b>':''}</div>`:''}${pk.length&&featOn('stock')?`<div class="note" style="margin-top:4px">Shop: ${pk.map(i=>i.total+' '+(i.k==='radio'?'radios':i.label.replace(/^Meters /,'').replace(/ ·.*$/,'')+' meters')).join(' · ')}</div>`:''}<div class="note" style="color:var(--ink);margin-top:4px">${P.from==='home'?'Leave home '+P.leave:'Start '+P.leave}${P.shop?' · shop '+P.shop.eta:''}${P.school?' · leave for class by '+P.school.leaveBy:P.home?' · home ~'+P.home.eta:''} · ${D.stops.length} WOs</div><div class="grid2" style="margin-top:10px"><button data-ics="${nd}">Add alarms to calendar</button><button data-tmr="${nd}" data-act="clip">Paste more</button></div></div>`;
 }
 function renderToday(){
   {const n=followUps().length;$('tFollow').innerHTML=n?`<button class="linkcard" data-go="route" style="padding:12px 16px"><b>${n} follow-up${n>1?'s':''} open</b> <span class="note">— stops not done yet from earlier days</span></button>`:''}
@@ -2510,7 +2529,7 @@ $('v-setup').addEventListener('input',e=>{const t=e.target;
   touch('settings');});
 
 function render(v){({today:renderToday,route:renderRoute,log:renderLog,week:renderWeek,chat:renderChat,setup:renderSetup})[v]()}
-function renderAll(fromSnap){const cur=VIEWS.find(x=>$('v-'+x).classList.contains('on'))||'today';
+function renderAll(fromSnap){if(typeof applyFeat==='function')applyFeat();const cur=VIEWS.find(x=>$('v-'+x).classList.contains('on'))||'today';
   if(fromSnap&&cur==='log'&&document.activeElement&&document.activeElement.closest('#v-log'))return;
   render(cur);if(cur!=='today')renderClock();}
 show(location.hash.slice(1)||'today');
