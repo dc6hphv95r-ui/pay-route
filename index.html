@@ -104,7 +104,7 @@ label.f input{margin-top:4px}
 .lk-bot{display:flex;justify-content:center;gap:24px}.lk-link{border:0;background:none;color:var(--mute);font-weight:500;font-size:15px;min-height:40px}
 .lk-reset{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;justify-content:center;gap:10px;padding:28px;max-width:380px;margin:0 auto}
 body.no-chat .tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
-body.no-chat .tabs [data-go="chat"],body.no-stock #v-log .seg [data-p="stock"],body.no-stock .pkwrap,body.no-stock #tShop,body.no-stock [data-q="shop"],body.no-stock [data-a="extra"],body.no-voice #mic,body.no-tax #v-week .seg [data-p="tax"]{display:none!important}
+body.no-chat .tabs [data-go="chat"],body.no-stock #v-log .seg [data-p="stock"],body.no-stock .pkwrap,body.no-stock #tShop,body.no-stock [data-q="shop"],body.no-voice #mic,body.no-tax #v-week .seg [data-p="tax"]{display:none!important}
 .sw input{width:auto;flex:none;appearance:none;-webkit-appearance:none;width:51px;height:31px;border-radius:16px;background:var(--line);position:relative;margin:0;cursor:pointer;transition:background .2s;min-height:0;padding:0;border:0}
 .sw input::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transition:transform .2s}
 .sw input:checked{background:#34c759}.sw input:checked::after{transform:translateX(20px)}
@@ -473,6 +473,11 @@ body.thr{overflow:hidden}
       <button class="primary wide" id="payGo" style="margin-top:6px">Check pasted rows</button>
       <div id="payOut"></div>
     </div>
+    <div class="card" id="xlCard"><div style="font-weight:800;font-size:18px">Export to Excel</div>
+      <p class="note" style="margin:2px 0 8px">Your logged days in the payroll breakdown layout. If you've checked a pay sheet, a Differences tab lists what payroll missed.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><label>From<input type="date" id="xlFrom"></label><label>To<input type="date" id="xlTo"></label></div>
+      <button class="primary wide" id="xlGo" style="margin-top:8px">Export</button>
+    </div>
     </div>
     <div data-pane="tax" hidden><div class="card" id="taxCard"></div></div>
     <div data-pane="hist" hidden>
@@ -567,7 +572,7 @@ body.thr{overflow:hidden}
     </div>
     <div class="card" id="featCard"><div style="font-weight:800;font-size:18px">Features</div><p class="note" style="margin:2px 0 4px">Turn on only what you use. Nothing is deleted when a feature is off.</p>
       <label class="pushline sw"><span>Team chat &amp; calls<small>Chat tab, notifications, in-app calls</small></span><input type="checkbox" data-feat="chat"></label>
-      <label class="pushline sw"><span>Truck stock &amp; pickup<small>Stock counts, shop pickup list, extras after Done</small></span><input type="checkbox" data-feat="stock"></label>
+      <label class="pushline sw"><span>Truck stock &amp; pickup<small>Stock counts and shop pickup list</small></span><input type="checkbox" data-feat="stock"></label>
       <label class="pushline sw"><span>Voice<small>Mic button and spoken updates</small></span><input type="checkbox" data-feat="voice"></label>
       <label class="pushline sw"><span>Tax<small>Tax page under Week</small></span><input type="checkbox" data-feat="tax"></label>
     </div>
@@ -1430,7 +1435,7 @@ async function readSheetFile(f){
     const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true});let rows=[];for(const n of wb.SheetNames)rows=rows.concat(XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''}));return rows}
   return textRows(await f.text())}
 function textRows(t){return String(t).split(/\r?\n/).map(l=>l.includes('\t')?l.split('\t'):l.split(','))}
-function showSheetResult(rows,pre){const el=$('payOut');const parsed=pre||parseSheetRows(rows);LAST_SHEET=parsed;if(!parsed.length){el.innerHTML='<p class="msg err">Couldn\'t find day rows. Copy the rows from the date column to the Bonus column, or open the Excel file.</p>';return}
+function showSheetResult(rows,pre){const el=$('payOut');const parsed=pre||parseSheetRows(rows);LAST_SHEET=parsed;if(parsed.length){S.lastSheet={at:Date.now(),rows:parsed};cache();xlDefaults(true)}if(!parsed.length){el.innerHTML='<p class="msg err">Couldn\'t find day rows. Copy the rows from the date column to the Bonus column, or open the Excel file.</p>';return}
   const{res,diff}=compareSheet(parsed);const bad=res.filter(x=>x.issues.length||Math.abs(x.money)>=0.5);
   el.innerHTML=`<div class="card" style="margin-top:10px"><b style="font-size:18px">${bad.length?bad.length+' day'+(bad.length>1?'s':'')+' don\'t match':'Everything matches ✓'}</b>
    <div class="note">${parsed.length} days checked · ${fmtD(parsed[0].date)} to ${fmtD(parsed[parsed.length-1].date)}${Math.abs(diff)>=0.5?` · <b style="color:${diff>0?'#c62828':'inherit'}">${diff>0?'you may be owed ':'sheet pays '}${money(Math.abs(diff))}${diff>0?'':' more than you logged'}</b>`:''}</div>
@@ -1486,6 +1491,45 @@ $('payShot').addEventListener('change',async e=>{const f=e.target.files[0];e.tar
   try{const rows=await payFromImage(f,p=>{el.innerHTML=`<p class="note">Reading the pay sheet… ${Math.round(p*100)}%</p>`});
     if(!rows.length)throw new Error('none');showSheetResult(null,rows.sort((a,b)=>a.date<b.date?-1:1))}
   catch(x){el.innerHTML='<p class="msg err">Couldn\'t read that picture. Use the screenshot straight from the email (not a photo of a screen), zoomed so the numbers are clear.</p>'}});
+
+/* export: same layout as KTI's payroll breakdown, plus a Differences tab for anything payroll missed */
+const XL_HEAD={mrt:'REPL_MRT Install Remove Permit',wr:"Wire Run < 25', Wire Fix >12'",wrl:"Wire Run >25'",wf4:"Wire Fix <4'",wf12:"Wire Fix 4'-12'",tc:'TC Outside REPL_T',rad:'Radio Retrofit',radc:'Radio Retrofit - Commercial',dkw:'DK Weekday',dks:'DK Saturday',bcv:'BCV',tp:'TP REPL Repair Investigation',pmin:'Minor Plumbing 1-3 fitting',pnor:'Normal Plumbing 4-6 fitting',cmin:'Minor Carpentry',cnor:'Normal Carpentry'};
+function xlDefaults(force){const f=$('xlFrom'),t=$('xlTo');if(!f||(!force&&f.value))return;const ls=S.lastSheet&&S.lastSheet.rows;
+  if(ls&&ls.length){const ds=ls.map(r=>r.date).sort();f.value=weekStart(ds[0]);t.value=addDays(weekStart(ds[ds.length-1]),6)}
+  else{const end=addDays(weekStart(TODAY),-1);f.value=addDays(end,-13);t.value=end}}
+async function loadXLSX(){if(!window.XLSX)await new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='xlsx.full.min.js';sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)})}
+async function exportXL(from,to){await loadXLSX();const st=S.settings,M='$#,##0.00',who=st.myName||'',tag=String(st.tag||'').replace(/^_/,'');
+  const A=[],money=[];const put=(r,c)=>money.push([r,c]);
+  A.push([who,'Hrs Worked','Reg Hours','OT Hours','No Piece',...SHEET_COLS.map(k=>XL_HEAD[k]),'','Reg Pay','Piece','Bonus',"KM's"]);
+  A.push([tag,'','','',+st.hourly||0,...SHEET_COLS.map(k=>rate(k)),'','','','','']);for(let c=4;c<=4+SHEET_COLS.length;c++)put(1,c);
+  const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const all={h:0,reg:0,piece:0,bonus:0,km:0};
+  for(let ws=weekStart(from);ws<=to;ws=addDays(ws,7)){const wk={h:0,reg:0,piece:0,bonus:0,km:0};
+    for(let i=0;i<7;i++){const dt=addDays(ws,i);if(dt<from||dt>to)continue;const d=S.days[dt],c=calc(d),D=parseD(dt);
+      const m2=v=>v?Math.round(v*100)/100:'';const row=[String(D.getDate()).padStart(2,'0')+'-'+MON3[D.getMonth()],c.h||'','','','',...SHEET_COLS.map(k=>+((d&&d.c||{})[k])||''),'',m2(c.reg),m2(c.piece),m2(c.bonus),c.km||''];
+      A.push(row);const r=A.length-1;[5+SHEET_COLS.length+1,5+SHEET_COLS.length+2,5+SHEET_COLS.length+3].forEach(cc=>put(r,cc));for(const k in wk)wk[k]+=c[k]||0}
+    const reg=Math.min(44,wk.h),r2=v=>Math.round(v*100)/100;A.push(['Total',r2(wk.h),r2(reg),Math.floor(Math.max(0,wk.h-44)*2)/2,'',...SHEET_COLS.map(()=>''),'',r2(wk.reg),r2(wk.piece),r2(wk.bonus),wk.km||'']);
+    const r=A.length-1;[5+SHEET_COLS.length+1,5+SHEET_COLS.length+2,5+SHEET_COLS.length+3].forEach(cc=>put(r,cc));for(const k in all)all[k]+=wk[k]}
+  const ws1=XLSX.utils.aoa_to_sheet(A);for(const[r,c]of money){const ref=XLSX.utils.encode_cell({r,c});if(ws1[ref]&&typeof ws1[ref].v==='number')ws1[ref].z=M}
+  ws1['!cols']=[{wch:12},{wch:10},{wch:10},{wch:9},{wch:9},...SHEET_COLS.map(()=>({wch:12})),{wch:2},{wch:11},{wch:11},{wch:11},{wch:7}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws1,'Breakdown');
+  // differences against the pay sheet you checked
+  const sh=(S.lastSheet&&S.lastSheet.rows||[]).filter(r=>r.date>=from&&r.date<=to);let owed=0;
+  if(sh.length){const B=[['Date','Item','I logged','Payroll paid','Difference','Rate','Amount','Work orders']];
+    for(const r of sh){const d=S.days[r.date]||{};
+      if(Math.abs((+d.h||0)-r.h)>0.05)B.push([fmtD(r.date),'Hours',+(+d.h||0).toFixed(2),r.h,+((+d.h||0)-r.h).toFixed(2),+st.hourly||0,+(((+d.h||0)-r.h)*(+st.hourly||0)).toFixed(2),'']);
+      for(const k of SHEET_COLS){const mine=+((d.c||{})[k])||0,th=+r.c[k]||0;if(mine===th)continue;
+        const wos=(d.stops||[]).filter(x=>(x.extra&&x.extra[k])||(x.st==='done'&&TYPE_JOB[x.type]===k)).map(x=>x.wo).join(', ');
+        const amt=+((mine-th)*rate(k)).toFixed(2);owed+=amt;B.push([fmtD(r.date),XL_HEAD[k],mine,th,mine-th,rate(k),amt,wos])}}
+    B.push([]);B.push(['','','','','','Total',+owed.toFixed(2),'']);
+    const ws2=XLSX.utils.aoa_to_sheet(B);for(let r=1;r<B.length;r++)for(const c of[5,6]){const ref=XLSX.utils.encode_cell({r,c});if(ws2[ref]&&typeof ws2[ref].v==='number')ws2[ref].z=M}
+    ws2['!cols']=[{wch:12},{wch:30},{wch:9},{wch:12},{wch:11},{wch:9},{wch:11},{wch:40}];XLSX.utils.book_append_sheet(wb,ws2,'Differences')}
+  const fy=x=>parseD(x).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});const name=`Pay breakdown ${fmtD(from)} - ${fy(to)}.xlsx`.replace(/[\\/:*?"<>|]/g,'-');
+  const blob=new Blob([XLSX.write(wb,{bookType:'xlsx',type:'array'})],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),file=new File([blob],name,{type:blob.type});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return{owed,diff:sh.length}}}catch(e){if(e&&e.name==='AbortError')return{owed,diff:sh.length,cancel:true}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);return{owed,diff:sh.length}}
+$('xlGo').onclick=async()=>{const f=$('xlFrom').value,t=$('xlTo').value;if(!f||!t||f>t){toast('Pick a date range');return}const b=$('xlGo');b.disabled=true;
+  try{const r=await exportXL(f,t);if(!r.cancel)toast(r.diff?'Exported · payroll owes '+money(Math.max(0,r.owed)):'Exported')}catch(e){toast('Couldn\'t make the file')}b.disabled=false};
+xlDefaults();
 
 /* ---------- tax pack ---------- */
 const EXP_CATS=['Tools','Work clothing / boots','Training / courses','Phone','Vehicle','Other'];
@@ -2092,7 +2136,7 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-smsk]');if
   g.items.forEach(s=>s.texted=Date.now());touch(date)},true);
 function speak(t){if(!S.settings.voice||!featOn('voice')||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-CA';u.rate=1.02;speechSynthesis.speak(u)}catch(e){}}
 const sayAddr=a=>a.replace(/\bST\b/g,'Street').replace(/\bDR\b/g,'Drive').replace(/\bCRES\b/g,'Crescent').replace(/\bCRT\b/g,'Court').replace(/\bAVE\b/g,'Avenue').replace(/\bRD\b/g,'Road').replace(/\bPL\b/g,'Place').replace(/\bCIR\b/g,'Circle').replace(/\bBLVD\b/g,'Boulevard').replace(/\bLANDNG\b/g,'Landing').replace(/\bN\b/g,'North').replace(/\bS\b/g,'South').replace(/\bE\b/g,'East').replace(/\bW\b/g,'West').toLowerCase();
-function askExtras(date,s,then){const d=S.days[date];if(!d||!s||!featOn('stock')){then&&then();return}const cur={...(s.extra||{})};
+function askExtras(date,s,then){const d=S.days[date];if(!d||!s){then&&then();return}const cur={...(s.extra||{})};
   $('sheetT').textContent='Anything extra?'+(s.unit?' · unit '+s.unit:'')+' · WO '+(s.wo||'');
   const draw=()=>{$('sheetB').innerHTML=EXTRAS.map(([grp,opts])=>`<div class="exg"><div class="exh">${grp}</div><div class="exo">${opts.map(([k,l,sub])=>`<button class="exb${cur[k]?' on':''}" data-ex="${k}">${esc(l)}${sub?`<small>${esc(sub)}</small>`:''}${rate(k)?`<small>${money(rate(k))}</small>`:''}</button>`).join('')}</div></div>`).join('')
     +`<div class="grid2" style="margin-top:6px"><button data-exn="1">${Object.keys(s.extra||{}).length?'Clear all':'Nothing extra'}</button><button class="primary" data-exs="1">Save${Object.keys(cur).length?' · +'+money(Object.keys(cur).reduce((a,k)=>a+rate(k),0)):''}</button></div>`};
