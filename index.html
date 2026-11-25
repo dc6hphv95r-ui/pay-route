@@ -467,7 +467,8 @@ body.thr{overflow:hidden}
     </div>
     <div data-pane="check" hidden>
     <div class="card">
-      <label class="btn wide">Open Excel / CSV file<input type="file" id="payFile" accept=".xlsx,.xls,.csv,.ods,.txt" hidden></label>
+      <label class="btn wide primary">Open a screenshot or photo<input type="file" id="payShot" accept="image/*" hidden></label>
+      <label class="btn wide" style="margin-top:8px">Open Excel / CSV file<input type="file" id="payFile" accept=".xlsx,.xls,.csv,.ods,.txt" hidden></label>
       <textarea id="payText" placeholder="…or paste rows here" style="margin-top:8px;min-height:90px"></textarea>
       <button class="primary wide" id="payGo" style="margin-top:6px">Check pasted rows</button>
       <div id="payOut"></div>
@@ -656,8 +657,8 @@ const cityName=c=>{c=String(c||'').trim();if(/^[A-Z]{2,4}\d*$/i.test(c)){const f
 function cityOf(ward){const m=/^([A-Z]+)/i.exec(ward||'');if(!m)return'';const k=m[1].toUpperCase();for(const p in CITY)if(k.startsWith(p))return CITY[p];return''}
 function winMin(t){const m=/^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AP])M$/i.exec(t||'');if(!m)return 9999;let h=+m[1]%12;if(m[3].toUpperCase()==='P')h+=12;return h*60+(+m[2])}
 function parseSchedule(text,tag){
-  const c=toCells(text);
-  const isWO=s=>/^\d{6,8}$/.test(s||''),isT=s=>/^\d{1,2}:\d{2}(:\d{2})?\s*[AP]M$/i.test(s||''),isCode=s=>/^([A-Z0-9_\/-]{2,}|0)$/.test(s||''),isTech=s=>/^\d+h_[a-z0-9]+$/i.test(s||'');
+  const c=toCells(text).filter(x=>!/^call for repl_?t$/i.test(x));
+  const isWO=s=>/^[A-Z]{0,2}\d{6,10}$/i.test(s||''),isT=s=>/^\d{1,2}:\d{2}(:\d{2})?\s*[AP]M$/i.test(s||''),isCode=s=>/^([A-Z0-9_\/-]{2,}|0)$/.test(s||''),isTech=s=>/^\d+h_[a-z0-9]+$/i.test(s||'');
   let a=0,b=c.length,found=false;
   if(tag){const t=tag.toLowerCase().replace(/^_?/,'_');const i=c.findIndex(x=>isTech(x)&&x.toLowerCase().endsWith(t));if(i>=0){a=i+1;found=true;let j=a;while(j<c.length&&!isTech(c[j]))j++;b=j}}
   const out=[];
@@ -674,6 +675,8 @@ function parseSchedule(text,tag){
     out.push({wo:f[0],time:f[1].replace(/:00(\s*[AP]M)$/i,'$1'),win:winMin(f[1]),name:f[2],addr:f[3],unit:(f[4]&&f[4]!=='0')?f[4]:'',ward:f[5],city:cityOf(f[5]),ph:ph(f[7]),ph2:ph(f[8]),size:f[9],meter:f[10],notes:c.slice(i+11,k).filter(Boolean).join(' '),problem:c[k]||'',program:c[k+1]||'',type:c[k+2]||'',st:''});
     i=k+2;
   }
+  const UN=/\s+(?:UNIT|APT|SUITE|STE|#)\s*#?\s*([A-Z0-9-]+)\s*$/i;
+  for(const s of out){const m=UN.exec(s.addr||'');if(m){s.addr=s.addr.replace(UN,'');if(!s.unit)s.unit=m[1]}}
   return{stops:out,found};
 }
 
@@ -830,7 +833,7 @@ function stopCard(g,n,date,isNext){
   const names=[...new Set(g.items.map(s=>s.name))],units=g.items.map(s=>s.unit).filter(Boolean),notes=[...new Set(g.items.map(s=>s.notes).filter(Boolean))];
   const phones=[...new Set(g.items.flatMap(s=>[s.ph,s.ph2]).filter(Boolean))];
   const types={};g.items.forEach(s=>types[s.type]=(types[s.type]||0)+1);
-  const ul=g.items.length>=2&&g.items.filter(s=>s.unit).length>=2,call=needsCall(g),arr=g.items.find(s=>s.arriveAt);
+  const ul=g.items.length>=2&&(g.items.filter(s=>s.unit).length>=2||g.items.every(s=>s.type==='REPL_T')),call=needsCall(g),arr=g.items.find(s=>s.arriveAt);
   let unitHtml='';
   if(ul){const so=[...g.items].sort((a,b)=>(parseInt(a.unit,10)||1e9)-(parseInt(b.unit,10)||1e9)||String(a.unit).localeCompare(String(b.unit)));
     const cur=so.find(s=>!s.st),dn=so.filter(s=>s.st==='done').length;
@@ -909,9 +912,21 @@ function loadStops(text,date,source,pre){
   rMsg('Loaded '+r.stops.length+' work orders for '+longD(date)+(source?' from '+source:'')+(r.found?'':' (whole email — your name wasn\'t found)'));
   $('mails').innerHTML='';$('pasteBox').hidden=true;return true;
 }
-function parseTable(text,date){const a=parseTable1(text,date,true),b=parseTable1(text,date,false);return a.length>=b.length?a:b}
+function parseTable(text,date){const a=parseTable1(text,date,true),b=parseTable1(text,date,false),r=a.length>=b.length?a:b;return r.length?r:parseBare(text,date)}
+/* a replace-T list with no headings: WO, name, street, full address, unit — repeated */
+function parseBare(text,date){const c=toCells(text).filter(x=>x!==''),isWO=x=>/^[A-Z]{0,2}\d{6,10}$/i.test(x||''),isAd=x=>/^\d+[A-Z]?\s+[A-Z0-9]/i.test(x||'')&&!isWO(x);
+  const at=c.map((x,i)=>isWO(x)?i:-1).filter(i=>i>=0);if(!at.length)return [];
+  const lens=at.slice(1).map((v,k)=>v-at[k]),cnt={};lens.forEach(l=>cnt[l]=(cnt[l]||0)+1);
+  const n=lens.length?+Object.keys(cnt).sort((x,y)=>cnt[y]-cnt[x])[0]:Math.min(c.length-at[0],5);if(n<3||n>8)return [];
+  const known=((S.days[date]&&S.days[date].stops)||[]).map(s=>s.city).filter(Boolean),defCity=known.sort((x,y)=>known.filter(v=>v===y).length-known.filter(v=>v===x).length)[0]||'Milton';
+  const out=[];
+  for(const i of at){const r=c.slice(i,i+n);if(r.slice(1).some(isWO))continue;const ad=r.slice(1).find(isAd);if(!ad)continue;
+    const last=r[n-1],unit=last!==ad&&/^[A-Z]?\d{1,5}[A-Z]?$/i.test(last||'')?last:'';
+    const name=r.slice(1).find(x=>x!==ad&&x!==unit&&!/\b(RD|DR|ST|AVE|CRES|CRT|BLVD|WAY|LANE|LN|COMMON|CIR|TERR|PL|GATE|TRAIL|PT)\b\.?$/i.test(x))||'';
+    out.push({wo:r[0],time:'',win:9999,slot:'am',name,addr:ad.toUpperCase(),unit,ward:'',city:defCity,ph:'',ph2:'',size:'',meter:'',notes:'',problem:'',program:'',type:'REPL_T',st:'',manual:true})}
+  return out.length>=Math.ceil(at.length/2)?out:[]}
 function parseTable1(text,date,keepEmpty){
-  const c0=toCells(text),c=keepEmpty?c0.slice(c0.findIndex(x=>/^(host order|wo)\s*#?/i.test(x))):c0.filter(x=>x!==''),isWO=x=>/^\d{6,8}$/.test(x||'');
+  const c0=toCells(text),c=keepEmpty?c0.slice(c0.findIndex(x=>/^(host order|wo)\s*#?/i.test(x))):c0.filter(x=>x!==''),isWO=x=>/^[A-Z]{0,2}\d{6,10}$/i.test(x||'');
   const h=c.findIndex(x=>/^(host order|wo)\s*#?/i.test(x));if(h<0)return [];
   let n=0;while(h+n<c.length&&!isWO(c[h+n])&&n<20)n++;
   const hd=c.slice(h,h+n).map(x=>x.toLowerCase()),col=re=>hd.findIndex(x=>re.test(x));
@@ -968,7 +983,7 @@ function parseLines(text,type,slot,date){
   const out=[];
   for(let line of decodeEnt(text).split(/\n/)){
     line=line.replace(/\u00a0/g,' ').replace(/^\s*(?:[-*•]|\d{1,2}[.)])\s+/,'').trim();if(!line)continue;
-    let wo='';const m=/^(\d{6,8})[\s,;:-]+(.*)$/.exec(line);if(m&&/^\d/.test(m[2])){wo=m[1];line=m[2]}
+    let wo='';const m=/^([A-Z]{0,2}\d{6,10})[\s,;:-]+(.*)$/i.exec(line);if(m&&/^\d/.test(m[2])){wo=m[1];line=m[2]}
     if(!/^\d+[A-Z]?\s+\S/i.test(line))continue;
     let city=CITIES.find(c=>new RegExp('\\b'+c+'\\b','i').test(line))||'';
     {const cm=/[,\s]+(MIL|BUR|OAK|HHL?|GEO|ACT)\d?\s*$/i.exec(line);if(!city&&cm){city=cityOf(cm[1]);line=line.slice(0,cm.index)}}
@@ -1162,7 +1177,7 @@ function pdfSchedule(rows,tag){
     const cols=blk.cols,x0=cols[0].x,colOf=x=>{let c=null;for(const k of cols)if(k.x<=x+4)c=k;return c};
     const rec={},label=[];
     for(const it of r.items){if(it.x<x0-4){label.push(it.s);continue}const c=colOf(it.x);if(!c||!c.f)continue;rec[c.f]=(rec[c.f]?rec[c.f]+' ':'')+it.s}
-    if(/^\d{6,8}$/.test(rec.wo||'')){
+    if(/^[A-Z]{0,2}\d{6,10}$/i.test(rec.wo||'')){
       const t=String(rec.time||'').replace(/\s+/g,' ').trim(),ph=v=>(v&&v!=='0')?v:'',ward=rec.ward||'';
       const notes=[label.join(' '),rec.notes||''].filter(Boolean).join(' — ');
       const s={wo:rec.wo,time:t.replace(/:00(\s*[AP]M)$/i,'$1'),win:winMin(t),name:rec.name||'',addr:String(rec.addr||'').toUpperCase(),unit:ph(rec.unit),ward,city:cityOf(ward),ph:ph(rec.ph),ph2:ph(rec.ph2),size:rec.size||'',meter:ph(rec.meter),notes,problem:rec.problem||'',program:rec.program||'',type:(rec.type||'').toUpperCase(),st:''};
@@ -1222,7 +1237,7 @@ async function ocrWorker(progress){if(OCRW)return OCRW;if(!window.Tesseract)awai
   const base=new URL('./',location.href).href;
   OCRW=await Tesseract.createWorker('eng',1,{workerPath:base+'worker.min.js',corePath:base,langPath:base,gzip:true,logger:m=>{if(progress&&m.status==='recognizing text')progress(m.progress)}});
   await OCRW.setParameters({preserve_interword_spaces:'1',tessedit_pageseg_mode:'11'});return OCRW}
-async function shotPrep(file){const img=await createImageBitmap(file),k=img.width<900?3:img.width<1800?2:1,c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;
+async function shotPrep(file,kf){const img=await createImageBitmap(file),k=kf||(img.width<900?3:img.width<1800?2:1),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;
   const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(img,0,0,c.width,c.height);
   const W=c.width,H=c.height,d=x.getImageData(0,0,W,H),a=d.data,g=new Uint8Array(W*H);let sum=0;
   for(let i=0,p=0;i<a.length;i+=4,p++){g[p]=(a[i]*0.3+a[i+1]*0.59+a[i+2]*0.11)|0;sum+=g[p]}
@@ -1252,7 +1267,7 @@ function ocrTable(words,tag){
     const woCell=cells.find(c=>/^WO/i.test(c.s));if(!woCell)continue;const cols=cells.filter(c=>c.x0>=woCell.x0-lh).map(c=>{const k=PDF_COL.find(([re])=>re.test(c.s.toLowerCase().replace(/:$/,'')));return{f:k?k[1]:'',x:c.x0}});for(let i=cols.length-2;i>=0;i--)if(!cols[i].f&&cols[i+1].f&&cols[i+1].x-cols[i].x<lh*6)cols[i].f=cols[i+1].f;heads.push({y:w.cy,cols})}}
   const tags=[];{const seen=new Set();for(const w of W){if(seen.has(w))continue;const line=W.filter(v=>Math.abs(v.cy-w.cy)<lh*0.6).sort((a,b)=>a.x0-b.x0);line.forEach(v=>seen.add(v));
     const m=/\d{2,4}\s*[hn]\s*[_\s.-]\s*([a-z]{2,})/i.exec(line.map(v=>v.t).join(' '));if(m&&!/\bWO\b/i.test(line.map(v=>v.t).join(' ')))tags.push({y:line.reduce((a,v)=>a+v.cy,0)/line.length,t:'_'+m[1].toLowerCase()})}}
-  const anchors=W.filter(w=>/^1\d{6}$/.test(w.t)).sort((a,b)=>a.y0-b.y0);
+  const anchors=W.filter(w=>/^(1\d{6}|[C]0\d{8})$/i.test(w.t)).sort((a,b)=>a.y0-b.y0);
   const out=[];
   anchors.forEach((a,ai)=>{const hd=heads.filter(h=>h.y<a.cy).pop();if(hd){const woc=hd.cols.find(c=>c.f==='wo');if(woc&&Math.abs(a.x0-woc.x)>lh*4)return}
     const tg=tags.filter(t=>t.y<a.cy).pop();if(tags.length&&tag&&!(tg&&tg.t.endsWith(want)))return;
@@ -1284,7 +1299,7 @@ function ocrRows(lines,tag){const want=String(tag||'').toLowerCase().replace(/^_
   for(let raw of lines){const L=ocrFix(raw).replace(/\s+/g,' ').trim();if(!L)continue;
     const tm=/\b\d{2,3}h_[a-z]+/i.exec(L);if(tm){mine=!!tag&&tm[0].toLowerCase().endsWith(want);last=null;continue}
     if(!mine)continue;
-    const wo=/(?:^|\s)(1\d{6})(?=\s|$)/.exec(L),t=/\b(\d{1,2}:\d{2}(?::\d{2})?\s?[AP]M)\b/i.exec(L);
+    const wo=/(?:^|\s)(1\d{6}|[C]0\d{8})(?=\s|$)/i.exec(L),t=/\b(\d{1,2}:\d{2}(?::\d{2})?\s?[AP]M)\b/i.exec(L);
     if(!wo){if(last&&!/WO\s*#|MAIL_Name|Address/i.test(L)&&L.length>3)last.notes=(last.notes+' '+L).trim().slice(0,300);continue}
     const after=L.slice(wo.index+wo[0].length);
     const am=/\b(\d{1,5}[A-Z]?)\s+((?:[A-Z0-9'.-]+\s+){0,4}?[A-Z0-9'.-]+?)\s*$/;
@@ -1389,13 +1404,21 @@ function sheetDate(v){if(v instanceof Date)return ymd(v);if(typeof v==='number'&
   const m=/^(\d{1,2})[-\s]([A-Za-z]{3})/.exec(String(v||'').trim());if(!m)return null;const mo=MON[m[2].toLowerCase()];if(mo==null)return null;
   const now=new Date();let y=now.getFullYear();let d=new Date(y,mo,+m[1]);if(d-now>14*864e5)d=new Date(y-1,mo,+m[1]);return ymd(d)}
 function parseSheetRows(rows){const out=[];
-  for(const r of rows){const date=sheetDate(r[0]);if(!date)continue;const hrs=num(r[1]);if(!(hrs>0))continue;
-    const c={};SHEET_COLS.forEach((k,i)=>{const v=num(r[3+i]);if(v>0)c[k]=v});
-    const tail=r.slice(3+SHEET_COLS.length).map(num).filter(v=>isFinite(v));
-    out.push({date,h:hrs,c,reg:tail[0]||0,piece:tail[1]||0,bonus:tail[2]||0})}
+  // where do the job columns and pay columns start? (from the heading row if there is one)
+  let j0=-1,iReg=-1,iPiece=-1,iBonus=-1,iHrs=1;
+  for(const r of rows){const t=r.map(x=>String(x==null?'':x));const m=t.findIndex(x=>/REPL_?MRT/i.test(x));if(m<0)continue;j0=m;
+    iReg=t.findIndex(x=>/^\s*reg\s*pay/i.test(x));iPiece=t.findIndex((x,i)=>i>j0+SHEET_COLS.length-1&&/^\s*piece\s*$/i.test(x));iBonus=t.findIndex(x=>/^\s*bonus/i.test(x));
+    const h=t.findIndex(x=>/hrs|hours\s*work/i.test(x));if(h>0)iHrs=h;break}
+  for(const r of rows){const date=sheetDate(r[0]);if(!date)continue;const hrs=num(r[iHrs]);if(!(hrs>0))continue;
+    const js=j0>=0?j0:r.length>=24?5:3;
+    const c={};SHEET_COLS.forEach((k,i)=>{const v=num(r[js+i]);if(v>0)c[k]=v});
+    let reg,piece,bonus;
+    if(iReg>=0){reg=num(r[iReg]);piece=num(r[iPiece>=0?iPiece:iReg+1]);bonus=num(r[iBonus>=0?iBonus:iReg+2])}
+    else{const tail=r.slice(js+SHEET_COLS.length).filter(x=>String(x).trim()!=='').map(num).filter(v=>isFinite(v));reg=tail[0];piece=tail[1];bonus=tail[2]}
+    out.push({date,h:hrs,c,reg:reg||0,piece:piece||0,bonus:bonus||0})}
   return out}
 function compareSheet(rows){const res=[];let diff=0;
-  for(const r of rows){const d=S.days[r.date],a=calc(d),issues=[];
+  for(const r of rows){const d=S.days[r.date],a=calc(d),issues=[];if(r.unsure)issues.push('Some job counts on this day couldn\'t be read clearly — check them against the sheet');
     if(!d){issues.push('not logged in the app');res.push({r,issues,money:0});continue}
     if(Math.abs((+d.h||0)-r.h)>0.05)issues.push('hours: you '+(+d.h||0).toFixed(2)+', sheet '+r.h.toFixed(2));
     for(const k of SHEET_COLS){const mine=+(d.c||{})[k]||0,th=r.c[k]||0;if(mine!==th){const nm=JOBS.find(j=>j[0]===k)[1];const wos=(d.stops||[]).filter(x=>x.extra&&x.extra[k]).map(x=>x.wo);issues.push(nm+': you '+mine+', sheet '+th+' ('+(mine>th?'short ':'extra ')+money(Math.abs(mine-th)*rate(k))+')'+(wos.length?' — WO '+wos.join(', '):''))}}
@@ -1407,11 +1430,62 @@ async function readSheetFile(f){
     const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true});let rows=[];for(const n of wb.SheetNames)rows=rows.concat(XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''}));return rows}
   return textRows(await f.text())}
 function textRows(t){return String(t).split(/\r?\n/).map(l=>l.includes('\t')?l.split('\t'):l.split(','))}
-function showSheetResult(rows){const el=$('payOut');const parsed=parseSheetRows(rows);if(!parsed.length){el.innerHTML='<p class="msg err">Couldn\'t find day rows. Copy the rows from the date column to the Bonus column, or open the Excel file.</p>';return}
+function showSheetResult(rows,pre){const el=$('payOut');const parsed=pre||parseSheetRows(rows);LAST_SHEET=parsed;if(!parsed.length){el.innerHTML='<p class="msg err">Couldn\'t find day rows. Copy the rows from the date column to the Bonus column, or open the Excel file.</p>';return}
   const{res,diff}=compareSheet(parsed);const bad=res.filter(x=>x.issues.length||Math.abs(x.money)>=0.5);
   el.innerHTML=`<div class="card" style="margin-top:10px"><b style="font-size:18px">${bad.length?bad.length+' day'+(bad.length>1?'s':'')+' don\'t match':'Everything matches ✓'}</b>
    <div class="note">${parsed.length} days checked · ${fmtD(parsed[0].date)} to ${fmtD(parsed[parsed.length-1].date)}${Math.abs(diff)>=0.5?` · <b style="color:${diff>0?'#c62828':'inherit'}">${diff>0?'you may be owed ':'sheet pays '}${money(Math.abs(diff))}${diff>0?'':' more than you logged'}</b>`:''}</div>
+   ${bad.length?`<button class="primary wide" id="paySave" style="margin:10px 0 4px">Use the sheet's numbers for ${bad.length===1?'this day':'these '+bad.length+' days'}</button><p class="note" style="margin:0 0 6px">Sets hours and job counts to what payroll shows. Your check-in times and stops stay.</p>`:''}
    ${bad.map(x=>`<div class="fu"><div><b>${longD(x.r.date)}</b>${Math.abs(x.money)>=0.5?` · <span style="color:${x.money>0?'#c62828':'inherit'}">${x.money>0?'sheet pays '+money(x.money)+' less than you logged':'sheet pays '+money(-x.money)+' more than you logged'}</span>`:''}<div class="note">${x.issues.map(esc).join('<br>')||'pay total differs'}</div></div><span></span></div>`).join('')}</div>`}
+
+let LAST_SHEET=null;
+document.addEventListener('click',e=>{if(e.target.id!=='paySave'||!LAST_SHEET)return;let n=0;
+  for(const r of LAST_SHEET){const d=day(r.date);d.h=r.h;const keep={};for(const[k,v]of Object.entries(d.c||{}))if(!SHEET_COLS.includes(k))keep[k]=v;d.c=Object.assign(keep,r.c);touch(r.date);n++}
+  renderAll();showSheetResult(null,LAST_SHEET);toast('Updated '+n+' day'+(n>1?'s':'')+' from the pay sheet')});
+/* read the payroll breakdown from a picture of the spreadsheet */
+async function payFromImage(file,progress){const K=3,c=await shotPrep(file,K),w=await ocrWorker();
+  await w.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
+  const r=await w.recognize(c,{},{blocks:true});const W=[];for(const b of r.data.blocks||[])for(const p of b.paragraphs)for(const l of p.lines)for(const x of l.words){const t=x.text.trim();if(t)W.push({t,x0:x.bbox.x0,x1:x.bbox.x1,y0:x.bbox.y0,y1:x.bbox.y1,cy:(x.bbox.y0+x.bbox.y1)/2})}
+  const dates=W.filter(x=>/^\d{1,2}-[A-Za-z]{3}$/.test(x.t)&&sheetDate(x.t)).sort((a,b)=>a.cy-b.cy);if(!dates.length)throw new Error('no dates');
+  const H=W.find(x=>/^hrs/i.test(x.t)),REG=W.filter(x=>/^reg$/i.test(x.t)).sort((a,b)=>b.x0-a.x0)[0],PIECE=W.filter(x=>/^piece$/i.test(x.t)).sort((a,b)=>b.x0-a.x0)[0];
+  const payX=REG?REG.x0-20*K:Infinity;
+  // the rate row ($25.63, $17.28 …) is the band above the first date with the most amounts; its 16 right-most amounts sit at the job columns' right edges
+  const isAmt=t=>/^\$?\d{1,4}([.,]\d{2})?[sS]?$/.test(t)&&!/^\d{1,2}-/.test(t);
+  let best=[];for(const a of W){if(a.cy>=dates[0].y0)continue;const band=W.filter(b=>Math.abs(b.cy-a.cy)<6*K&&isAmt(b.t.replace(/^[S$]+/,''))&&b.x1<payX);if(band.length>best.length)best=band}
+  best=[...new Map(best.map(b=>[b.x0,b])).values()].sort((a,b)=>a.x0-b.x0);
+  if(best.length<SHEET_COLS.length)throw new Error('no rate row');
+  const edges=best.slice(-SHEET_COLS.length).map(b=>b.x1+3*K),cw=edges[1]-edges[0];
+  const X=c.getContext('2d',{willReadFrequently:true}),img=X.getImageData(0,0,c.width,c.height).data,CW=c.width;
+  const ink=(x0,y0,x1,y1)=>{let n=0;for(let y=Math.max(0,y0|0);y<Math.min(c.height,y1|0);y++)for(let x=Math.max(0,x0|0);x<Math.min(CW,x1|0);x++)if(img[(y*CW+x)*4]<100)n++;return n};
+  const cell=document.createElement('canvas'),cx=cell.getContext('2d');
+  const raw=document.createElement('canvas');{const bm=await createImageBitmap(file);raw.width=bm.width*K;raw.height=bm.height*K;const rx=raw.getContext('2d');rx.imageSmoothingQuality='high';rx.drawImage(bm,0,0,raw.width,raw.height)}
+  const rates=best.slice(-SHEET_COLS.length).map(b=>{const t=b.t.replace(/[^\d.,]/g,'').replace(',','.');return t.includes('.')?+t:+t/100});
+  await w.setParameters({tessedit_pageseg_mode:'8',tessedit_char_whitelist:'0123456789'});
+  const out=[];let done=0;
+  try{for(let di=0;di<dates.length;di++){const d=dates[di],date=sheetDate(d.t),top=di?(dates[di-1].cy+d.cy)/2:d.y0-4*K,bot=di<dates.length-1?(d.cy+dates[di+1].cy)/2:d.y1+4*K;
+    const row=W.filter(x=>x.cy>top&&x.cy<bot).sort((a,b)=>a.x0-b.x0);
+    const hrsW=row.find(x=>x!==d&&x.x0>d.x1&&(!H||x.x0<H.x1+40*K)&&/^\d{1,2}([.,]\d{1,2})?$/.test(x.t));const h=hrsW?+hrsW.t.replace(',','.'):0;
+    const money=row.filter(x=>x.x0>=payX&&/\d/.test(x.t)).map(x=>num(x.t.replace(/[^\d.,-]/g,''))).filter(v=>isFinite(v));
+    const cnt={},inkCols=[];
+    if(h>0)for(let j=0;j<SHEET_COLS.length;j++){const pad=6*K,x1=edges[j]+5*K,x0=(j?edges[j-1]:edges[j]-cw)+pad,y0=top+2*K,y1=bot-2*K,cwid=x1-x0,ch=y1-y0;
+      if(cwid<=0||ink(x0,y0,x1,y1)<4*K*K)continue;inkCols.push(j);
+      cell.width=cwid+30;cell.height=ch+30;cx.fillStyle='#fff';cx.fillRect(0,0,cell.width,cell.height);cx.drawImage(raw,x0,y0,cwid,ch,15,15,cwid,ch);
+      const t=(await w.recognize(cell)).data.text.replace(/\D/g,'');const v=+t;if(t&&v>0&&v<100)cnt[SHEET_COLS[j]]=v}
+    const piece=money[1]||0;let sure=true;
+    if(h>0&&piece>0){const tot=o=>Math.round(SHEET_COLS.reduce((a,k,j)=>a+(o[k]||0)*rates[j],0)*100);const want=Math.round(piece*100);
+      if(tot(cnt)!==want){sure=false;
+        // one bad cell: solve it from the Piece total
+        for(const j of inkCols){const k=SHEET_COLS[j],rest=tot(Object.assign({},cnt,{[k]:0})),v=(want-rest)/Math.round(rates[j]*100);if(v>0&&v<100&&Number.isInteger(v)){cnt[k]=v;sure=true;break}}
+        // two bad cells
+        if(!sure)outer:for(const a of inkCols)for(const b of inkCols){if(b<=a)continue;const ka=SHEET_COLS[a],kb=SHEET_COLS[b],base=tot(Object.assign({},cnt,{[ka]:0,[kb]:0}));
+          for(let va=1;va<60;va++){const v=(want-base-va*Math.round(rates[a]*100))/Math.round(rates[b]*100);if(v>0&&v<100&&Number.isInteger(v)){cnt[ka]=va;cnt[kb]=v;sure=true;break outer}}}}}
+    if(date&&h>0)out.push({date,h,c:cnt,reg:money[0]||0,piece,bonus:money[2]||0,unsure:!sure});
+    if(progress)progress(++done/dates.length)}}
+  finally{await w.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''})}
+  return out}
+$('payShot').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const el=$('payOut');el.innerHTML='<p class="note">Reading the pay sheet…</p>';
+  try{const rows=await payFromImage(f,p=>{el.innerHTML=`<p class="note">Reading the pay sheet… ${Math.round(p*100)}%</p>`});
+    if(!rows.length)throw new Error('none');showSheetResult(null,rows.sort((a,b)=>a.date<b.date?-1:1))}
+  catch(x){el.innerHTML='<p class="msg err">Couldn\'t read that picture. Use the screenshot straight from the email (not a photo of a screen), zoomed so the numbers are clear.</p>'}});
 
 /* ---------- tax pack ---------- */
 const EXP_CATS=['Tools','Work clothing / boots','Training / courses','Phone','Vehicle','Other'];
@@ -2162,7 +2236,7 @@ function pinSheet(addr,city){const k=fixKey(addr,city);$('sheetT').textContent='
 document.addEventListener('click',e=>{const b=e.target.closest('[data-setpin]');if(!b)return;const i=b.dataset.setpin.lastIndexOf('|');pinSheet(b.dataset.setpin.slice(0,i),b.dataset.setpin.slice(i+1))});
 const fixKey=(addr,city)=>String(addr||'').toUpperCase().trim()+'|'+String(city||'').toLowerCase().trim();
 function atPoint(x,y,how){const v=HaltonRouter.snap(MAP,x,y);return v>=0?{x,y,how,v}:null}
-function locate(addr,city){city=cityName(city);
+function locate(addr,city){city=cityName(city);addr=String(addr||'').replace(/\s+(?:UNIT|APT|SUITE|STE|#)\s*#?\s*[A-Z0-9-]+\s*$/i,'');
   const k=fixKey(addr,city);if(GEO.has(k))return GEO.get(k);
   const f=(S.settings.fix||{})[k];if(f&&f[0]<0){const q=MAP.ll2q(f[0],f[1]),r=atPoint(q[0],q[1],'fixed');GEO.set(k,r);return r}
   const g=HaltonRouter.geocode(MAP,addr,city);let r=null;if(g){const v=HaltonRouter.snap(MAP,g.x,g.y);if(v>=0)r={x:g.x,y:g.y,how:g.how,v}}
